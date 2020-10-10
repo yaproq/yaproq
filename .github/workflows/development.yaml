@@ -17,7 +17,7 @@ jobs:
   ubuntu-bionic:
     runs-on: ubuntu-latest
     container:
-      image: swift:5.1-bionic
+      image: swift:5.3-bionic
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -36,7 +36,7 @@ jobs:
   ubuntu-xenial:
     runs-on: ubuntu-latest
     container:
-      image: swift:5.1-xenial
+      image: swift:5.3-xenial
     steps:
     - name: Checkout
       uses: actions/checkout@v2
