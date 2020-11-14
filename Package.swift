@@ -9,7 +9,7 @@ let package = Package(
     ],
     targets: [
         .target(name: "Yaproq"),
-        .testTarget(name: "ChaqmoqTests", dependencies: [
+        .testTarget(name: "YaproqTests", dependencies: [
             .target(name: "Yaproq")
         ])
     ],
