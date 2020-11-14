@@ -9,6 +9,9 @@ let package = Package(
     ],
     targets: [
         .target(name: "Yaproq"),
-        .testTarget(name: "YaproqTests", dependencies: ["Yaproq"])
-    ]
+        .testTarget(name: "ChaqmoqTests", dependencies: [
+            .target(name: "Yaproq")
+        ])
+    ],
+    swiftLanguageVersions: [.v5]
 )
