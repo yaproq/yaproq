@@ -10,6 +10,7 @@ protocol StatementVisitor {
     func visitInclude(statement: IncludeStatement) throws
     func visitPrint(statement: PrintStatement) throws
     func visitSuper(statement: SuperStatement) throws
+    func visitVariable(statement: VariableStatement) throws
 }
 
 class BlockStatement: Statement {
@@ -100,5 +101,19 @@ class PrintStatement: Statement {
 class SuperStatement: Statement {
     func accept(visitor: StatementVisitor) throws {
         try visitor.visitSuper(statement: self)
+    }
+}
+
+class VariableStatement: Statement {
+    let token: Token
+    let expression: Expression?
+
+    init(token: Token, expression: Expression? = nil) {
+        self.token = token
+        self.expression = expression
+    }
+
+    func accept(visitor: StatementVisitor) throws {
+        try visitor.visitVariable(statement: self)
     }
 }
