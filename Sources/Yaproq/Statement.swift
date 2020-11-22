@@ -6,6 +6,7 @@ protocol StatementVisitor {
     func visitBlock(statement: BlockStatement) throws
     func visitExpression(statement: ExpressionStatement) throws
     func visitExtend(statement: ExtendStatement) throws
+    func visitIf(statement: IfStatement) throws
 }
 
 class BlockStatement: Statement {
@@ -43,5 +44,28 @@ class ExtendStatement: Statement {
 
     func accept(visitor: StatementVisitor) throws {
         try visitor.visitExtend(statement: self)
+    }
+}
+
+class IfStatement: Statement {
+    let condition: Expression
+    let thenBranch: Statement
+    let elseIfBranches: [IfStatement]?
+    let elseBranch: Statement?
+
+    init(
+        condition: Expression,
+        thenBranch: Statement,
+        elseIfBranches: [IfStatement]? = nil,
+        elseBranch: Statement? = nil
+    ) {
+        self.condition = condition
+        self.thenBranch = thenBranch
+        self.elseIfBranches = elseIfBranches
+        self.elseBranch = elseBranch
+    }
+
+    func accept(visitor: StatementVisitor) throws {
+        try visitor.visitIf(statement: self)
     }
 }
