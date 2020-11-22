@@ -9,6 +9,7 @@ protocol ExpressionVisitor {
     func visitLiteral(expression: LiteralExpression) throws -> Any?
     func visitLogical(expression: LogicalExpression) throws -> Any?
     func visitUnary(expression: UnaryExpression) throws -> Any
+    func visitVariable(expression: VariableExpression) throws -> Any?
 }
 
 class AssignmentExpression: Expression {
@@ -92,5 +93,19 @@ class UnaryExpression: Expression {
 
     func accept(visitor: ExpressionVisitor) throws -> Any? {
         try visitor.visitUnary(expression: self)
+    }
+}
+
+class VariableExpression: Expression {
+    let token: Token
+    let value: Expression?
+
+    init(token: Token, value: Expression? = nil) {
+        self.token = token
+        self.value = value
+    }
+
+    func accept(visitor: ExpressionVisitor) throws -> Any? {
+        try visitor.visitVariable(expression: self)
     }
 }
