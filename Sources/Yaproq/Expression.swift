@@ -4,6 +4,7 @@ protocol Expression {
 
 protocol ExpressionVisitor {
     func visitAssignment(expression: AssignmentExpression) throws -> Any?
+    func visitBinary(expression: BinaryExpression) throws -> Any
 }
 
 class AssignmentExpression: Expression {
@@ -17,5 +18,21 @@ class AssignmentExpression: Expression {
 
     func accept(visitor: ExpressionVisitor) throws -> Any? {
         try visitor.visitAssignment(expression: self)
+    }
+}
+
+class BinaryExpression: Expression {
+    let left: Expression
+    let token: Token
+    let right: Expression
+
+    init(left: Expression, token: Token, right: Expression) {
+        self.left = left
+        self.token = token
+        self.right = right
+    }
+
+    func accept(visitor: ExpressionVisitor) throws -> Any? {
+        try visitor.visitBinary(expression: self)
     }
 }
