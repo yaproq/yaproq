@@ -9,6 +9,7 @@ protocol StatementVisitor {
     func visitIf(statement: IfStatement) throws
     func visitInclude(statement: IncludeStatement) throws
     func visitPrint(statement: PrintStatement) throws
+    func visitSuper(statement: SuperStatement) throws
 }
 
 class BlockStatement: Statement {
@@ -93,5 +94,11 @@ class PrintStatement: Statement {
 
     func accept(visitor: StatementVisitor) throws {
         try visitor.visitPrint(statement: self)
+    }
+}
+
+class SuperStatement: Statement {
+    func accept(visitor: StatementVisitor) throws {
+        try visitor.visitSuper(statement: self)
     }
 }
