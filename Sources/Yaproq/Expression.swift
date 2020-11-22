@@ -5,6 +5,7 @@ protocol Expression {
 protocol ExpressionVisitor {
     func visitAssignment(expression: AssignmentExpression) throws -> Any?
     func visitBinary(expression: BinaryExpression) throws -> Any
+    func visitGrouping(expression: GroupingExpression) throws -> Any?
 }
 
 class AssignmentExpression: Expression {
@@ -34,5 +35,17 @@ class BinaryExpression: Expression {
 
     func accept(visitor: ExpressionVisitor) throws -> Any? {
         try visitor.visitBinary(expression: self)
+    }
+}
+
+class GroupingExpression: Expression {
+    let expression: Expression
+
+    init(expression: Expression) {
+        self.expression = expression
+    }
+
+    func accept(visitor: ExpressionVisitor) throws -> Any? {
+        try visitor.visitGrouping(expression: self)
     }
 }
