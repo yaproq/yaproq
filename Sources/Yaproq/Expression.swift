@@ -7,6 +7,7 @@ protocol ExpressionVisitor {
     func visitBinary(expression: BinaryExpression) throws -> Any
     func visitGrouping(expression: GroupingExpression) throws -> Any?
     func visitLiteral(expression: LiteralExpression) throws -> Any?
+    func visitLogical(expression: LogicalExpression) throws -> Any?
 }
 
 class AssignmentExpression: Expression {
@@ -60,5 +61,21 @@ class LiteralExpression: Expression {
 
     func accept(visitor: ExpressionVisitor) throws -> Any? {
         try visitor.visitLiteral(expression: self)
+    }
+}
+
+class LogicalExpression: Expression {
+    let left: Expression
+    let token: Token
+    let right: Expression
+
+    init(left: Expression, token: Token, right: Expression) {
+        self.left = left
+        self.token = token
+        self.right = right
+    }
+
+    func accept(visitor: ExpressionVisitor) throws -> Any? {
+        try visitor.visitLogical(expression: self)
     }
 }
