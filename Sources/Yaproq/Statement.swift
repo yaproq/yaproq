@@ -8,6 +8,7 @@ protocol StatementVisitor {
     func visitExtend(statement: ExtendStatement) throws
     func visitIf(statement: IfStatement) throws
     func visitInclude(statement: IncludeStatement) throws
+    func visitPrint(statement: PrintStatement) throws
 }
 
 class BlockStatement: Statement {
@@ -80,5 +81,17 @@ class IncludeStatement: Statement {
 
     func accept(visitor: StatementVisitor) throws {
         try visitor.visitInclude(statement: self)
+    }
+}
+
+class PrintStatement: Statement {
+    let expression: Expression
+
+    init(expression: Expression) {
+        self.expression = expression
+    }
+
+    func accept(visitor: StatementVisitor) throws {
+        try visitor.visitPrint(statement: self)
     }
 }
