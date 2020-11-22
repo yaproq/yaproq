@@ -7,6 +7,7 @@ protocol StatementVisitor {
     func visitExpression(statement: ExpressionStatement) throws
     func visitExtend(statement: ExtendStatement) throws
     func visitIf(statement: IfStatement) throws
+    func visitInclude(statement: IncludeStatement) throws
 }
 
 class BlockStatement: Statement {
@@ -67,5 +68,17 @@ class IfStatement: Statement {
 
     func accept(visitor: StatementVisitor) throws {
         try visitor.visitIf(statement: self)
+    }
+}
+
+class IncludeStatement: Statement {
+    let expression: Expression
+
+    init(expression: Expression) {
+        self.expression = expression
+    }
+
+    func accept(visitor: StatementVisitor) throws {
+        try visitor.visitInclude(statement: self)
     }
 }
