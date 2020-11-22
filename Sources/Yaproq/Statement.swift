@@ -11,6 +11,7 @@ protocol StatementVisitor {
     func visitPrint(statement: PrintStatement) throws
     func visitSuper(statement: SuperStatement) throws
     func visitVariable(statement: VariableStatement) throws
+    func visitWhile(statement: WhileStatement) throws
 }
 
 class BlockStatement: Statement {
@@ -115,5 +116,19 @@ class VariableStatement: Statement {
 
     func accept(visitor: StatementVisitor) throws {
         try visitor.visitVariable(statement: self)
+    }
+}
+
+class WhileStatement: Statement {
+    let condition: Expression
+    let body: Statement
+
+    init(condition: Expression, body: Statement) {
+        self.condition = condition
+        self.body = body
+    }
+
+    func accept(visitor: StatementVisitor) throws {
+        try visitor.visitWhile(statement: self)
     }
 }
