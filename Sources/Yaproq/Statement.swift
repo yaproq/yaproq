@@ -5,6 +5,7 @@ protocol Statement {
 protocol StatementVisitor {
     func visitBlock(statement: BlockStatement) throws
     func visitExpression(statement: ExpressionStatement) throws
+    func visitExtend(statement: ExtendStatement) throws
 }
 
 class BlockStatement: Statement {
@@ -30,5 +31,17 @@ class ExpressionStatement: Statement {
 
     func accept(visitor: StatementVisitor) throws {
         try visitor.visitExpression(statement: self)
+    }
+}
+
+class ExtendStatement: Statement {
+    let expression: Expression
+
+    init(expression: Expression) {
+        self.expression = expression
+    }
+
+    func accept(visitor: StatementVisitor) throws {
+        try visitor.visitExtend(statement: self)
     }
 }
