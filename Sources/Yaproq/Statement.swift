@@ -4,6 +4,7 @@ protocol Statement {
 
 protocol StatementVisitor {
     func visitBlock(statement: BlockStatement) throws
+    func visitExpression(statement: ExpressionStatement) throws
 }
 
 class BlockStatement: Statement {
@@ -17,5 +18,17 @@ class BlockStatement: Statement {
 
     func accept(visitor: StatementVisitor) throws {
         try visitor.visitBlock(statement: self)
+    }
+}
+
+class ExpressionStatement: Statement {
+    let expression: Expression
+
+    init(expression: Expression) {
+        self.expression = expression
+    }
+
+    func accept(visitor: StatementVisitor) throws {
+        try visitor.visitExpression(statement: self)
     }
 }
