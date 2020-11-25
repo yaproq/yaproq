@@ -177,8 +177,8 @@ extension Scanner {
         case Token.Kind.less.rawValue:
             addToken(kind: matches(Token.Kind.equal.rawValue) ? .lessOrEqual : .less)
         case Token.Kind.carriageReturn.rawValue,
-             Token.Kind.emptySpace.rawValue,
-             Token.Kind.tab.rawValue:
+             Token.Kind.tab.rawValue,
+             Token.Kind.whitespace.rawValue:
             break
         case Token.Kind.newline.rawValue:
             line += 1
@@ -218,8 +218,8 @@ extension Scanner {
 
         switch character {
         case Token.Kind.carriageReturn.rawValue,
-             Token.Kind.emptySpace.rawValue,
-             Token.Kind.tab.rawValue:
+             Token.Kind.tab.rawValue,
+             Token.Kind.whitespace.rawValue:
             skip()
         case Token.Kind.newline.rawValue:
             skip()
@@ -247,8 +247,8 @@ extension Scanner {
                 } else {
                     switch character {
                     case Token.Kind.carriageReturn.rawValue,
-                         Token.Kind.emptySpace.rawValue,
-                         Token.Kind.tab.rawValue:
+                         Token.Kind.tab.rawValue,
+                         Token.Kind.whitespace.rawValue:
                         break
                     case Token.Kind.newline.rawValue:
                         line += 1

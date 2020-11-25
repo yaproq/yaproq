@@ -20,7 +20,6 @@ extension Token {
         case carriageReturn = "\r"
         case comma = ","
         case dot = "."
-        case emptySpace = " "
         case leftBrace = "{"
         case leftParenthesis = "("
         case minus = "-"
@@ -33,6 +32,7 @@ extension Token {
         case slash = "/"
         case star = "*"
         case tab = "\t"
+        case whitespace = " "
 
         // One or two character.
         case bang = "!"
