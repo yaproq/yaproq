@@ -74,4 +74,18 @@ final class TokenTests: XCTestCase {
 
         XCTAssertEqual(Token.Kind.eof.rawValue, "")
     }
+
+    func testKeywords() {
+        // Assert
+        XCTAssertEqual(Token.Kind.keywords, [
+            .and, .block, .else, .elseif, .endblock, .endfor, .endif, .endwhile, .extend,
+            .false, .for, .if, .include, .nil, .or, .super, .true, .var, .while
+        ])
+        XCTAssertEqual(Token.Kind.keywords, [
+            .and, .block, .else, .elseif, .endblock, .endfor, .endif, .endwhile, .extend,
+            .false, .for, .if, .include, .nil, .or, .super, .true, .var, .while
+        ])
+        XCTAssertEqual(Token.Kind.blockStartKeywords, [.block, .for, .if, .while])
+        XCTAssertEqual(Token.Kind.blockEndKeywords, [.endblock, .endfor, .endif, .endwhile])
+    }
 }
