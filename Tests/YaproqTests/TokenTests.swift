@@ -4,16 +4,19 @@ import XCTest
 final class TokenTests: XCTestCase {
     func testInit() {
         // Arrange
-        let kind = Token.Kind.and
+        let kind = Token.Kind.number
+        let literal = 1
+        let lexeme = String(literal)
         let line = 1
         let column = 3
 
         // Act
-        let token = Token(kind: kind, lexeme: kind.rawValue, line: line, column: column)
+        let token = Token(kind: kind, lexeme: lexeme, literal: literal, line: line, column: column)
 
         // Assert
         XCTAssertEqual(token.kind, kind)
-        XCTAssertEqual(token.lexeme, kind.rawValue)
+        XCTAssertEqual(token.lexeme, lexeme)
+        XCTAssertEqual(token.literal! as! Int, literal)
         XCTAssertEqual(token.line, line)
         XCTAssertEqual(token.column, column)
     }
