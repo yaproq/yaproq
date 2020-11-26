@@ -1,5 +1,5 @@
-@testable import Yaproq
 import XCTest
+@testable import Yaproq
 
 final class TokenTests: XCTestCase {
     func testInit() {
