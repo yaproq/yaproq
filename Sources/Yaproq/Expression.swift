@@ -12,7 +12,7 @@ protocol ExpressionVisitor {
     func visitVariable(expression: VariableExpression) throws -> Any?
 }
 
-class AssignmentExpression: Expression {
+struct AssignmentExpression: Expression {
     let token: Token
     let value: Expression
 
@@ -26,7 +26,7 @@ class AssignmentExpression: Expression {
     }
 }
 
-class BinaryExpression: Expression {
+struct BinaryExpression: Expression {
     let left: Expression
     let token: Token
     let right: Expression
@@ -42,7 +42,7 @@ class BinaryExpression: Expression {
     }
 }
 
-class GroupingExpression: Expression {
+struct GroupingExpression: Expression {
     let expression: Expression
 
     init(expression: Expression) {
@@ -54,7 +54,7 @@ class GroupingExpression: Expression {
     }
 }
 
-class LiteralExpression: Expression {
+struct LiteralExpression: Expression, Equatable {
     let token: Token
 
     init(token: Token) {
@@ -66,7 +66,7 @@ class LiteralExpression: Expression {
     }
 }
 
-class LogicalExpression: Expression {
+struct LogicalExpression: Expression {
     let left: Expression
     let token: Token
     let right: Expression
@@ -82,7 +82,7 @@ class LogicalExpression: Expression {
     }
 }
 
-class UnaryExpression: Expression {
+struct UnaryExpression: Expression {
     let token: Token
     let right: Expression
 
@@ -96,7 +96,7 @@ class UnaryExpression: Expression {
     }
 }
 
-class VariableExpression: Expression {
+struct VariableExpression: Expression {
     let token: Token
     let value: Expression?
 
