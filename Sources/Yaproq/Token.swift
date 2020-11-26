@@ -1,4 +1,4 @@
-class Token {
+struct Token {
     let kind: Kind
     let lexeme: String
     let literal: Any?
