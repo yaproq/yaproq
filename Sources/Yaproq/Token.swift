@@ -23,6 +23,16 @@ extension Token: CustomStringConvertible {
     }
 }
 
+extension Token: Equatable {
+    static func ==(lhs: Token, rhs: Token) -> Bool {
+        lhs.kind == rhs.kind &&
+        lhs.lexeme == rhs.lexeme &&
+        String(describing: lhs.literal ?? "") == String(describing: rhs.literal ?? "") &&
+        lhs.line == rhs.line &&
+        lhs.column == rhs.column
+    }
+}
+
 extension Token {
     enum Kind: String {
         // Single-character.
