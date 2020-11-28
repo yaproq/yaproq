@@ -191,3 +191,32 @@ final class UnaryExpressionTests: XCTestCase {
         XCTAssertEqual(expression.right as! LiteralExpression, right)
     }
 }
+
+final class VariableExpressionTests: XCTestCase {
+    func testInit() {
+        // Arrange
+        let token = Token(
+            kind: .var,
+            lexeme: Token.Kind.var.rawValue,
+            line: 1,
+            column: 6
+        )
+        let literal = 1
+        let value = LiteralExpression(
+            token: .init(
+                kind: .number,
+                lexeme: String(literal),
+                literal: literal,
+                line: 1,
+                column: 12
+            )
+        )
+
+        // Act
+        let expression = VariableExpression(token: token, value: value)
+
+        // Assert
+        XCTAssertEqual(expression.token, token)
+        XCTAssertEqual(expression.value as! LiteralExpression, value)
+    }
+}
