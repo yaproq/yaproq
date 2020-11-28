@@ -20,3 +20,23 @@ final class TemplateErrorTests: XCTestCase {
         XCTAssertEqual(error.errorDescription, error.message)
     }
 }
+
+final class SyntaxErrorTests: XCTestCase {
+    func testInit() {
+        // Act
+        var error = SyntaxError(line: 1, column: 1)
+
+        // Assert
+        XCTAssertEqual(error.message, "[\(error.line):\(error.column)] Syntax error: An unknown error.")
+        XCTAssertEqual(error.errorDescription, error.message)
+
+        let message = "An invalid assignment target."
+
+        // Act
+        error = SyntaxError(message, line: 1, column: 1)
+
+        // Assert
+        XCTAssertEqual(error.message, "[\(error.line):\(error.column)] Syntax error: \(message)")
+        XCTAssertEqual(error.errorDescription, error.message)
+    }
+}
