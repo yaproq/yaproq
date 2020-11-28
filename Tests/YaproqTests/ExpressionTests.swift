@@ -124,3 +124,41 @@ final class LiteralExpressionTests: XCTestCase {
         XCTAssertEqual(expression.token, token)
     }
 }
+
+final class LogicalExpressionTests: XCTestCase {
+    func testInit() {
+        // Arrange
+        let left = LiteralExpression(
+            token: .init(
+                kind: .true,
+                lexeme: Token.Kind.true.rawValue,
+                literal: true,
+                line: 1,
+                column: 7
+            )
+        )
+        let token = Token(
+            kind: .plus,
+            lexeme: Token.Kind.or.rawValue,
+            line: 1,
+            column: 10
+        )
+        let right = LiteralExpression(
+            token: .init(
+                kind: .false,
+                lexeme: Token.Kind.false.rawValue,
+                literal: false,
+                line: 1,
+                column: 16
+            )
+        )
+
+        // Act
+        let expression = LogicalExpression(left: left, token: token, right: right)
+
+        // Assert
+        XCTAssertEqual(expression.left as! LiteralExpression, left)
+        XCTAssertEqual(expression.token, token)
+        XCTAssertEqual(expression.right as! LiteralExpression, right)
+    }
+}
