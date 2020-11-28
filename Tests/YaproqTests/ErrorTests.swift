@@ -40,3 +40,23 @@ final class SyntaxErrorTests: XCTestCase {
         XCTAssertEqual(error.errorDescription, error.message)
     }
 }
+
+final class RuntimeErrorTests: XCTestCase {
+    func testInit() {
+        // Act
+        var error = RuntimeError(line: 1, column: 1)
+
+        // Assert
+        XCTAssertEqual(error.message, "[\(error.line):\(error.column)] Runtime error: An unknown error.")
+        XCTAssertEqual(error.errorDescription, error.message)
+
+        let message = "Operands must be comparable."
+
+        // Act
+        error = RuntimeError(message, line: 1, column: 1)
+
+        // Assert
+        XCTAssertEqual(error.message, "[\(error.line):\(error.column)] Runtime error: \(message)")
+        XCTAssertEqual(error.errorDescription, error.message)
+    }
+}
