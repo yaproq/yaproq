@@ -28,3 +28,41 @@ final class AssignmentExpressionTests: XCTestCase {
         XCTAssertEqual(expression.value as! LiteralExpression, value)
     }
 }
+
+final class BinaryExpressionTests: XCTestCase {
+    func testInit() {
+        // Arrange
+        let left = LiteralExpression(
+            token: .init(
+                kind: .number,
+                lexeme: String(1),
+                literal: 1,
+                line: 1,
+                column: 4
+            )
+        )
+        let token = Token(
+            kind: .plus,
+            lexeme: Token.Kind.plus.rawValue,
+            line: 1,
+            column: 6
+        )
+        let right = LiteralExpression(
+            token: .init(
+                kind: .number,
+                lexeme: String(2),
+                literal: 2,
+                line: 1,
+                column: 8
+            )
+        )
+
+        // Act
+        let expression = BinaryExpression(left: left, token: token, right: right)
+
+        // Assert
+        XCTAssertEqual(expression.left as! LiteralExpression, left)
+        XCTAssertEqual(expression.token, token)
+        XCTAssertEqual(expression.right as! LiteralExpression, right)
+    }
+}
