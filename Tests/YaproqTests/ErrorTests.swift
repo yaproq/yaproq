@@ -10,6 +10,7 @@ final class TemplateErrorTests: XCTestCase {
         XCTAssertEqual(error.message, "Template error: An unknown error.")
         XCTAssertEqual(error.errorDescription, error.message)
 
+        // Arrange
         let message = "An invalid source."
 
         // Act
@@ -30,6 +31,7 @@ final class SyntaxErrorTests: XCTestCase {
         XCTAssertEqual(error.message, "[\(error.line):\(error.column)] Syntax error: An unknown error.")
         XCTAssertEqual(error.errorDescription, error.message)
 
+        // Arrange
         let message = "An invalid assignment target."
 
         // Act
@@ -50,6 +52,7 @@ final class RuntimeErrorTests: XCTestCase {
         XCTAssertEqual(error.message, "[\(error.line):\(error.column)] Runtime error: An unknown error.")
         XCTAssertEqual(error.errorDescription, error.message)
 
+        // Arrange
         let message = "Operands must be comparable."
 
         // Act
