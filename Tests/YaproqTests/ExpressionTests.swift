@@ -162,3 +162,32 @@ final class LogicalExpressionTests: XCTestCase {
         XCTAssertEqual(expression.right as! LiteralExpression, right)
     }
 }
+
+final class UnaryExpressionTests: XCTestCase {
+    func testInit() {
+        // Arrange
+        let token = Token(
+            kind: .minus,
+            lexeme: Token.Kind.minus.rawValue,
+            line: 1,
+            column: 4
+        )
+        let literal = 1
+        let right = LiteralExpression(
+            token: .init(
+                kind: .number,
+                lexeme: String(literal),
+                literal: literal,
+                line: 1,
+                column: 5
+            )
+        )
+
+        // Act
+        let expression = UnaryExpression(token: token, right: right)
+
+        // Assert
+        XCTAssertEqual(expression.token, token)
+        XCTAssertEqual(expression.right as! LiteralExpression, right)
+    }
+}
