@@ -27,7 +27,7 @@ public struct SyntaxError: LocalizedError {
             if let message = message {
                 self.message = "[\(line):\(column)] Syntax error: \(message)"
             } else {
-                self.message = "[\(line):\(column)] Syntax error: Unknown error."
+                self.message = "[\(line):\(column)] Syntax error: An unknown error."
             }
         } else {
             self.message = message
@@ -49,7 +49,7 @@ public struct RuntimeError: LocalizedError {
             if let message = message {
                 self.message = "[\(line):\(column)] Runtime error: \(message)"
             } else {
-                self.message = "[\(line):\(column)] Runtime error: Unknown error."
+                self.message = "[\(line):\(column)] Runtime error: An unknown error."
             }
         } else {
             self.message = message
