@@ -294,10 +294,7 @@ extension Parser {
     }
 
     private func primaryExpression() throws -> Expression {
-        if match(.false) { return LiteralExpression(token: previous()) }
-        if match(.true) { return LiteralExpression(token: previous()) }
-        if match(.nil) { return LiteralExpression(token: previous()) }
-        if match(.number, .string) { return LiteralExpression(token: previous()) }
+        if match(.false, .nil, .number, .string, .true) { return LiteralExpression(token: previous()) }
         if match(.identifier) { return VariableExpression(token: previous()) }
 
         if match(.leftParenthesis) {
