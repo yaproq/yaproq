@@ -13,7 +13,7 @@ public final class Yaproq {
         let fileManager = FileManager.default
         guard fileManager.fileExists(atPath: path),
             let data = fileManager.contents(atPath: path),
-            let source = String(data: data, encoding: .utf8) else { throw YaproqError("Invalid source.") }
+            let source = String(data: data, encoding: .utf8) else { throw TemplateError("An invalid source.") }
 
         return source
     }
@@ -67,7 +67,7 @@ extension Yaproq {
             )
 
             if updatedRawDelimiters.count != initialRawDelimiters.count {
-                throw YaproqError("Delimiters must be unique.")
+                throw TemplateError("Delimiters must be unique.")
             }
         }
     }

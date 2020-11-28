@@ -1,14 +1,14 @@
 import Foundation
 
-public struct YaproqError: LocalizedError {
+public struct TemplateError: LocalizedError {
     let message: String?
     public var errorDescription: String? { message }
 
     init(_ message: String? = nil) {
         if let message = message {
-            self.message = "Yaproq error: \(message)"
+            self.message = "Template error: \(message)"
         } else {
-            self.message = "Yaproq error: Unknown error."
+            self.message = "Template error: An unknown error."
         }
     }
 }
@@ -19,18 +19,14 @@ public struct SyntaxError: LocalizedError {
     let column: Int?
     public var errorDescription: String? { message }
 
-    init(_ message: String? = nil, line: Int? = nil, column: Int? = nil) {
+    init(_ message: String? = nil, line: Int, column: Int) {
         self.line = line
         self.column = column
 
-        if let line = line, let column = column {
-            if let message = message {
-                self.message = "[\(line):\(column)] Syntax error: \(message)"
-            } else {
-                self.message = "[\(line):\(column)] Syntax error: An unknown error."
-            }
+        if let message = message {
+            self.message = "[\(line):\(column)] Syntax error: \(message)"
         } else {
-            self.message = message
+            self.message = "[\(line):\(column)] Syntax error: An unknown error."
         }
     }
 }
@@ -41,18 +37,14 @@ public struct RuntimeError: LocalizedError {
     let column: Int?
     public var errorDescription: String? { message }
 
-    init(_ message: String? = nil, line: Int? = nil, column: Int? = nil) {
+    init(_ message: String? = nil, line: Int, column: Int) {
         self.line = line
         self.column = column
 
-        if let line = line, let column = column {
-            if let message = message {
-                self.message = "[\(line):\(column)] Runtime error: \(message)"
-            } else {
-                self.message = "[\(line):\(column)] Runtime error: An unknown error."
-            }
+        if let message = message {
+            self.message = "[\(line):\(column)] Runtime error: \(message)"
         } else {
-            self.message = message
+            self.message = "[\(line):\(column)] Runtime error: An unknown error."
         }
     }
 }

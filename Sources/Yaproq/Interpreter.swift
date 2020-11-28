@@ -12,14 +12,14 @@ class Interpreter {
 
     func interpret() throws {
         let extendStatements = statements.filter { $0 is ExtendStatement }
-        if extendStatements.count > 1 { throw RuntimeError("Can't extend multiple template files.") }
+        if extendStatements.count > 1 { throw TemplateError("Can't extend multiple template files.") }
 
         if let firstExtendStatement = extendStatements.first,
             let index = statements.firstIndex(
                 where: { ObjectIdentifier(type(of: $0)) == ObjectIdentifier(type(of: firstExtendStatement)) }
             ) {
             if index != 0 {
-                throw RuntimeError("The 'extend' must the first statement in a template file.")
+                throw TemplateError("The 'extend' must the first statement in a template file.")
             }
         }
 
