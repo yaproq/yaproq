@@ -104,3 +104,23 @@ final class GroupingExpressionTests: XCTestCase {
         XCTAssertEqual((expression.expression as! BinaryExpression).right as! LiteralExpression, right)
     }
 }
+
+final class LiteralExpressionTests: XCTestCase {
+    func testInit() {
+        // Arrange
+        let literal = "Hello World"
+        let token = Token(
+            kind: .string,
+            lexeme: literal,
+            literal: literal,
+            line: 1,
+            column: 16
+        )
+
+        // Act
+        let expression = LiteralExpression(token: token)
+
+        // Assert
+        XCTAssertEqual(expression.token, token)
+    }
+}
