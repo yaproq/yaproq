@@ -15,8 +15,8 @@ public struct TemplateError: LocalizedError {
 
 public struct SyntaxError: LocalizedError {
     let message: String?
-    let line: Int?
-    let column: Int?
+    let line: Int
+    let column: Int
     public var errorDescription: String? { message }
 
     init(_ message: String? = nil, line: Int, column: Int) {
@@ -33,8 +33,8 @@ public struct SyntaxError: LocalizedError {
 
 public struct RuntimeError: LocalizedError {
     let message: String?
-    let line: Int?
-    let column: Int?
+    let line: Int
+    let column: Int
     public var errorDescription: String? { message }
 
     init(_ message: String? = nil, line: Int, column: Int) {
