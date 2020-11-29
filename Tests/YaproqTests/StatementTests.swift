@@ -28,3 +28,18 @@ final class ExtendStatementTests: XCTestCase {
         XCTAssertEqual(statement.expression as! LiteralExpression, expression)
     }
 }
+
+final class IncludeStatementTests: XCTestCase {
+    func testInit() {
+        // Arrange
+        let expression = LiteralExpression(
+            token: .init(kind: .string, lexeme: "header.html", literal: "header.html", line: 1, column: 20)
+        )
+
+        // Act
+        let statement = IncludeStatement(expression: expression)
+
+        // Assert
+        XCTAssertEqual(statement.expression as! LiteralExpression, expression)
+    }
+}
