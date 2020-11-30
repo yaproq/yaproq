@@ -52,6 +52,60 @@ final class ExtendStatementTests: XCTestCase {
     }
 }
 
+final class IfStatementTests: XCTestCase {
+    func testInit() {
+        // Arrange
+        let trueCondition = LiteralExpression(
+            token: .init(kind: .true, lexeme: "true", literal: true, line: 1, column: 10)
+        )
+        let oneExpression = LiteralExpression(
+            token: .init(kind: .number, lexeme: "1", literal: 1, line: 2, column: 4)
+        )
+        let falseCondition = LiteralExpression(
+            token: .init(kind: .false, lexeme: "false", literal: false, line: 3, column: 15)
+        )
+        let twoExpression = LiteralExpression(
+            token: .init(kind: .number, lexeme: "2", literal: 2, line: 4, column: 4)
+        )
+        let threeExpression = LiteralExpression(
+            token: .init(kind: .number, lexeme: "3", literal: 3, line: 6, column: 4)
+        )
+
+        // Act
+        let statement = IfStatement(
+            condition: trueCondition,
+            thenBranch: BlockStatement(statements: [PrintStatement(expression: oneExpression)]),
+            elseIfBranches: [
+                IfStatement(
+                    condition: falseCondition,
+                    thenBranch: BlockStatement(statements: [PrintStatement(expression: twoExpression)])
+                )
+            ],
+            elseBranch: BlockStatement(statements: [PrintStatement(expression: threeExpression)])
+        )
+
+        // Assert
+        XCTAssertEqual(statement.condition as! LiteralExpression, trueCondition)
+        XCTAssertEqual((statement.thenBranch as! BlockStatement).statements.count, 1)
+        XCTAssertEqual(
+            ((statement.thenBranch as! BlockStatement).statements.first as! PrintStatement).expression as! LiteralExpression,
+            oneExpression
+        )
+        XCTAssertEqual(statement.elseIfBranches.count, 1)
+        XCTAssertEqual(statement.elseIfBranches.first?.condition as! LiteralExpression, falseCondition)
+        XCTAssertEqual((statement.elseIfBranches.first?.thenBranch as! BlockStatement).statements.count, 1)
+        XCTAssertEqual(
+            ((statement.elseIfBranches.first?.thenBranch as! BlockStatement).statements.first as! PrintStatement).expression as! LiteralExpression,
+            twoExpression
+        )
+        XCTAssertEqual((statement.elseBranch as! BlockStatement).statements.count, 1)
+        XCTAssertEqual(
+            ((statement.elseBranch as! BlockStatement).statements.first as! PrintStatement).expression as! LiteralExpression,
+            threeExpression
+        )
+    }
+}
+
 final class IncludeStatementTests: XCTestCase {
     func testInit() {
         // Arrange
