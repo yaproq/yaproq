@@ -18,7 +18,7 @@ class BlockStatement: Statement {
     let name: String?
     var statements: [Statement]
 
-    init(name: String? = nil, statements: [Statement]) {
+    init(name: String? = nil, statements: [Statement] = .init()) {
         self.name = name
         self.statements = statements
     }
