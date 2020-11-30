@@ -12,7 +12,7 @@ final class BlockStatementTests: XCTestCase {
 
         // Arrange
         let name = "title"
-        let expression = LiteralExpression(token: .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 4))
+        let expression = LiteralExpression(token: .init(kind: .number, lexeme: "1", literal: 1, line: 2, column: 4))
 
         // Act
         statement = BlockStatement(name: name, statements: [PrintStatement(expression: expression)])
@@ -156,7 +156,7 @@ final class WhileStatementTests: XCTestCase {
             token: .init(kind: .true, lexeme: "true", literal: true, line: 1, column: 16)
         )
         let expression = LiteralExpression(
-            token: .init(kind: .string, lexeme: "true", literal: "true", line: 1, column: 7)
+            token: .init(kind: .string, lexeme: "true", literal: "true", line: 2, column: 7)
         )
 
         // Act
