@@ -1,6 +1,6 @@
 import Foundation
 
-class Parser {
+final class Parser {
     let tokens: [Token]
     private var current = 0
 

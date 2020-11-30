@@ -1,6 +1,6 @@
 import Foundation
 
-class Interpreter {
+final class Interpreter {
     let templating: Yaproq
     var environment: Environment
     lazy var statements: [Statement] = .init()

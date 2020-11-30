@@ -1,4 +1,4 @@
-class Scanner {
+final class Scanner {
     let source: String
     private let delimiters: [Delimiter]
 

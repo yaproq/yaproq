@@ -1,4 +1,4 @@
-class Environment {
+final class Environment {
     let parent: Environment?
     var variables: [String: Any] { didSet { variableNames = Set(variables.keys) } }
     private var variableNames: Set<String>
