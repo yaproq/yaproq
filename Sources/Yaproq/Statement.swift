@@ -14,7 +14,7 @@ protocol StatementVisitor {
     func visitWhile(statement: WhileStatement) throws
 }
 
-class BlockStatement: Statement {
+final class BlockStatement: Statement {
     let name: String?
     var statements: [Statement]
 
@@ -28,7 +28,7 @@ class BlockStatement: Statement {
     }
 }
 
-class ExpressionStatement: Statement {
+struct ExpressionStatement: Statement {
     let expression: Expression
 
     init(expression: Expression) {
@@ -40,7 +40,7 @@ class ExpressionStatement: Statement {
     }
 }
 
-class ExtendStatement: Statement {
+struct ExtendStatement: Statement {
     let expression: Expression
 
     init(expression: Expression) {
@@ -52,7 +52,7 @@ class ExtendStatement: Statement {
     }
 }
 
-class IfStatement: Statement {
+struct IfStatement: Statement {
     let condition: Expression
     let thenBranch: Statement
     let elseIfBranches: [IfStatement]
@@ -75,7 +75,7 @@ class IfStatement: Statement {
     }
 }
 
-class IncludeStatement: Statement {
+struct IncludeStatement: Statement {
     let expression: Expression
 
     init(expression: Expression) {
@@ -87,7 +87,7 @@ class IncludeStatement: Statement {
     }
 }
 
-class PrintStatement: Statement {
+struct PrintStatement: Statement {
     let expression: Expression
 
     init(expression: Expression) {
@@ -99,13 +99,13 @@ class PrintStatement: Statement {
     }
 }
 
-class SuperStatement: Statement {
+struct SuperStatement: Statement {
     func accept(visitor: StatementVisitor) throws {
         try visitor.visitSuper(statement: self)
     }
 }
 
-class VariableStatement: Statement {
+struct VariableStatement: Statement {
     let token: Token
     let expression: Expression?
 
@@ -119,7 +119,7 @@ class VariableStatement: Statement {
     }
 }
 
-class WhileStatement: Statement {
+struct WhileStatement: Statement {
     let condition: Expression
     let body: Statement
 
