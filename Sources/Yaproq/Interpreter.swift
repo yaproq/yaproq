@@ -291,13 +291,11 @@ extension Interpreter: StatementVisitor {
         } else {
             var isTruthy = false
 
-            if let elseIfBranches = statement.elseIfBranches {
-                for elseIfBranch in elseIfBranches {
-                    if self.isTruthy(try evaluate(expression: elseIfBranch.condition)) {
-                        isTruthy = true
-                        try execute(statement: elseIfBranch.thenBranch)
-                        break
-                    }
+            for elseIfBranch in statement.elseIfBranches {
+                if self.isTruthy(try evaluate(expression: elseIfBranch.condition)) {
+                    isTruthy = true
+                    try execute(statement: elseIfBranch.thenBranch)
+                    break
                 }
             }
 

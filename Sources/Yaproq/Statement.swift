@@ -55,13 +55,13 @@ class ExtendStatement: Statement {
 class IfStatement: Statement {
     let condition: Expression
     let thenBranch: Statement
-    let elseIfBranches: [IfStatement]?
+    let elseIfBranches: [IfStatement]
     let elseBranch: Statement?
 
     init(
         condition: Expression,
         thenBranch: Statement,
-        elseIfBranches: [IfStatement]? = nil,
+        elseIfBranches: [IfStatement] = .init(),
         elseBranch: Statement? = nil
     ) {
         self.condition = condition
