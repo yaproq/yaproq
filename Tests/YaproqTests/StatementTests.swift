@@ -79,3 +79,18 @@ final class PrintStatementTests: XCTestCase {
         XCTAssertEqual(statement.expression as! LiteralExpression, expression)
     }
 }
+
+final class VariableStatementTests: XCTestCase {
+    func testInit() {
+        // Arrange
+        let token = Token(kind: .identifier, lexeme: "a", line: 1, column: 4)
+        let expression = LiteralExpression(token: .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 8))
+
+        // Act
+        let statement = VariableStatement(token: token, expression: expression)
+
+        // Assert
+        XCTAssertEqual(statement.token, token)
+        XCTAssertEqual(statement.expression as! LiteralExpression, expression)
+    }
+}
