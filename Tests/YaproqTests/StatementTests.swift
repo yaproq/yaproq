@@ -94,3 +94,29 @@ final class VariableStatementTests: XCTestCase {
         XCTAssertEqual(statement.expression as! LiteralExpression, expression)
     }
 }
+
+final class WhileStatementTests: XCTestCase {
+    func testInit() {
+        // Arrange
+        let condition = LiteralExpression(
+            token: .init(kind: .true, lexeme: "true", literal: true, line: 1, column: 16)
+        )
+        let expression = LiteralExpression(
+            token: .init(kind: .string, lexeme: "true", literal: "true", line: 1, column: 7)
+        )
+
+        // Act
+        let statement = WhileStatement(
+            condition: condition,
+            body: BlockStatement(statements: [PrintStatement(expression: expression)])
+        )
+
+        // Assert
+        XCTAssertEqual(statement.condition as! LiteralExpression, condition)
+        XCTAssertEqual((statement.body as! BlockStatement).statements.count, 1)
+        XCTAssertEqual(
+            ((statement.body as! BlockStatement).statements.first as! PrintStatement).expression as! LiteralExpression,
+            expression
+        )
+    }
+}
