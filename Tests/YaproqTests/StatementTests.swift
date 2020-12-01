@@ -1,7 +1,7 @@
 import XCTest
 @testable import Yaproq
 
-final class BlockStatementTests: XCTestCase {
+final class BlockStatementTests: BaseTests {
     func testInit() {
         // Act
         var statement = BlockStatement()
@@ -24,7 +24,7 @@ final class BlockStatementTests: XCTestCase {
     }
 }
 
-final class ExpressionStatementTests: XCTestCase {
+final class ExpressionStatementTests: BaseTests {
     func testInit() {
         // Arrange
         let expression = LiteralExpression(token: .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 4))
@@ -37,7 +37,7 @@ final class ExpressionStatementTests: XCTestCase {
     }
 }
 
-final class ExtendStatementTests: XCTestCase {
+final class ExtendStatementTests: BaseTests {
     func testInit() {
         // Arrange
         let expression = LiteralExpression(
@@ -52,7 +52,7 @@ final class ExtendStatementTests: XCTestCase {
     }
 }
 
-final class IfStatementTests: XCTestCase {
+final class IfStatementTests: BaseTests {
     func testInit() {
         // Arrange
         let trueCondition = LiteralExpression(
@@ -106,7 +106,7 @@ final class IfStatementTests: XCTestCase {
     }
 }
 
-final class IncludeStatementTests: XCTestCase {
+final class IncludeStatementTests: BaseTests {
     func testInit() {
         // Arrange
         let expression = LiteralExpression(
@@ -121,7 +121,7 @@ final class IncludeStatementTests: XCTestCase {
     }
 }
 
-final class PrintStatementTests: XCTestCase {
+final class PrintStatementTests: BaseTests {
     func testInit() {
         // Arrange
         let expression = LiteralExpression(token: .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 4))
@@ -134,7 +134,7 @@ final class PrintStatementTests: XCTestCase {
     }
 }
 
-final class VariableStatementTests: XCTestCase {
+final class VariableStatementTests: BaseTests {
     func testInit() {
         // Arrange
         let token = Token(kind: .identifier, lexeme: "a", line: 1, column: 4)
@@ -149,7 +149,7 @@ final class VariableStatementTests: XCTestCase {
     }
 }
 
-final class WhileStatementTests: XCTestCase {
+final class WhileStatementTests: BaseTests {
     func testInit() {
         // Arrange
         let condition = LiteralExpression(

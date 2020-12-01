@@ -1,7 +1,7 @@
 import XCTest
 @testable import Yaproq
 
-final class TokenTests: XCTestCase {
+final class TokenTests: BaseTests {
     func testInit() {
         // Arrange
         let kind = Token.Kind.number

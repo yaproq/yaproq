@@ -1,7 +1,7 @@
 import XCTest
 @testable import Yaproq
 
-final class AssignmentExpressionTests: XCTestCase {
+final class AssignmentExpressionTests: BaseTests {
     func testInit() {
         // Arrange
         let token = Token(
@@ -29,7 +29,7 @@ final class AssignmentExpressionTests: XCTestCase {
     }
 }
 
-final class BinaryExpressionTests: XCTestCase {
+final class BinaryExpressionTests: BaseTests {
     func testInit() {
         // Arrange
         let left = LiteralExpression(
@@ -67,7 +67,7 @@ final class BinaryExpressionTests: XCTestCase {
     }
 }
 
-final class GroupingExpressionTests: XCTestCase {
+final class GroupingExpressionTests: BaseTests {
     func testInit() {
         // Arrange
         let left = LiteralExpression(
@@ -105,7 +105,7 @@ final class GroupingExpressionTests: XCTestCase {
     }
 }
 
-final class LiteralExpressionTests: XCTestCase {
+final class LiteralExpressionTests: BaseTests {
     func testInit() {
         // Arrange
         let literal = "Hello World"
@@ -125,7 +125,7 @@ final class LiteralExpressionTests: XCTestCase {
     }
 }
 
-final class LogicalExpressionTests: XCTestCase {
+final class LogicalExpressionTests: BaseTests {
     func testInit() {
         // Arrange
         let left = LiteralExpression(
@@ -163,7 +163,7 @@ final class LogicalExpressionTests: XCTestCase {
     }
 }
 
-final class UnaryExpressionTests: XCTestCase {
+final class UnaryExpressionTests: BaseTests {
     func testInit() {
         // Arrange
         let token = Token(
@@ -192,7 +192,7 @@ final class UnaryExpressionTests: XCTestCase {
     }
 }
 
-final class VariableExpressionTests: XCTestCase {
+final class VariableExpressionTests: BaseTests {
     func testInit() {
         // Arrange
         let token = Token(

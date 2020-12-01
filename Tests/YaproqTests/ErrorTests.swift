@@ -1,7 +1,7 @@
 import XCTest
 @testable import Yaproq
 
-final class TemplateErrorTests: XCTestCase {
+final class TemplateErrorTests: BaseTests {
     func testInit() {
         // Act
         var error = TemplateError()
@@ -22,7 +22,7 @@ final class TemplateErrorTests: XCTestCase {
     }
 }
 
-final class SyntaxErrorTests: XCTestCase {
+final class SyntaxErrorTests: BaseTests {
     func testInit() {
         // Arrange
         let line = 1
@@ -51,7 +51,7 @@ final class SyntaxErrorTests: XCTestCase {
     }
 }
 
-final class RuntimeErrorTests: XCTestCase {
+final class RuntimeErrorTests: BaseTests {
     func testInit() {
         // Arrange
         let line = 1
