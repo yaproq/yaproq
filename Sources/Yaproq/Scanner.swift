@@ -344,18 +344,18 @@ extension Scanner {
 
     private func addToken(kind: Token.Kind, lexeme: String? = nil, literal: Any? = nil, isText: Bool = false) {
         let token: Token
-        var lexeme = lexeme == nil ? substring(from: start, to: current) : lexeme
+        var lexeme = lexeme == nil ? substring(from: start, to: current) : lexeme!
         var literal = literal
 
         if isText {
-            if let lastCharacter = lexeme?.last, String(lastCharacter) == Token.Kind.newline.rawValue {
-                lexeme?.removeLast()
+            if let lastCharacter = lexeme.last, String(lastCharacter) == Token.Kind.newline.rawValue {
+                lexeme.removeLast()
             }
 
             literal = lexeme
         }
 
-        token = Token(kind: kind, lexeme: lexeme ?? "", literal: literal, line: line, column: column)
+        token = Token(kind: kind, lexeme: lexeme, literal: literal, line: line, column: column)
         tokens.append(token)
     }
 }
