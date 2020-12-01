@@ -152,8 +152,6 @@ extension Scanner {
 
     private func addToken(for character: String) throws {
         switch character {
-        case Token.Kind.comma.rawValue:
-            addToken(kind: .comma)
         case Token.Kind.dot.rawValue:
             addToken(kind: .dot)
         case Token.Kind.leftParenthesis.rawValue:
