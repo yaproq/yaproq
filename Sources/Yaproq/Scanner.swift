@@ -70,6 +70,7 @@ extension Scanner {
     private func matches(_ character: String) -> Bool {
         if isAtEnd() || character != self.character(at: current) { return false }
         current += 1
+        column += 1
 
         return true
     }
