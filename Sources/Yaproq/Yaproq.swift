@@ -4,8 +4,12 @@ public final class Yaproq {
     public let configuration: Configuration
     private lazy var interpreter = Interpreter(templating: self)
 
-    public init(configuration: Configuration) {
+    public init(configuration: Configuration = .init()) {
         self.configuration = configuration
+    }
+
+    public func loadTemplate(named name: String) throws -> String {
+        try loadTemplate(at: configuration.directoryPath + name)
     }
 
     public func loadTemplate(at path: String) throws -> String {
@@ -15,6 +19,10 @@ public final class Yaproq {
             let source = String(data: data, encoding: .utf8) else { throw TemplateError("An invalid source.") }
 
         return source
+    }
+
+    public func renderTemplate(named name: String, context: [String: Any] = .init()) throws {
+        try renderTemplate(at: configuration.directoryPath + name)
     }
 
     public func renderTemplate(at path: String, context: [String: Any] = .init()) throws {
