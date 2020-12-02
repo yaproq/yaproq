@@ -9,7 +9,6 @@ public final class Yaproq {
     }
 
     public func loadTemplate(at path: String) throws -> String {
-        let path = configuration.directoryPath + path
         let fileManager = FileManager.default
         guard fileManager.fileExists(atPath: path),
             let data = fileManager.contents(atPath: path),
@@ -20,7 +19,7 @@ public final class Yaproq {
 
     public func renderTemplate(at path: String, context: [String: Any] = .init()) throws {
         let source = try loadTemplate(at: path)
-        interpreter.environment.variables = context
+        for (name, value) in context { try interpreter.environment.defineVariable(named: name, with: value) }
         interpreter.statements = try parse(source)
         try interpreter.interpret()
     }

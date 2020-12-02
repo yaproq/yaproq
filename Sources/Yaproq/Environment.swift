@@ -1,12 +1,22 @@
 final class Environment {
     let parent: Environment?
-    var variables: [String: Any] { didSet { variableNames = Set(variables.keys) } }
+    var variables: [String: Any] { mutableVariables }
+    private var mutableVariables: [String: Any]
     private var variableNames: Set<String>
 
     init(parent: Environment? = nil, variables: [String: Any] = .init()) {
         self.parent = parent
-        self.variables = variables
+        self.mutableVariables = variables
         variableNames = Set(variables.keys)
+    }
+
+    func defineVariable(named name: String, with value: Any? = nil) throws {
+        if variableNames.contains(name) {
+            throw RuntimeError("A variable '\(name)' already exists.", line: -1, column: -1)
+        }
+
+        variableNames.insert(name)
+        mutableVariables[name] = value
     }
 
     func defineVariable(for token: Token, with value: Any? = nil) throws {
@@ -17,14 +27,14 @@ final class Environment {
         }
 
         variableNames.insert(name)
-        variables[name] = value
+        mutableVariables[name] = value
     }
 
     func assign(value: Any?, toVariableWith token: Token) throws {
         let name = token.lexeme
 
         if variableNames.contains(name) {
-            variables[name] = value
+            mutableVariables[name] = value
         } else if let parent = parent {
             try parent.assign(value: value, toVariableWith: token)
         } else {
@@ -34,7 +44,7 @@ final class Environment {
 
     func valueForVariable(with token: Token) throws -> Any? {
         let name = token.lexeme
-        if variableNames.contains(name) { return variables[name] }
+        if variableNames.contains(name) { return mutableVariables[name] }
         if let parent = parent { return try parent.valueForVariable(with: token) }
         throw RuntimeError("An undefined variable '\(name)'.", line: token.line, column: token.column)
     }
