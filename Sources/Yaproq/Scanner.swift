@@ -6,7 +6,7 @@ final class Scanner {
     private var current = 0
     private var line = 1
     private var column = 0
-    private var lastDelimiterIndex: Int?
+    private var currentDelimiterIndex: Int?
     private lazy var tokens: [Token] = .init()
 
     init(source: String) {
@@ -106,33 +106,25 @@ extension Scanner {
         return tokens
     }
 
-    private func ignoreNewline() {
-        if peek() == Token.Kind.newline.rawValue {
-            advance()
-            line += 1
-            column = 0
-        }
-    }
-
     private func scanToken() throws {
-        if let lastDelimiterIndex = lastDelimiterIndex {
+        if let currentDelimiterIndex = currentDelimiterIndex {
             let character = advance()
 
             if let delimiterIndex = delimiters.firstIndex(where: { $0.end == substring(count: $0.end.count) }) {
                 let endDelimiter = delimiters[delimiterIndex].end
 
-                if lastDelimiterIndex != delimiterIndex {
+                if currentDelimiterIndex != delimiterIndex {
                     throw SyntaxError("An invalid closing delimiter `\(endDelimiter)`.", line: line, column: column)
                 }
 
                 advance(endDelimiter.count)
-                ignoreNewline()
-                self.lastDelimiterIndex = nil
+                ignoreNextNewline()
+                self.currentDelimiterIndex = nil
             } else {
-                let startDelimiter = delimiters[lastDelimiterIndex].start
+                let startDelimiter = delimiters[currentDelimiterIndex].start
 
                 if startDelimiter == Delimiter.comment.start {
-                    ignoreCommentToken()
+                    ignoreComment()
                 } else if startDelimiter == Delimiter.output.start {
                     try addPrintToken(for: character)
                 } else {
@@ -143,45 +135,76 @@ extension Scanner {
             let character = self.character(at: current)
 
             if character == Token.Kind.newline.rawValue {
-                line += 1
-                column = 0
+                ignoreNewline()
             }
 
             addTextToken()
         }
     }
 
+    private func ignoreNewline() {
+        line += 1
+        column = 0
+    }
+
+    @discardableResult
+    private func ignoreNextNewline() -> Bool {
+        if peek() == Token.Kind.newline.rawValue {
+            advance()
+            ignoreNewline()
+
+            return true
+        }
+
+        return false
+    }
+
+    private func ignoreComment() {
+        while let currentDelimiterIndex = currentDelimiterIndex,
+              delimiters[currentDelimiterIndex].start == Delimiter.comment.start, !isAtEnd() {
+            if let delimiterIndex = delimiters.firstIndex(
+                where: { $0.end == Delimiter.comment.end && $0.end == substring(count: $0.end.count) }
+            ) {
+                let endDelimiter = delimiters[delimiterIndex].end
+                advance(endDelimiter.count)
+                self.currentDelimiterIndex = nil
+                break
+            } else {
+                advance()
+            }
+        }
+    }
+
     private func addToken(for character: String) throws {
         switch character {
-        case Token.Kind.leftParenthesis.rawValue:
-            addToken(kind: .leftParenthesis)
-        case Token.Kind.minus.rawValue:
-            addToken(kind: .minus)
-        case Token.Kind.plus.rawValue:
-            addToken(kind: .plus)
-        case Token.Kind.rightParenthesis.rawValue:
-            addToken(kind: .rightParenthesis)
-        case Token.Kind.slash.rawValue:
-            addToken(kind: .slash)
-        case Token.Kind.star.rawValue:
-            addToken(kind: .star)
         case Token.Kind.bang.rawValue:
             addToken(kind: matches(Token.Kind.equal.rawValue) ? .bangEqual : .bang)
         case Token.Kind.equal.rawValue:
             addToken(kind: matches(Token.Kind.equal.rawValue) ? .equalEqual : .equal)
         case Token.Kind.greater.rawValue:
             addToken(kind: matches(Token.Kind.equal.rawValue) ? .greaterOrEqual : .greater)
+        case Token.Kind.leftParenthesis.rawValue:
+            addToken(kind: .leftParenthesis)
         case Token.Kind.less.rawValue:
             addToken(kind: matches(Token.Kind.equal.rawValue) ? .lessOrEqual : .less)
+        case Token.Kind.minus.rawValue:
+            addToken(kind: .minus)
+        case Token.Kind.plus.rawValue:
+            addToken(kind: .plus)
+        case Token.Kind.quote.rawValue:
+            try addStringToken()
+        case Token.Kind.rightParenthesis.rawValue:
+            addToken(kind: .rightParenthesis)
+        case Token.Kind.slash.rawValue:
+            addToken(kind: .slash)
+        case Token.Kind.star.rawValue:
+            addToken(kind: .star)
         case Token.Kind.carriageReturn.rawValue,
              Token.Kind.tab.rawValue,
              Token.Kind.whitespace.rawValue:
             break
         case Token.Kind.newline.rawValue:
-            line += 1
-            column = 0
-        case Token.Kind.quote.rawValue:
-            try addStringToken()
+            ignoreNewline()
         default:
             if isNumeric(character) {
                 addNumberToken()
@@ -189,22 +212,6 @@ extension Scanner {
                 try addIdentifierToken()
             } else {
                 throw SyntaxError("An unexpected character `\(character)`.", line: line, column: column)
-            }
-        }
-    }
-
-    private func ignoreCommentToken() {
-        while let lastDelimiterIndex = lastDelimiterIndex,
-              delimiters[lastDelimiterIndex].start == Delimiter.comment.start, !isAtEnd() {
-            if let delimiterIndex = delimiters.firstIndex(
-                where: { $0.end == Delimiter.comment.end && $0.end == substring(count: $0.end.count) }
-            ) {
-                let endDelimiter = delimiters[delimiterIndex].end
-                advance(endDelimiter.count)
-                self.lastDelimiterIndex = nil
-                break
-            } else {
-                advance()
             }
         }
     }
@@ -220,21 +227,20 @@ extension Scanner {
             skip()
         case Token.Kind.newline.rawValue:
             skip()
-            line += 1
-            column = 0
+            ignoreNewline()
         default:
             firstChar = true
             try addToken(for: character)
         }
 
-        while let lastDelimiterIndex = lastDelimiterIndex,
-              delimiters[lastDelimiterIndex].start == Delimiter.output.start, !isAtEnd() {
+        while let currentDelimiterIndex = currentDelimiterIndex,
+              delimiters[currentDelimiterIndex].start == Delimiter.output.start, !isAtEnd() {
             if let delimiterIndex = delimiters.firstIndex(
                 where: { $0.end == Delimiter.output.end && $0.end == substring(count: $0.end.count) }
             ) {
                 let endDelimiter = delimiters[delimiterIndex].end
                 advance(endDelimiter.count)
-                self.lastDelimiterIndex = nil
+                self.currentDelimiterIndex = nil
                 break
             } else {
                 let character = advance()
@@ -248,8 +254,7 @@ extension Scanner {
                          Token.Kind.whitespace.rawValue:
                         break
                     case Token.Kind.newline.rawValue:
-                        line += 1
-                        column = 0
+                        ignoreNewline()
                     default:
                         firstChar = true
                         try addToken(for: character)
@@ -261,8 +266,8 @@ extension Scanner {
 
     private func addTextToken() {
         while !isAtEnd() {
-            lastDelimiterIndex = delimiters.firstIndex(where: { $0.start == substring(count: $0.start.count) })
-            if lastDelimiterIndex != nil { break }
+            currentDelimiterIndex = delimiters.firstIndex(where: { $0.start == substring(count: $0.start.count) })
+            if currentDelimiterIndex != nil { break }
             advance()
         }
 
@@ -273,8 +278,8 @@ extension Scanner {
             addToken(kind: .string, isText: true)
         }
 
-        if let lastDelimiterIndex = lastDelimiterIndex {
-            let startDelimiter = delimiters[lastDelimiterIndex].start
+        if let currentDelimiterIndex = currentDelimiterIndex {
+            let startDelimiter = delimiters[currentDelimiterIndex].start
             advance(startDelimiter.count)
         }
     }
@@ -287,7 +292,7 @@ extension Scanner {
             if Token.Kind.blockStartKeywords.contains(kind) {
                 addToken(kind: kind)
 
-                while lastDelimiterIndex != nil && !isAtEnd() {
+                while currentDelimiterIndex != nil && !isAtEnd() {
                     start = current
                     try scanToken()
                 }
@@ -297,7 +302,7 @@ extension Scanner {
                 addToken(kind: .rightBrace, lexeme: Token.Kind.rightBrace.rawValue)
                 addToken(kind: kind)
 
-                while lastDelimiterIndex != nil && !isAtEnd() {
+                while currentDelimiterIndex != nil && !isAtEnd() {
                     start = current
                     try scanToken()
                 }
@@ -327,12 +332,9 @@ extension Scanner {
 
     private func addStringToken() throws {
         while peek() != Token.Kind.quote.rawValue && !isAtEnd() {
-            if peek() == Token.Kind.newline.rawValue {
-                line += 1
-                column = 0
+            if !ignoreNextNewline() {
+                advance()
             }
-
-            advance()
         }
 
         if isAtEnd() { throw SyntaxError("An unterminated string.", line: line, column: column) }
