@@ -1,5 +1,6 @@
 final class Scanner {
     let source: String
+    let count: Int
     private let delimiters: [Delimiter]
 
     private var start = 0
@@ -11,6 +12,7 @@ final class Scanner {
 
     init(source: String) {
         self.source = source
+        count = source.count
         delimiters = Delimiter.all
     }
 }
@@ -40,11 +42,10 @@ extension Scanner {
 
     private func substring(count: Int = 1) -> String {
         let start = current
-        let end = start + count
-        var substring = ""
-        for index in start..<end where end <= source.count { substring += character(at: index) }
+        var end = start + count
+        if end > self.count { end = self.count }
 
-        return substring
+        return substring(from: start, to: end)
     }
 
     private func substring(from start: Int, to end: Int) -> String {
@@ -62,7 +63,7 @@ extension Scanner {
 
     private func peekNext() -> String {
         let index = current + 1
-        if index >= source.count { return Token.Kind.nullTerminator.rawValue }
+        if index >= count { return Token.Kind.nullTerminator.rawValue }
 
         return character(at: index)
     }
@@ -76,7 +77,7 @@ extension Scanner {
     }
 
     private func isAtEnd() -> Bool {
-        current >= source.count
+        current >= count
     }
 
     private func isAlpha(_ character: String) -> Bool {
