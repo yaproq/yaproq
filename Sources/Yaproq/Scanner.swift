@@ -60,11 +60,7 @@ extension Scanner {
     }
 
     private func substring(next count: Int = 1) -> String {
-        let start = current
-        var end = start + count
-        if end > self.count { end = self.count }
-
-        return substring(from: start, to: end)
+        substring(from: current, to: current + count)
     }
 
     private func substring(from start: Int, to end: Int) -> String {
@@ -177,45 +173,50 @@ extension Scanner {
 }
 
 extension Scanner {
-    private func addToken(for character: String) throws {
-        switch character {
-        case Token.Kind.bang.rawValue:
-            addToken(kind: matches(Token.Kind.equal.rawValue) ? .bangEqual : .bang)
-        case Token.Kind.equal.rawValue:
-            addToken(kind: matches(Token.Kind.equal.rawValue) ? .equalEqual : .equal)
-        case Token.Kind.greater.rawValue:
-            addToken(kind: matches(Token.Kind.equal.rawValue) ? .greaterOrEqual : .greater)
-        case Token.Kind.leftParenthesis.rawValue:
-            addToken(kind: .leftParenthesis)
-        case Token.Kind.less.rawValue:
-            addToken(kind: matches(Token.Kind.equal.rawValue) ? .lessOrEqual : .less)
-        case Token.Kind.minus.rawValue:
-            addToken(kind: .minus)
-        case Token.Kind.plus.rawValue:
-            addToken(kind: .plus)
-        case Token.Kind.quote.rawValue:
-            try addStringToken()
-        case Token.Kind.rightParenthesis.rawValue:
-            addToken(kind: .rightParenthesis)
-        case Token.Kind.slash.rawValue:
-            addToken(kind: .slash)
-        case Token.Kind.star.rawValue:
-            addToken(kind: .star)
-        case Token.Kind.carriageReturn.rawValue,
-             Token.Kind.tab.rawValue,
-             Token.Kind.whitespace.rawValue:
-            break
-        case Token.Kind.newline.rawValue:
-            ignoreNewline()
-        default:
-            if isNumeric(character) {
-                addNumberToken()
-            } else if isAlpha(character) || Token.Kind.super.rawValue.starts(with: character) {
-                try addIdentifierToken()
+    private func addIdentifierToken() throws {
+        while isAlpha(peek()) && !isAtEnd() { advance() }
+        let text = substring(from: start, to: current)
+
+        if let kind = Token.Kind(rawValue: text), Token.Kind.keywords.contains(kind) {
+            if Token.Kind.blockStartKeywords.contains(kind) {
+                addToken(kind: kind)
+
+                while currentDelimiterIndex != nil && !isAtEnd() {
+                    start = current
+                    try scanToken()
+                }
+
+                addToken(kind: .leftBrace, lexeme: Token.Kind.leftBrace.rawValue)
+            } else if kind == .elseif {
+                addToken(kind: .rightBrace, lexeme: Token.Kind.rightBrace.rawValue)
+                addToken(kind: kind)
+
+                while currentDelimiterIndex != nil && !isAtEnd() {
+                    start = current
+                    try scanToken()
+                }
+
+                addToken(kind: .leftBrace, lexeme: Token.Kind.leftBrace.rawValue)
+            } else if kind == .else {
+                addToken(kind: .rightBrace, lexeme: Token.Kind.rightBrace.rawValue)
+                addToken(kind: kind)
+                addToken(kind: .leftBrace, lexeme: Token.Kind.leftBrace.rawValue)
+            } else if Token.Kind.blockEndKeywords.contains(kind) {
+                addToken(kind: .rightBrace, lexeme: Token.Kind.rightBrace.rawValue)
             } else {
-                throw SyntaxError("An unexpected character `\(character)`.", line: line, column: column)
+                addToken(kind: kind)
             }
+        } else {
+            addToken(kind: .identifier)
         }
+    }
+
+    private func addNumberToken() {
+        while isNumeric(peek()) && !isAtEnd() { advance() }
+        if peek() == Token.Kind.dot.rawValue && isNumeric(peekNext()) { advance() }
+        while isNumeric(peek()) && !isAtEnd() { advance() }
+        let value = Double(substring(from: start, to: current))
+        addToken(kind: .number, literal: value)
     }
 
     private func addPrintToken(for character: String) throws {
@@ -266,6 +267,19 @@ extension Scanner {
         }
     }
 
+    private func addStringToken() throws {
+        while peek() != Token.Kind.quote.rawValue && !isAtEnd() {
+            if !ignoreNextNewline() {
+                advance()
+            }
+        }
+
+        if isAtEnd() { throw SyntaxError("An unterminated string.", line: line, column: column) }
+        advance()
+        let value = substring(from: start + 1, to: current - 1)
+        addToken(kind: .string, literal: value)
+    }
+
     private func addTextToken() {
         while !isAtEnd() {
             currentDelimiterIndex = delimiters.firstIndex(where: { $0.start == substring(next: $0.start.count) })
@@ -286,65 +300,6 @@ extension Scanner {
         }
     }
 
-    private func addIdentifierToken() throws {
-        while isAlpha(peek()) && !isAtEnd() { advance() }
-        let text = substring(from: start, to: current)
-
-        if let kind = Token.Kind(rawValue: text), Token.Kind.keywords.contains(kind) {
-            if Token.Kind.blockStartKeywords.contains(kind) {
-                addToken(kind: kind)
-
-                while currentDelimiterIndex != nil && !isAtEnd() {
-                    start = current
-                    try scanToken()
-                }
-
-                addToken(kind: .leftBrace, lexeme: Token.Kind.leftBrace.rawValue)
-            } else if kind == .elseif {
-                addToken(kind: .rightBrace, lexeme: Token.Kind.rightBrace.rawValue)
-                addToken(kind: kind)
-
-                while currentDelimiterIndex != nil && !isAtEnd() {
-                    start = current
-                    try scanToken()
-                }
-
-                addToken(kind: .leftBrace, lexeme: Token.Kind.leftBrace.rawValue)
-            } else if kind == .else {
-                addToken(kind: .rightBrace, lexeme: Token.Kind.rightBrace.rawValue)
-                addToken(kind: kind)
-                addToken(kind: .leftBrace, lexeme: Token.Kind.leftBrace.rawValue)
-            } else if Token.Kind.blockEndKeywords.contains(kind) {
-                addToken(kind: .rightBrace, lexeme: Token.Kind.rightBrace.rawValue)
-            } else {
-                addToken(kind: kind)
-            }
-        } else {
-            addToken(kind: .identifier)
-        }
-    }
-
-    private func addNumberToken() {
-        while isNumeric(peek()) && !isAtEnd() { advance() }
-        if peek() == Token.Kind.dot.rawValue && isNumeric(peekNext()) { advance() }
-        while isNumeric(peek()) && !isAtEnd() { advance() }
-        let value = Double(substring(from: start, to: current))
-        addToken(kind: .number, literal: value)
-    }
-
-    private func addStringToken() throws {
-        while peek() != Token.Kind.quote.rawValue && !isAtEnd() {
-            if !ignoreNextNewline() {
-                advance()
-            }
-        }
-
-        if isAtEnd() { throw SyntaxError("An unterminated string.", line: line, column: column) }
-        advance()
-        let value = substring(from: start + 1, to: current - 1)
-        addToken(kind: .string, literal: value)
-    }
-
     private func addToken(kind: Token.Kind, lexeme: String? = nil, literal: Any? = nil, isText: Bool = false) {
         let token: Token
         var lexeme = lexeme == nil ? substring(from: start, to: current) : lexeme!
@@ -360,5 +315,46 @@ extension Scanner {
 
         token = Token(kind: kind, lexeme: lexeme, literal: literal, line: line, column: column)
         tokens.append(token)
+    }
+
+    private func addToken(for character: String) throws {
+        switch character {
+        case Token.Kind.bang.rawValue:
+            addToken(kind: matches(Token.Kind.equal.rawValue) ? .bangEqual : .bang)
+        case Token.Kind.equal.rawValue:
+            addToken(kind: matches(Token.Kind.equal.rawValue) ? .equalEqual : .equal)
+        case Token.Kind.greater.rawValue:
+            addToken(kind: matches(Token.Kind.equal.rawValue) ? .greaterOrEqual : .greater)
+        case Token.Kind.leftParenthesis.rawValue:
+            addToken(kind: .leftParenthesis)
+        case Token.Kind.less.rawValue:
+            addToken(kind: matches(Token.Kind.equal.rawValue) ? .lessOrEqual : .less)
+        case Token.Kind.minus.rawValue:
+            addToken(kind: .minus)
+        case Token.Kind.plus.rawValue:
+            addToken(kind: .plus)
+        case Token.Kind.quote.rawValue:
+            try addStringToken()
+        case Token.Kind.rightParenthesis.rawValue:
+            addToken(kind: .rightParenthesis)
+        case Token.Kind.slash.rawValue:
+            addToken(kind: .slash)
+        case Token.Kind.star.rawValue:
+            addToken(kind: .star)
+        case Token.Kind.carriageReturn.rawValue,
+             Token.Kind.tab.rawValue,
+             Token.Kind.whitespace.rawValue:
+            break
+        case Token.Kind.newline.rawValue:
+            ignoreNewline()
+        default:
+            if isNumeric(character) {
+                addNumberToken()
+            } else if isAlpha(character) || Token.Kind.super.rawValue.starts(with: character) {
+                try addIdentifierToken()
+            } else {
+                throw SyntaxError("An unexpected character `\(character)`.", line: line, column: column)
+            }
+        }
     }
 }
