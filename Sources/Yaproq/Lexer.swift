@@ -1,4 +1,4 @@
-final class Scanner {
+final class Lexer {
     let source: String
     let count: Int
     private let delimiters: [Delimiter]
@@ -17,7 +17,7 @@ final class Scanner {
     }
 }
 
-extension Scanner {
+extension Lexer {
     @discardableResult
     private func advance(_ step: Int = 1) -> String {
         current += step
@@ -54,7 +54,7 @@ extension Scanner {
     }
 }
 
-extension Scanner {
+extension Lexer {
     private func character(at index: Int) -> String {
         substring(from: index, to: index + 1)
     }
@@ -72,7 +72,7 @@ extension Scanner {
     }
 }
 
-extension Scanner {
+extension Lexer {
     private func isAlpha(_ character: String) -> Bool {
         (character >= "a" && character <= "z") || (character >= "A" && character <= "Z") || character == "_"
     }
@@ -86,7 +86,7 @@ extension Scanner {
     }
 }
 
-extension Scanner {
+extension Lexer {
     private func ignoreNewline() {
         line += 1
         column = 0
@@ -121,7 +121,7 @@ extension Scanner {
     }
 }
 
-extension Scanner {
+extension Lexer {
     func scanTokens() throws -> [Token] {
         while !isAtEnd() {
             start = current
@@ -172,7 +172,7 @@ extension Scanner {
     }
 }
 
-extension Scanner {
+extension Lexer {
     private func addIdentifierToken() throws {
         while isAlpha(peek()) && !isAtEnd() { advance() }
         let text = substring(from: start, to: current)

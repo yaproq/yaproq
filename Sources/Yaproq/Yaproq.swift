@@ -33,8 +33,8 @@ public final class Yaproq {
     }
 
     func parse(_ source: String) throws -> [Statement] {
-        let scanner = Scanner(source: source)
-        let tokens = try scanner.scanTokens()
+        let lexer = Lexer(source: source)
+        let tokens = try lexer.scanTokens()
         let parser = Parser(tokens: tokens)
 
         return try parser.parse()
