@@ -32,15 +32,34 @@ extension Scanner {
         column = start
     }
 
-    private func character(at index: Int) -> String {
-        let lowerBound = source.index(source.startIndex, offsetBy: index)
-        let upperBound = source.index(lowerBound, offsetBy: 1)
-        let range = lowerBound..<upperBound
-
-        return String(source[range])
+    private func peek() -> String {
+        isAtEnd() ? Token.Kind.nullTerminator.rawValue : character(at: current)
     }
 
-    private func substring(count: Int = 1) -> String {
+    private func peekNext() -> String {
+        let index = current + 1
+        return index >= count ? Token.Kind.nullTerminator.rawValue : character(at: index)
+    }
+
+    private func matches(_ character: String) -> Bool {
+        if isAtEnd() || character != self.character(at: current) { return false }
+        current += 1
+        column += 1
+
+        return true
+    }
+
+    private func isAtEnd() -> Bool {
+        current >= count
+    }
+}
+
+extension Scanner {
+    private func character(at index: Int) -> String {
+        substring(from: index, to: index + 1)
+    }
+
+    private func substring(next count: Int = 1) -> String {
         let start = current
         var end = start + count
         if end > self.count { end = self.count }
@@ -55,31 +74,9 @@ extension Scanner {
 
         return String(source[range])
     }
+}
 
-    private func peek() -> String {
-        if isAtEnd() { return Token.Kind.nullTerminator.rawValue }
-        return character(at: current)
-    }
-
-    private func peekNext() -> String {
-        let index = current + 1
-        if index >= count { return Token.Kind.nullTerminator.rawValue }
-
-        return character(at: index)
-    }
-
-    private func matches(_ character: String) -> Bool {
-        if isAtEnd() || character != self.character(at: current) { return false }
-        current += 1
-        column += 1
-
-        return true
-    }
-
-    private func isAtEnd() -> Bool {
-        current >= count
-    }
-
+extension Scanner {
     private func isAlpha(_ character: String) -> Bool {
         (character >= "a" && character <= "z") || (character >= "A" && character <= "Z") || character == "_"
     }
@@ -90,6 +87,41 @@ extension Scanner {
 
     private func isNumeric(_ character: String) -> Bool {
         Int(character) != nil
+    }
+}
+
+extension Scanner {
+    private func ignoreNewline() {
+        line += 1
+        column = 0
+    }
+
+    @discardableResult
+    private func ignoreNextNewline() -> Bool {
+        if peek() == Token.Kind.newline.rawValue {
+            advance()
+            ignoreNewline()
+
+            return true
+        }
+
+        return false
+    }
+
+    private func ignoreComment() {
+        while let currentDelimiterIndex = currentDelimiterIndex,
+              delimiters[currentDelimiterIndex].start == Delimiter.comment.start, !isAtEnd() {
+            if let delimiterIndex = delimiters.firstIndex(
+                where: { $0.end == Delimiter.comment.end && $0.end == substring(next: $0.end.count) }
+            ) {
+                let endDelimiter = delimiters[delimiterIndex].end
+                advance(endDelimiter.count)
+                self.currentDelimiterIndex = nil
+                break
+            } else {
+                advance()
+            }
+        }
     }
 }
 
@@ -111,7 +143,7 @@ extension Scanner {
         if let currentDelimiterIndex = currentDelimiterIndex {
             let character = advance()
 
-            if let delimiterIndex = delimiters.firstIndex(where: { $0.end == substring(count: $0.end.count) }) {
+            if let delimiterIndex = delimiters.firstIndex(where: { $0.end == substring(next: $0.end.count) }) {
                 let endDelimiter = delimiters[delimiterIndex].end
 
                 if currentDelimiterIndex != delimiterIndex {
@@ -142,40 +174,9 @@ extension Scanner {
             addTextToken()
         }
     }
+}
 
-    private func ignoreNewline() {
-        line += 1
-        column = 0
-    }
-
-    @discardableResult
-    private func ignoreNextNewline() -> Bool {
-        if peek() == Token.Kind.newline.rawValue {
-            advance()
-            ignoreNewline()
-
-            return true
-        }
-
-        return false
-    }
-
-    private func ignoreComment() {
-        while let currentDelimiterIndex = currentDelimiterIndex,
-              delimiters[currentDelimiterIndex].start == Delimiter.comment.start, !isAtEnd() {
-            if let delimiterIndex = delimiters.firstIndex(
-                where: { $0.end == Delimiter.comment.end && $0.end == substring(count: $0.end.count) }
-            ) {
-                let endDelimiter = delimiters[delimiterIndex].end
-                advance(endDelimiter.count)
-                self.currentDelimiterIndex = nil
-                break
-            } else {
-                advance()
-            }
-        }
-    }
-
+extension Scanner {
     private func addToken(for character: String) throws {
         switch character {
         case Token.Kind.bang.rawValue:
@@ -237,7 +238,7 @@ extension Scanner {
         while let currentDelimiterIndex = currentDelimiterIndex,
               delimiters[currentDelimiterIndex].start == Delimiter.output.start, !isAtEnd() {
             if let delimiterIndex = delimiters.firstIndex(
-                where: { $0.end == Delimiter.output.end && $0.end == substring(count: $0.end.count) }
+                where: { $0.end == Delimiter.output.end && $0.end == substring(next: $0.end.count) }
             ) {
                 let endDelimiter = delimiters[delimiterIndex].end
                 advance(endDelimiter.count)
@@ -267,7 +268,7 @@ extension Scanner {
 
     private func addTextToken() {
         while !isAtEnd() {
-            currentDelimiterIndex = delimiters.firstIndex(where: { $0.start == substring(count: $0.start.count) })
+            currentDelimiterIndex = delimiters.firstIndex(where: { $0.start == substring(next: $0.start.count) })
             if currentDelimiterIndex != nil { break }
             advance()
         }
