@@ -1,6 +1,6 @@
 final class Lexer {
     let source: String
-    let count: Int
+    private let count: Int
     private let delimiters: [Delimiter]
 
     private var start = 0
@@ -75,10 +75,6 @@ extension Lexer {
 extension Lexer {
     private func isAlpha(_ character: String) -> Bool {
         (character >= "a" && character <= "z") || (character >= "A" && character <= "Z") || character == "_"
-    }
-
-    private func isAlphaNumeric(_ character: String) -> Bool {
-        isAlpha(character) || isNumeric(character)
     }
 
     private func isNumeric(_ character: String) -> Bool {
