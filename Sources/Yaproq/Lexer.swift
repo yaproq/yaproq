@@ -26,12 +26,6 @@ extension Lexer {
         return character(at: current - step)
     }
 
-    private func skip() {
-        start += 1
-        current = start
-        column += 1
-    }
-
     private func peek() -> String {
         isAtEnd() ? Token.Kind.nullTerminator.rawValue : character(at: current)
     }
@@ -112,7 +106,15 @@ extension Lexer {
                 break
             } else {
                 let character = advance()
-                if delimiter != .comment { try addToken(for: character) }
+
+                if delimiter == .comment {
+                    if character == Token.Kind.newline.rawValue {
+                        line += 1
+                        column = 0
+                    }
+                } else {
+                    try addToken(for: character)
+                }
             }
         }
     }
@@ -128,7 +130,8 @@ extension Lexer {
                  Token.Kind.whitespace.rawValue:
                 column += 1
             case Token.Kind.newline.rawValue:
-                ignoreNewline()
+                line += 1
+                column = 0
             default:
                 break
             }
@@ -144,15 +147,9 @@ extension Lexer {
         }
 
         if let delimiter = currentDelimiter {
+            if delimiter == .output { addToken(kind: .print, line: -1, column: -1) }
             advance(delimiter.start.count)
         }
-    }
-}
-
-extension Lexer {
-    private func ignoreNewline() {
-        line += 1
-        column = 0
     }
 }
 
@@ -265,9 +262,13 @@ extension Lexer {
         case Token.Kind.carriageReturn.rawValue,
              Token.Kind.tab.rawValue,
              Token.Kind.whitespace.rawValue:
-            skip()
+            start += 1
+            current = start
         case Token.Kind.newline.rawValue:
-            ignoreNewline()
+            start += 1
+            current = start
+            line += 1
+            column = 0
         default:
             if isNumeric(character) {
                 addNumberToken()
