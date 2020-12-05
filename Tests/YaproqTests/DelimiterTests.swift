@@ -35,7 +35,7 @@ final class DelimiterTests: BaseTests {
 
     func testHashable() {
         // Act
-        let delimiters = Set<Delimiter>(Delimiter.all)
+        let delimiters = Set<Delimiter>(Delimiter.allCases)
 
         // Assert
         XCTAssertTrue(delimiters.contains(.comment))
@@ -45,6 +45,6 @@ final class DelimiterTests: BaseTests {
 
     func testAll() {
         // Assert
-        XCTAssertEqual(Delimiter.all, [.comment, .output, .statement])
+        XCTAssertEqual(Delimiter.allCases, [.comment, .output, .statement])
     }
 }

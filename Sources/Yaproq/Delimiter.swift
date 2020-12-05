@@ -1,10 +1,10 @@
-public enum Delimiter {
+public enum Delimiter: CaseIterable {
     case comment(String, String), output(String, String), statement(String, String)
 
     static var comment: Delimiter = .comment(Default.comment.start, Default.comment.end)
     static var output: Delimiter = .output(Default.output.start, Default.output.end)
     static var statement: Delimiter = .statement(Default.statement.start, Default.statement.end)
-    static var all: [Delimiter] { [.comment, .output, .statement] }
+    public static var allCases: [Delimiter] { [.comment, .output, .statement] }
 
     var name: String {
         switch self {

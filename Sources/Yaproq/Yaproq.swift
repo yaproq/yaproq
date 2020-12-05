@@ -34,7 +34,7 @@ public final class Yaproq {
 
     func parse(_ source: String) throws -> [Statement] {
         let lexer = Lexer(source: source)
-        let tokens = try lexer.scanTokens()
+        let tokens = try lexer.scan()
         let parser = Parser(tokens: tokens)
 
         return try parser.parse()
@@ -52,7 +52,7 @@ extension Yaproq {
 
         public init(directoryPath: String = defaultDirectoryPath, delimiters: Set<Delimiter>) throws {
             self.directoryPath = directoryPath
-            let initialDelimiters = Delimiter.all
+            let initialDelimiters = Delimiter.allCases
             let initialRawDelimiters = Set<String>(
                 initialDelimiters.map { $0.start } + initialDelimiters.map { $0.end }
             )
@@ -68,7 +68,7 @@ extension Yaproq {
                 }
             }
 
-            let updatedDelimiters = Delimiter.all
+            let updatedDelimiters = Delimiter.allCases
             let updatedRawDelimiters = Set<String>(
                 updatedDelimiters.map { $0.start } + updatedDelimiters.map { $0.end }
             )
