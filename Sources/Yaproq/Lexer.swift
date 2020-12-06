@@ -89,6 +89,10 @@ extension Lexer {
             }
         }
 
+        if let delimiter = currentDelimiter {
+            throw SyntaxError("The closing delimiter `\(delimiter.end)` is expected.", line: line, column: column)
+        }
+
         let kind: Token.Kind = .eof
         let token = Token(kind: kind, lexeme: kind.rawValue, line: line, column: column)
         tokens.append(token)
