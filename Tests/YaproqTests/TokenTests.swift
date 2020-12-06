@@ -30,7 +30,6 @@ final class TokenTests: BaseTests {
         XCTAssertEqual(Token.Kind.leftParenthesis.rawValue, "(")
         XCTAssertEqual(Token.Kind.minus.rawValue, "-")
         XCTAssertEqual(Token.Kind.newline.rawValue, "\n")
-        XCTAssertEqual(Token.Kind.nullTerminator.rawValue, "\0")
         XCTAssertEqual(Token.Kind.plus.rawValue, "+")
         XCTAssertEqual(Token.Kind.quote.rawValue, "\"")
         XCTAssertEqual(Token.Kind.rightBrace.rawValue, "}")
@@ -75,7 +74,7 @@ final class TokenTests: BaseTests {
         XCTAssertEqual(Token.Kind.endif.rawValue, "endif")
         XCTAssertEqual(Token.Kind.endwhile.rawValue, "endwhile")
 
-        XCTAssertEqual(Token.Kind.eof.rawValue, "")
+        XCTAssertEqual(Token.Kind.eof.rawValue, "\0")
     }
 
     func testKeywords() {

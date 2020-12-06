@@ -43,7 +43,6 @@ extension Token {
         case leftParenthesis = "("
         case minus = "-"
         case newline = "\n"
-        case nullTerminator = "\0"
         case plus = "+"
         case quote = "\""
         case rightBrace = "}"
@@ -93,7 +92,7 @@ extension Token {
         case endwhile
 
         // End of file.
-        case eof = ""
+        case eof = "\0"
 
         static var keywords: Set<Kind> = [
             .and, .block, .else, .elseif, .endblock, .endfor, .endif, .endwhile, .extend,

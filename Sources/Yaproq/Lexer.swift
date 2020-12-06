@@ -27,12 +27,12 @@ extension Lexer {
     }
 
     private func peek() -> String {
-        isAtEnd() ? Token.Kind.nullTerminator.rawValue : character(at: current)
+        isAtEnd() ? Token.Kind.eof.rawValue : character(at: current)
     }
 
     private func peekNext() -> String {
         let index = current + 1
-        return index >= count ? Token.Kind.nullTerminator.rawValue : character(at: index)
+        return index >= count ? Token.Kind.eof.rawValue : character(at: index)
     }
 
     private func matches(_ character: String) -> Bool {
@@ -160,12 +160,11 @@ extension Lexer {
                 addToken(kind: kind)
 
                 while !isAtEnd() {
-                    if let delimiter = delimiters.first(where: { $0.end == substring(next: $0.end.count) }) {
-                        if currentDelimiter == delimiter { break }
-                        // TODO: raise an invalid closing tag exception
-                    } else {
+                    if delimiters.first(where: { $0.end == substring(next: $0.end.count) }) == nil {
                         let character = advance()
                         try addToken(for: character)
+                    } else {
+                        break
                     }
                 }
 
@@ -175,12 +174,11 @@ extension Lexer {
                 addToken(kind: kind)
 
                 while !isAtEnd() {
-                    if let delimiter = delimiters.first(where: { $0.end == substring(next: $0.end.count) }) {
-                        if currentDelimiter == delimiter { break }
-                        // TODO: raise an invalid closing tag exception
-                    } else {
+                    if delimiters.first(where: { $0.end == substring(next: $0.end.count) }) == nil {
                         let character = advance()
                         try addToken(for: character)
+                    } else {
+                        break
                     }
                 }
 
