@@ -124,16 +124,9 @@ extension Lexer {
             currentDelimiter = delimiters.first(where: { $0.start == substring(next: $0.start.count) })
             if currentDelimiter != nil { break }
 
-            switch advance() {
-            case Token.Kind.carriageReturn.rawValue,
-                 Token.Kind.tab.rawValue,
-                 Token.Kind.whitespace.rawValue:
-                column += 1
-            case Token.Kind.newline.rawValue:
+            if advance() == Token.Kind.newline.rawValue {
                 line += 1
                 column = 0
-            default:
-                break
             }
         }
 
