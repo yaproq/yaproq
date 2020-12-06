@@ -19,6 +19,56 @@ final class Lexer {
 }
 
 extension Lexer {
+    func scan() throws -> [Token] {
+        while !isAtEnd {
+            start = current
+
+            if let delimiter = currentDelimiter {
+                try addTokens(for: delimiter)
+            } else {
+                addRawTextToken()
+            }
+        }
+
+        if let delimiter = currentDelimiter {
+            throw SyntaxError("The closing delimiter `\(delimiter.end)` is expected.", line: line, column: column)
+        }
+
+        let kind: Token.Kind = .eof
+        let token = Token(kind: kind, lexeme: kind.rawValue, line: line, column: column)
+        tokens.append(token)
+
+        return tokens
+    }
+
+    func character(at index: Int) -> String {
+        substring(from: index, to: index + 1)
+    }
+
+    func substring(next count: Int) -> String {
+        substring(from: current, to: current + count)
+    }
+
+    func substring(from start: Int, to end: Int) -> String {
+        if start < 0 || end < 0 || start > end || start > count { return Token.Kind.eof.rawValue }
+        let end = end > count ? count : end
+        let lowerBound = source.index(source.startIndex, offsetBy: start)
+        let upperBound = source.index(source.startIndex, offsetBy: end)
+        let range = lowerBound..<upperBound
+
+        return String(source[range])
+    }
+
+    func isAlpha(_ character: String) -> Bool {
+        (character >= "a" && character <= "z") || (character >= "A" && character <= "Z") || character == "_"
+    }
+
+    func isNumeric(_ character: String) -> Bool {
+        Int(character) != nil
+    }
+}
+
+extension Lexer {
     @discardableResult
     private func advance(_ step: Int = 1) -> String {
         current += step
@@ -41,60 +91,6 @@ extension Lexer {
         advance()
 
         return true
-    }
-}
-
-extension Lexer {
-    private func character(at index: Int) -> String {
-        substring(from: index, to: index + 1)
-    }
-
-    private func substring(next count: Int = 1) -> String {
-        substring(from: current, to: current + count)
-    }
-
-    private func substring(from start: Int, to end: Int) -> String {
-        if start > end || start > count { return "" }
-        let end = end > count ? count : end
-        let lowerBound = source.index(source.startIndex, offsetBy: start)
-        let upperBound = source.index(source.startIndex, offsetBy: end)
-        let range = lowerBound..<upperBound
-
-        return String(source[range])
-    }
-}
-
-extension Lexer {
-    private func isAlpha(_ character: String) -> Bool {
-        (character >= "a" && character <= "z") || (character >= "A" && character <= "Z") || character == "_"
-    }
-
-    private func isNumeric(_ character: String) -> Bool {
-        Int(character) != nil
-    }
-}
-
-extension Lexer {
-    func scan() throws -> [Token] {
-        while !isAtEnd {
-            start = current
-
-            if let delimiter = currentDelimiter {
-                try addTokens(for: delimiter)
-            } else {
-                addRawTextToken()
-            }
-        }
-
-        if let delimiter = currentDelimiter {
-            throw SyntaxError("The closing delimiter `\(delimiter.end)` is expected.", line: line, column: column)
-        }
-
-        let kind: Token.Kind = .eof
-        let token = Token(kind: kind, lexeme: kind.rawValue, line: line, column: column)
-        tokens.append(token)
-
-        return tokens
     }
 }
 
@@ -145,9 +141,7 @@ extension Lexer {
             advance(delimiter.start.count)
         }
     }
-}
 
-extension Lexer {
     private func addIdentifierToken() throws {
         while isAlpha(peek()) && !isAtEnd { advance() }
         let lexeme = substring(from: start, to: current)
