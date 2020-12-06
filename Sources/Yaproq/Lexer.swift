@@ -3,6 +3,8 @@ final class Lexer {
     private let count: Int
     private let delimiters: [Delimiter]
 
+    var peek: String { isAtEnd ? Token.Kind.eof.rawValue : character(at: current) }
+    var peekNext: String { current + 1 >= count ? Token.Kind.eof.rawValue : character(at: current + 1) }
     var isAtEnd: Bool { current >= count }
     private var start = 0
     private var current = 0
@@ -77,15 +79,6 @@ extension Lexer {
         return character(at: current - step)
     }
 
-    private func peek() -> String {
-        isAtEnd ? Token.Kind.eof.rawValue : character(at: current)
-    }
-
-    private func peekNext() -> String {
-        let index = current + 1
-        return index >= count ? Token.Kind.eof.rawValue : character(at: index)
-    }
-
     private func matches(_ character: String) -> Bool {
         if isAtEnd || character != self.character(at: current) { return false }
         advance()
@@ -143,7 +136,7 @@ extension Lexer {
     }
 
     private func addIdentifierToken() throws {
-        while isAlpha(peek()) && !isAtEnd { advance() }
+        while isAlpha(peek) && !isAtEnd { advance() }
         let lexeme = substring(from: start, to: current)
 
         if let kind = Token.Kind(rawValue: lexeme), Token.Kind.keywords.contains(kind) {
@@ -189,16 +182,16 @@ extension Lexer {
     }
 
     private func addNumberToken() {
-        while isNumeric(peek()) && !isAtEnd { advance() }
-        if peek() == Token.Kind.dot.rawValue && isNumeric(peekNext()) { advance() }
-        while isNumeric(peek()) && !isAtEnd { advance() }
+        while isNumeric(peek) && !isAtEnd { advance() }
+        if peek == Token.Kind.dot.rawValue && isNumeric(peekNext) { advance() }
+        while isNumeric(peek) && !isAtEnd { advance() }
         let lexeme = substring(from: start, to: current)
         let value = Double(lexeme)
         addToken(kind: .number, lexeme: lexeme, literal: value)
     }
 
     private func addStringToken() throws {
-        while peek() != Token.Kind.quote.rawValue && !isAtEnd { advance() }
+        while peek != Token.Kind.quote.rawValue && !isAtEnd { advance() }
         if isAtEnd { throw SyntaxError("An unterminated string.", line: line, column: column) }
         advance()
         let lexeme = substring(from: start, to: current)
