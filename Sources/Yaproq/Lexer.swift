@@ -3,6 +3,7 @@ final class Lexer {
     private let count: Int
     private let delimiters: [Delimiter]
 
+    var isAtEnd: Bool { current >= count }
     private var start = 0
     private var current = 0
     private var line = 1
@@ -27,7 +28,7 @@ extension Lexer {
     }
 
     private func peek() -> String {
-        isAtEnd() ? Token.Kind.eof.rawValue : character(at: current)
+        isAtEnd ? Token.Kind.eof.rawValue : character(at: current)
     }
 
     private func peekNext() -> String {
@@ -36,14 +37,10 @@ extension Lexer {
     }
 
     private func matches(_ character: String) -> Bool {
-        if isAtEnd() || character != self.character(at: current) { return false }
+        if isAtEnd || character != self.character(at: current) { return false }
         advance()
 
         return true
-    }
-
-    private func isAtEnd() -> Bool {
-        current >= count
     }
 }
 
@@ -79,7 +76,7 @@ extension Lexer {
 
 extension Lexer {
     func scan() throws -> [Token] {
-        while !isAtEnd() {
+        while !isAtEnd {
             start = current
 
             if let delimiter = currentDelimiter {
@@ -103,7 +100,7 @@ extension Lexer {
 
 extension Lexer {
     private func addTokens(for delimiter: Delimiter) throws {
-        while currentDelimiter == delimiter, !isAtEnd() {
+        while currentDelimiter == delimiter, !isAtEnd {
             if delimiter.end == substring(next: delimiter.end.count) {
                 advance(delimiter.end.count)
                 currentDelimiter = nil
@@ -124,7 +121,7 @@ extension Lexer {
     }
 
     private func addRawTextToken() {
-        while !isAtEnd() {
+        while !isAtEnd {
             currentDelimiter = delimiters.first(where: { $0.start == substring(next: $0.start.count) })
             if currentDelimiter != nil { break }
 
@@ -152,14 +149,14 @@ extension Lexer {
 
 extension Lexer {
     private func addIdentifierToken() throws {
-        while isAlpha(peek()) && !isAtEnd() { advance() }
+        while isAlpha(peek()) && !isAtEnd { advance() }
         let lexeme = substring(from: start, to: current)
 
         if let kind = Token.Kind(rawValue: lexeme), Token.Kind.keywords.contains(kind) {
             if Token.Kind.blockStartKeywords.contains(kind) {
                 addToken(kind: kind)
 
-                while !isAtEnd() {
+                while !isAtEnd {
                     if delimiters.first(where: { $0.end == substring(next: $0.end.count) }) == nil {
                         let character = advance()
                         try addToken(for: character)
@@ -173,7 +170,7 @@ extension Lexer {
                 addToken(kind: .rightBrace, line: -1, column: -1)
                 addToken(kind: kind)
 
-                while !isAtEnd() {
+                while !isAtEnd {
                     if delimiters.first(where: { $0.end == substring(next: $0.end.count) }) == nil {
                         let character = advance()
                         try addToken(for: character)
@@ -198,17 +195,17 @@ extension Lexer {
     }
 
     private func addNumberToken() {
-        while isNumeric(peek()) && !isAtEnd() { advance() }
+        while isNumeric(peek()) && !isAtEnd { advance() }
         if peek() == Token.Kind.dot.rawValue && isNumeric(peekNext()) { advance() }
-        while isNumeric(peek()) && !isAtEnd() { advance() }
+        while isNumeric(peek()) && !isAtEnd { advance() }
         let lexeme = substring(from: start, to: current)
         let value = Double(lexeme)
         addToken(kind: .number, lexeme: lexeme, literal: value)
     }
 
     private func addStringToken() throws {
-        while peek() != Token.Kind.quote.rawValue && !isAtEnd() { advance() }
-        if isAtEnd() { throw SyntaxError("An unterminated string.", line: line, column: column) }
+        while peek() != Token.Kind.quote.rawValue && !isAtEnd { advance() }
+        if isAtEnd { throw SyntaxError("An unterminated string.", line: line, column: column) }
         advance()
         let lexeme = substring(from: start, to: current)
         let value = substring(from: start + 1, to: current - 1)
