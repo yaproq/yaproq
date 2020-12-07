@@ -88,27 +88,6 @@ extension Lexer {
 }
 
 extension Lexer {
-    private func addTokens(for delimiter: Delimiter) throws {
-        while currentDelimiter == delimiter, !isAtEnd {
-            if delimiter.end == substring(next: delimiter.end.count) {
-                advance(delimiter.end.count)
-                currentDelimiter = nil
-                break
-            } else {
-                let character = advance()
-
-                if delimiter == .comment {
-                    if character == Token.Kind.newline.rawValue {
-                        line += 1
-                        column = 0
-                    }
-                } else {
-                    try addToken(for: character)
-                }
-            }
-        }
-    }
-
     private func addRawTextToken() {
         while !isAtEnd {
             currentDelimiter = delimiters.first(where: { $0.start == substring(next: $0.start.count) })
@@ -132,6 +111,72 @@ extension Lexer {
         if let delimiter = currentDelimiter {
             if delimiter == .output { addToken(kind: .print, line: -1, column: -1) }
             advance(delimiter.start.count)
+        }
+    }
+
+    private func addTokens(for delimiter: Delimiter) throws {
+        while currentDelimiter == delimiter, !isAtEnd {
+            if delimiter.end == substring(next: delimiter.end.count) {
+                advance(delimiter.end.count)
+                currentDelimiter = nil
+                break
+            } else {
+                let character = advance()
+
+                if delimiter == .comment {
+                    if character == Token.Kind.newline.rawValue {
+                        line += 1
+                        column = 0
+                    }
+                } else {
+                    try addToken(for: character)
+                }
+            }
+        }
+    }
+
+    private func addToken(for character: String) throws {
+        switch character {
+        case Token.Kind.bang.rawValue:
+            addToken(kind: matches(Token.Kind.equal.rawValue) ? .bangEqual : .bang)
+        case Token.Kind.equal.rawValue:
+            addToken(kind: matches(Token.Kind.equal.rawValue) ? .equalEqual : .equal)
+        case Token.Kind.greater.rawValue:
+            addToken(kind: matches(Token.Kind.equal.rawValue) ? .greaterOrEqual : .greater)
+        case Token.Kind.leftParenthesis.rawValue:
+            addToken(kind: .leftParenthesis)
+        case Token.Kind.less.rawValue:
+            addToken(kind: matches(Token.Kind.equal.rawValue) ? .lessOrEqual : .less)
+        case Token.Kind.minus.rawValue:
+            addToken(kind: .minus)
+        case Token.Kind.plus.rawValue:
+            addToken(kind: .plus)
+        case Token.Kind.quote.rawValue:
+            try addStringToken()
+        case Token.Kind.rightParenthesis.rawValue:
+            addToken(kind: .rightParenthesis)
+        case Token.Kind.slash.rawValue:
+            addToken(kind: .slash)
+        case Token.Kind.star.rawValue:
+            addToken(kind: .star)
+        case Token.Kind.carriageReturn.rawValue,
+             Token.Kind.tab.rawValue,
+             Token.Kind.whitespace.rawValue:
+            start += 1
+            current = start
+        case Token.Kind.newline.rawValue:
+            start += 1
+            current = start
+            line += 1
+            column = 0
+        default:
+            if isNumeric(character) {
+                addNumberToken()
+            } else if isAlpha(character) || Token.Kind.super.rawValue.starts(with: character) {
+                try addIdentifierToken()
+            } else {
+                throw SyntaxError("An unexpected character `\(character)`.", line: line, column: column)
+            }
         }
     }
 
@@ -212,50 +257,5 @@ extension Lexer {
         let token = Token(kind: kind, lexeme: lexeme, literal: literal, line: line, column: column)
         tokens.append(token)
         start = current
-    }
-
-    private func addToken(for character: String) throws {
-        switch character {
-        case Token.Kind.bang.rawValue:
-            addToken(kind: matches(Token.Kind.equal.rawValue) ? .bangEqual : .bang)
-        case Token.Kind.equal.rawValue:
-            addToken(kind: matches(Token.Kind.equal.rawValue) ? .equalEqual : .equal)
-        case Token.Kind.greater.rawValue:
-            addToken(kind: matches(Token.Kind.equal.rawValue) ? .greaterOrEqual : .greater)
-        case Token.Kind.leftParenthesis.rawValue:
-            addToken(kind: .leftParenthesis)
-        case Token.Kind.less.rawValue:
-            addToken(kind: matches(Token.Kind.equal.rawValue) ? .lessOrEqual : .less)
-        case Token.Kind.minus.rawValue:
-            addToken(kind: .minus)
-        case Token.Kind.plus.rawValue:
-            addToken(kind: .plus)
-        case Token.Kind.quote.rawValue:
-            try addStringToken()
-        case Token.Kind.rightParenthesis.rawValue:
-            addToken(kind: .rightParenthesis)
-        case Token.Kind.slash.rawValue:
-            addToken(kind: .slash)
-        case Token.Kind.star.rawValue:
-            addToken(kind: .star)
-        case Token.Kind.carriageReturn.rawValue,
-             Token.Kind.tab.rawValue,
-             Token.Kind.whitespace.rawValue:
-            start += 1
-            current = start
-        case Token.Kind.newline.rawValue:
-            start += 1
-            current = start
-            line += 1
-            column = 0
-        default:
-            if isNumeric(character) {
-                addNumberToken()
-            } else if isAlpha(character) || Token.Kind.super.rawValue.starts(with: character) {
-                try addIdentifierToken()
-            } else {
-                throw SyntaxError("An unexpected character `\(character)`.", line: line, column: column)
-            }
-        }
     }
 }
