@@ -12,7 +12,7 @@ final class Environment {
 
     func defineVariable(named name: String, with value: Any? = nil) throws {
         if variableNames.contains(name) {
-            throw RuntimeError("A variable '\(name)' already exists.", line: -1, column: -1)
+            throw RuntimeError("A variable '\(name)' already exists.", line: 0, column: 0)
         }
 
         variableNames.insert(name)

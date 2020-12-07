@@ -33,7 +33,11 @@ extension Lexer {
         }
 
         if let delimiter = currentDelimiter {
-            throw SyntaxError("The closing delimiter `\(delimiter.end)` is expected.", line: line, column: column)
+            throw SyntaxError(
+                "No matching closing delimiter `\(delimiter.end)` is found.",
+                line: line,
+                column: column
+            )
         }
 
         let kind: Token.Kind = .eof
@@ -104,12 +108,12 @@ extension Lexer {
         if !lexeme.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             if lexeme.hasPrefix(Token.Kind.newline.rawValue) { lexeme.removeFirst() }
             if lexeme.hasSuffix(Token.Kind.newline.rawValue) { lexeme.removeLast() }
-            addToken(kind: .print, line: -1, column: -1)
+            addToken(kind: .print, line: 0, column: 0)
             addToken(kind: .string, lexeme: lexeme, literal: lexeme)
         }
 
         if let delimiter = currentDelimiter {
-            if delimiter == .output { addToken(kind: .print, line: -1, column: -1) }
+            if delimiter == .output { addToken(kind: .print, line: 0, column: 0) }
             advance(delimiter.start.count)
         }
     }
@@ -197,9 +201,9 @@ extension Lexer {
                     }
                 }
 
-                addToken(kind: .leftBrace, line: -1, column: -1)
+                addToken(kind: .leftBrace, line: 0, column: 0)
             } else if kind == .elseif {
-                addToken(kind: .rightBrace, line: -1, column: -1)
+                addToken(kind: .rightBrace, line: 0, column: 0)
                 addToken(kind: kind)
 
                 while !isAtEnd {
@@ -211,13 +215,13 @@ extension Lexer {
                     }
                 }
 
-                addToken(kind: .leftBrace, line: -1, column: -1)
+                addToken(kind: .leftBrace, line: 0, column: 0)
             } else if kind == .else {
-                addToken(kind: .rightBrace, line: -1, column: -1)
+                addToken(kind: .rightBrace, line: 0, column: 0)
                 addToken(kind: kind)
-                addToken(kind: .leftBrace, line: -1, column: -1)
+                addToken(kind: .leftBrace, line: 0, column: 0)
             } else if Token.Kind.blockEndKeywords.contains(kind) {
-                addToken(kind: .rightBrace, line: -1, column: -1)
+                addToken(kind: .rightBrace, line: 0, column: 0)
             } else {
                 addToken(kind: kind, lexeme: lexeme)
             }
