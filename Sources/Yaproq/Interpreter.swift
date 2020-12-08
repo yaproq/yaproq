@@ -277,7 +277,14 @@ extension Interpreter: StatementVisitor {
     }
 
     private func extendFile(at path: String) throws {
-        let source = try templating.loadTemplate(at: path)
+        let source: String
+
+        do {
+            source = try templating.loadTemplate(named: path)
+        } catch {
+            source = try templating.loadTemplate(at: path)
+        }
+
         let statements = try templating.parse(source)
         self.statements.removeFirst()
         self.statements = statements + self.statements
@@ -287,7 +294,11 @@ extension Interpreter: StatementVisitor {
     func visitInclude(statement: IncludeStatement) throws {
         if let expression = statement.expression.expression as? LiteralExpression {
             if let path = expression.token.literal as? String {
-                try templating.renderTemplate(at: path)
+                do {
+                    try templating.renderTemplate(named: path)
+                } catch {
+                    try templating.renderTemplate(at: path)
+                }
             } else {
                 let token = expression.token
                 throw RuntimeError(
@@ -298,7 +309,11 @@ extension Interpreter: StatementVisitor {
             }
         } else if let expression = statement.expression.expression as? VariableExpression {
             if let path = try visitVariable(expression: expression) as? String {
-                try templating.renderTemplate(at: path)
+                do {
+                    try templating.renderTemplate(named: path)
+                } catch {
+                    try templating.renderTemplate(at: path)
+                }
             } else {
                 let token = expression.token
                 throw RuntimeError("This is not a valid path.", line: token.line, column: token.column)
