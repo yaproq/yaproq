@@ -2,6 +2,9 @@ import Foundation
 
 final class Parser {
     let tokens: [Token]
+    var isAtEnd: Bool { peek.kind == .eof }
+    var peek: Token { tokens[current] }
+    var previous: Token { tokens[current - 1] }
     private var current = 0
 
     init(tokens: [Token]) {
@@ -20,42 +23,28 @@ final class Parser {
     }
 
     private func check(_ kind: Token.Kind) -> Bool {
-        if isAtEnd() { return false }
-        return peek().kind == kind
+        isAtEnd ? false : peek.kind == kind
     }
 
     @discardableResult
     private func advance() -> Token {
-        if !isAtEnd() { current += 1 }
-        return previous()
-    }
-
-    private func isAtEnd() -> Bool {
-        peek().kind == .eof
-    }
-
-    private func peek() -> Token {
-        tokens[current]
-    }
-
-    private func previous() -> Token {
-        tokens[current - 1]
+        if !isAtEnd { current += 1 }
+        return previous
     }
 
     @discardableResult
     private func consume(_ kind: Token.Kind, elseErrorMessage message: String) throws -> Token {
         if check(kind) { return advance() }
-        let token = peek()
-        throw SyntaxError(message, line: token.line, column: token.column)
+        throw SyntaxError(message, line: peek.line, column: peek.column)
     }
 
     private func synchronize() {
         advance()
 
-        while !isAtEnd() {
-            if previous().kind == .newline { return }
+        while !isAtEnd {
+            if previous.kind == .newline { return }
 
-            switch peek().kind {
+            switch peek.kind {
             case .block,
                  .extend,
                  .for,
@@ -75,7 +64,7 @@ final class Parser {
     func parse() throws -> [Statement] {
         var statements: [Statement] = .init()
 
-        while !isAtEnd() {
+        while !isAtEnd {
             if let statement = declarationStatement() {
                 statements.append(statement)
             }
@@ -84,8 +73,6 @@ final class Parser {
         return statements
     }
 }
-
-// MARK: - Statement
 
 extension Parser {
     private func statement() throws -> Statement {
@@ -103,23 +90,20 @@ extension Parser {
     private func blockStatement() throws -> Statement {
         var name: String?
 
-        while !check(.leftBrace) && !isAtEnd() {
+        while !check(.leftBrace) && !isAtEnd {
             if let expression = try self.expression() as? VariableExpression {
                 if name == nil {
                     name = expression.token.lexeme
                 } else {
-                    let token = previous()
-                    throw SyntaxError("Invalid name for `block`.", line: token.line, column: token.column)
+                    throw SyntaxError("Invalid name for `block`.", line: previous.line, column: previous.column)
                 }
             } else {
-                let token = previous()
-                throw SyntaxError("Invalid name for `block`.", line: token.line, column: token.column)
+                throw SyntaxError("Invalid name for `block`.", line: previous.line, column: previous.column)
             }
         }
 
         if name == nil {
-            let token = previous()
-            throw SyntaxError("Invalid name for `block`.", line: token.line, column: token.column)
+            throw SyntaxError("Invalid name for `block`.", line: previous.line, column: previous.column)
         }
 
         try consume(.leftBrace, elseErrorMessage: "Expect '{' after block name.")
@@ -130,7 +114,7 @@ extension Parser {
     private func blockStatements() throws -> [Statement] {
         var statements: [Statement] = .init()
 
-        while !check(.rightBrace) && !isAtEnd() {
+        while !check(.rightBrace) && !isAtEnd {
             if let statement = declarationStatement() { statements.append(statement) }
         }
 
@@ -201,8 +185,6 @@ extension Parser {
     }
 }
 
-// MARK: - Expression
-
 extension Parser {
     private func expression() throws -> Expression {
         try assignmentExpression()
@@ -212,14 +194,13 @@ extension Parser {
         let expression = try orExpression()
 
         if match(.equal) {
-            let token = previous()
             let value = try assignmentExpression()
 
             if let variableExpression = expression as? VariableExpression {
                 return AssignmentExpression(token: variableExpression.token, value: value)
             }
 
-            throw SyntaxError("Invalid assignment target.", line: token.line, column: token.column)
+            throw SyntaxError("Invalid assignment target.", line: previous.line, column: previous.column)
         }
 
         return expression
@@ -229,7 +210,7 @@ extension Parser {
         var expression = try andExpression()
 
         while match(.or) {
-            expression = LogicalExpression(left: expression, token: previous(), right: try andExpression())
+            expression = LogicalExpression(left: expression, token: previous, right: try andExpression())
         }
 
         return expression
@@ -239,7 +220,7 @@ extension Parser {
         var expression = try equalityExpression()
 
         while match(.and) {
-            expression = LogicalExpression(left: expression, token: previous(), right: try equalityExpression())
+            expression = LogicalExpression(left: expression, token: previous, right: try equalityExpression())
         }
 
         return expression
@@ -249,7 +230,7 @@ extension Parser {
         var expression = try comparisonExpression()
 
         while match(.bangEqual, .equalEqual) {
-            expression = BinaryExpression(left: expression, token: previous(), right: try comparisonExpression())
+            expression = BinaryExpression(left: expression, token: previous, right: try comparisonExpression())
         }
 
         return expression
@@ -259,7 +240,7 @@ extension Parser {
         var expression = try additionExpression()
 
         while match(.greater, .greaterOrEqual, .less, .lessOrEqual) {
-            expression = BinaryExpression(left: expression, token: previous(), right: try additionExpression())
+            expression = BinaryExpression(left: expression, token: previous, right: try additionExpression())
         }
 
         return expression
@@ -269,7 +250,7 @@ extension Parser {
         var expression = try multiplicationExpression()
 
         while match(.minus, .plus) {
-            expression = BinaryExpression(left: expression, token: previous(), right: try multiplicationExpression())
+            expression = BinaryExpression(left: expression, token: previous, right: try multiplicationExpression())
         }
 
         return expression
@@ -279,23 +260,21 @@ extension Parser {
         var expression = try unaryExpression()
 
         while match(.slash, .star) {
-            expression = BinaryExpression(left: expression, token: previous(), right: try unaryExpression())
+            expression = BinaryExpression(left: expression, token: previous, right: try unaryExpression())
         }
 
         return expression
     }
 
     private func unaryExpression() throws -> Expression {
-        if match(.bang, .minus) {
-            return UnaryExpression(token: previous(), right: try unaryExpression())
-        }
-
-        return try primaryExpression()
+        match(.bang, .minus)
+            ? UnaryExpression(token: previous, right: try unaryExpression())
+            : try primaryExpression()
     }
 
     private func primaryExpression() throws -> Expression {
-        if match(.false, .nil, .number, .string, .true) { return LiteralExpression(token: previous()) }
-        if match(.identifier) { return VariableExpression(token: previous()) }
+        if match(.false, .nil, .number, .string, .true) { return LiteralExpression(token: previous) }
+        if match(.identifier) { return VariableExpression(token: previous) }
 
         if match(.leftParenthesis) {
             let expression = try self.expression()
@@ -303,7 +282,6 @@ extension Parser {
             return GroupingExpression(expression: expression)
         }
 
-        let token = peek()
-        throw SyntaxError("Expect expression.", line: token.line, column: token.column)
+        throw SyntaxError("Expect expression.", line: peek.line, column: peek.column)
     }
 }
