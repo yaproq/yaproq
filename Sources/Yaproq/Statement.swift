@@ -29,9 +29,9 @@ final class BlockStatement: Statement {
 }
 
 struct ExpressionStatement: Statement {
-    let expression: Expression
+    let expression: AnyExpression
 
-    init(expression: Expression) {
+    init(expression: AnyExpression) {
         self.expression = expression
     }
 
@@ -41,9 +41,9 @@ struct ExpressionStatement: Statement {
 }
 
 struct ExtendStatement: Statement {
-    let expression: Expression
+    let expression: AnyExpression
 
-    init(expression: Expression) {
+    init(expression: AnyExpression) {
         self.expression = expression
     }
 
@@ -53,13 +53,13 @@ struct ExtendStatement: Statement {
 }
 
 struct IfStatement: Statement {
-    let condition: Expression
+    let condition: AnyExpression
     let thenBranch: Statement
     let elseIfBranches: [IfStatement]
     let elseBranch: Statement?
 
     init(
-        condition: Expression,
+        condition: AnyExpression,
         thenBranch: Statement,
         elseIfBranches: [IfStatement] = .init(),
         elseBranch: Statement? = nil
@@ -76,9 +76,9 @@ struct IfStatement: Statement {
 }
 
 struct IncludeStatement: Statement {
-    let expression: Expression
+    let expression: AnyExpression
 
-    init(expression: Expression) {
+    init(expression: AnyExpression) {
         self.expression = expression
     }
 
@@ -88,9 +88,9 @@ struct IncludeStatement: Statement {
 }
 
 struct PrintStatement: Statement {
-    let expression: Expression
+    let expression: AnyExpression
 
-    init(expression: Expression) {
+    init(expression: AnyExpression) {
         self.expression = expression
     }
 
@@ -107,9 +107,9 @@ struct SuperStatement: Statement {
 
 struct VariableStatement: Statement {
     let token: Token
-    let expression: Expression?
+    let expression: AnyExpression?
 
-    init(token: Token, expression: Expression? = nil) {
+    init(token: Token, expression: AnyExpression? = nil) {
         self.token = token
         self.expression = expression
     }
@@ -120,10 +120,10 @@ struct VariableStatement: Statement {
 }
 
 struct WhileStatement: Statement {
-    let condition: Expression
+    let condition: AnyExpression
     let body: Statement
 
-    init(condition: Expression, body: Statement) {
+    init(condition: AnyExpression, body: Statement) {
         self.condition = condition
         self.body = body
     }

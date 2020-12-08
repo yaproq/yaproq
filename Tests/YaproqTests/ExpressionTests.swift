@@ -4,19 +4,10 @@ import XCTest
 final class AssignmentExpressionTests: BaseTests {
     func testInit() {
         // Arrange
-        let token = Token(
-            kind: .equal,
-            lexeme: Token.Kind.equal.rawValue,
-            line: 1,
-            column: 6
-        )
-        let value = LiteralExpression(
-            token: .init(
-                kind: .true,
-                lexeme: Token.Kind.true.rawValue,
-                literal: true,
-                line: 1,
-                column: 11
+        let token = Token(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 6)
+        let value = AnyExpression(
+            LiteralExpression(
+                token: .init(kind: .true, lexeme: Token.Kind.true.rawValue, literal: true, line: 1, column: 11)
             )
         )
 
@@ -25,21 +16,15 @@ final class AssignmentExpressionTests: BaseTests {
 
         // Assert
         XCTAssertEqual(expression.token, token)
-        XCTAssertEqual(expression.value as! LiteralExpression, value)
+        XCTAssertEqual(expression.value, value)
     }
 }
 
 final class BinaryExpressionTests: BaseTests {
     func testInit() {
         // Arrange
-        let left = LiteralExpression(
-            token: .init(
-                kind: .number,
-                lexeme: String(1),
-                literal: 1,
-                line: 1,
-                column: 4
-            )
+        let left = AnyExpression(
+            LiteralExpression(token: .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 4))
         )
         let token = Token(
             kind: .plus,
@@ -47,37 +32,25 @@ final class BinaryExpressionTests: BaseTests {
             line: 1,
             column: 6
         )
-        let right = LiteralExpression(
-            token: .init(
-                kind: .number,
-                lexeme: String(2),
-                literal: 2,
-                line: 1,
-                column: 8
-            )
+        let right = AnyExpression(
+            LiteralExpression(token: .init(kind: .number, lexeme: "2", literal: 2, line: 1, column: 8))
         )
 
         // Act
         let expression = BinaryExpression(left: left, token: token, right: right)
 
         // Assert
-        XCTAssertEqual(expression.left as! LiteralExpression, left)
+        XCTAssertEqual(expression.left, left)
         XCTAssertEqual(expression.token, token)
-        XCTAssertEqual(expression.right as! LiteralExpression, right)
+        XCTAssertEqual(expression.right, right)
     }
 }
 
 final class GroupingExpressionTests: BaseTests {
     func testInit() {
         // Arrange
-        let left = LiteralExpression(
-            token: .init(
-                kind: .number,
-                lexeme: String(1),
-                literal: 1,
-                line: 1,
-                column: 4
-            )
+        let left = AnyExpression(
+            LiteralExpression(token: .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 4))
         )
         let token = Token(
             kind: .plus,
@@ -85,23 +58,16 @@ final class GroupingExpressionTests: BaseTests {
             line: 1,
             column: 6
         )
-        let right = LiteralExpression(
-            token: .init(
-                kind: .number,
-                lexeme: String(2),
-                literal: 2,
-                line: 1,
-                column: 8
-            )
+        let right = AnyExpression(
+            LiteralExpression(token: .init(kind: .number, lexeme: "2", literal: 2, line: 1, column: 8))
         )
+        let binaryExpression = AnyExpression(BinaryExpression(left: left, token: token, right: right))
 
         // Act
-        let expression = GroupingExpression(expression: BinaryExpression(left: left, token: token, right: right))
+        let expression = GroupingExpression(expression: binaryExpression)
 
         // Assert
-        XCTAssertEqual((expression.expression as! BinaryExpression).left as! LiteralExpression, left)
-        XCTAssertEqual((expression.expression as! BinaryExpression).token, token)
-        XCTAssertEqual((expression.expression as! BinaryExpression).right as! LiteralExpression, right)
+        XCTAssertEqual(expression.expression, binaryExpression)
     }
 }
 
@@ -109,13 +75,7 @@ final class LiteralExpressionTests: BaseTests {
     func testInit() {
         // Arrange
         let literal = "Hello World"
-        let token = Token(
-            kind: .string,
-            lexeme: literal,
-            literal: literal,
-            line: 1,
-            column: 16
-        )
+        let token = Token(kind: .string, lexeme: literal, literal: literal, line: 1, column: 16)
 
         // Act
         let expression = LiteralExpression(token: token)
@@ -128,28 +88,15 @@ final class LiteralExpressionTests: BaseTests {
 final class LogicalExpressionTests: BaseTests {
     func testInit() {
         // Arrange
-        let left = LiteralExpression(
-            token: .init(
-                kind: .true,
-                lexeme: Token.Kind.true.rawValue,
-                literal: true,
-                line: 1,
-                column: 7
+        let left = AnyExpression(
+            LiteralExpression(
+                token: .init(kind: .true, lexeme: Token.Kind.true.rawValue, literal: true, line: 1, column: 7)
             )
         )
-        let token = Token(
-            kind: .plus,
-            lexeme: Token.Kind.or.rawValue,
-            line: 1,
-            column: 10
-        )
-        let right = LiteralExpression(
-            token: .init(
-                kind: .false,
-                lexeme: Token.Kind.false.rawValue,
-                literal: false,
-                line: 1,
-                column: 16
+        let token = Token(kind: .plus, lexeme: Token.Kind.or.rawValue, line: 1, column: 10)
+        let right = AnyExpression(
+            LiteralExpression(
+                token: .init(kind: .false, lexeme: Token.Kind.false.rawValue, literal: false, line: 1, column: 16)
             )
         )
 
@@ -157,9 +104,9 @@ final class LogicalExpressionTests: BaseTests {
         let expression = LogicalExpression(left: left, token: token, right: right)
 
         // Assert
-        XCTAssertEqual(expression.left as! LiteralExpression, left)
+        XCTAssertEqual(expression.left, left)
         XCTAssertEqual(expression.token, token)
-        XCTAssertEqual(expression.right as! LiteralExpression, right)
+        XCTAssertEqual(expression.right, right)
     }
 }
 
@@ -173,13 +120,9 @@ final class UnaryExpressionTests: BaseTests {
             column: 4
         )
         let literal = 1
-        let right = LiteralExpression(
-            token: .init(
-                kind: .number,
-                lexeme: String(literal),
-                literal: literal,
-                line: 1,
-                column: 5
+        let right = AnyExpression(
+            LiteralExpression(
+                token: .init(kind: .number, lexeme: String(literal), literal: literal, line: 1, column: 5)
             )
         )
 
@@ -188,7 +131,7 @@ final class UnaryExpressionTests: BaseTests {
 
         // Assert
         XCTAssertEqual(expression.token, token)
-        XCTAssertEqual(expression.right as! LiteralExpression, right)
+        XCTAssertEqual(expression.right, right)
     }
 }
 
@@ -202,13 +145,9 @@ final class VariableExpressionTests: BaseTests {
             column: 6
         )
         let literal = 1
-        let value = LiteralExpression(
-            token: .init(
-                kind: .number,
-                lexeme: String(literal),
-                literal: literal,
-                line: 1,
-                column: 12
+        let value = AnyExpression(
+            LiteralExpression(
+                token: .init(kind: .number, lexeme: String(literal), literal: literal, line: 1, column: 12)
             )
         )
 
@@ -217,6 +156,6 @@ final class VariableExpressionTests: BaseTests {
 
         // Assert
         XCTAssertEqual(expression.token, token)
-        XCTAssertEqual(expression.value as! LiteralExpression, value)
+        XCTAssertEqual(expression.value, value)
     }
 }

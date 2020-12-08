@@ -91,7 +91,7 @@ extension Parser {
         var name: String?
 
         while !check(.leftBrace) && !isAtEnd {
-            if let expression = try self.expression() as? VariableExpression {
+            if let expression = try self.expression().expression as? VariableExpression {
                 if name == nil {
                     name = expression.token.lexeme
                 } else {
@@ -174,7 +174,7 @@ extension Parser {
 
     private func variableDeclarationStatement() throws -> Statement {
         let token = try consume(.identifier, elseErrorMessage: "Expect variable name.")
-        var expression: Expression?
+        var expression: AnyExpression?
         if match(.equal) { expression = try self.expression() }
 
         return VariableStatement(token: token, expression: expression)
@@ -186,18 +186,18 @@ extension Parser {
 }
 
 extension Parser {
-    private func expression() throws -> Expression {
+    private func expression() throws -> AnyExpression {
         try assignmentExpression()
     }
 
-    private func assignmentExpression() throws -> Expression {
+    private func assignmentExpression() throws -> AnyExpression {
         let expression = try orExpression()
 
         if match(.equal) {
             let value = try assignmentExpression()
 
-            if let variableExpression = expression as? VariableExpression {
-                return AssignmentExpression(token: variableExpression.token, value: value)
+            if let variableExpression = expression.expression as? VariableExpression {
+                return AnyExpression(AssignmentExpression(token: variableExpression.token, value: value))
             }
 
             throw SyntaxError("Invalid assignment target.", line: previous.line, column: previous.column)
@@ -206,80 +206,92 @@ extension Parser {
         return expression
     }
 
-    private func orExpression() throws -> Expression {
+    private func orExpression() throws -> AnyExpression {
         var expression = try andExpression()
 
         while match(.or) {
-            expression = LogicalExpression(left: expression, token: previous, right: try andExpression())
+            expression = AnyExpression(
+                LogicalExpression(left: expression, token: previous, right: try andExpression())
+            )
         }
 
         return expression
     }
 
-    private func andExpression() throws -> Expression {
+    private func andExpression() throws -> AnyExpression {
         var expression = try equalityExpression()
 
         while match(.and) {
-            expression = LogicalExpression(left: expression, token: previous, right: try equalityExpression())
+            expression = AnyExpression(
+                LogicalExpression(left: expression, token: previous, right: try equalityExpression())
+            )
         }
 
         return expression
     }
 
-    private func equalityExpression() throws -> Expression {
+    private func equalityExpression() throws -> AnyExpression {
         var expression = try comparisonExpression()
 
         while match(.bangEqual, .equalEqual) {
-            expression = BinaryExpression(left: expression, token: previous, right: try comparisonExpression())
+            expression = AnyExpression(
+                BinaryExpression(left: expression, token: previous, right: try comparisonExpression())
+            )
         }
 
         return expression
     }
 
-    private func comparisonExpression() throws -> Expression {
+    private func comparisonExpression() throws -> AnyExpression {
         var expression = try additionExpression()
 
         while match(.greater, .greaterOrEqual, .less, .lessOrEqual) {
-            expression = BinaryExpression(left: expression, token: previous, right: try additionExpression())
+            expression = AnyExpression(
+                BinaryExpression(left: expression, token: previous, right: try additionExpression())
+            )
         }
 
         return expression
     }
 
-    private func additionExpression() throws -> Expression {
+    private func additionExpression() throws -> AnyExpression {
         var expression = try multiplicationExpression()
 
         while match(.minus, .plus) {
-            expression = BinaryExpression(left: expression, token: previous, right: try multiplicationExpression())
+            expression = AnyExpression(
+                BinaryExpression(left: expression, token: previous, right: try multiplicationExpression())
+            )
         }
 
         return expression
     }
 
-    private func multiplicationExpression() throws -> Expression {
+    private func multiplicationExpression() throws -> AnyExpression {
         var expression = try unaryExpression()
 
         while match(.slash, .star) {
-            expression = BinaryExpression(left: expression, token: previous, right: try unaryExpression())
+            expression = AnyExpression(
+                BinaryExpression(left: expression, token: previous, right: try unaryExpression())
+            )
         }
 
         return expression
     }
 
-    private func unaryExpression() throws -> Expression {
+    private func unaryExpression() throws -> AnyExpression {
         match(.bang, .minus)
-            ? UnaryExpression(token: previous, right: try unaryExpression())
+            ? AnyExpression(UnaryExpression(token: previous, right: try unaryExpression()))
             : try primaryExpression()
     }
 
-    private func primaryExpression() throws -> Expression {
-        if match(.false, .nil, .number, .string, .true) { return LiteralExpression(token: previous) }
-        if match(.identifier) { return VariableExpression(token: previous) }
+    private func primaryExpression() throws -> AnyExpression {
+        if match(.false, .nil, .number, .string, .true) { return AnyExpression(LiteralExpression(token: previous)) }
+        if match(.identifier) { return AnyExpression(VariableExpression(token: previous)) }
 
         if match(.leftParenthesis) {
             let expression = try self.expression()
             try consume(.rightParenthesis, elseErrorMessage: "Expect ')' after expression.")
-            return GroupingExpression(expression: expression)
+            return AnyExpression(GroupingExpression(expression: expression))
         }
 
         throw SyntaxError("Expect expression.", line: peek.line, column: peek.column)

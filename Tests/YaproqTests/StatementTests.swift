@@ -12,7 +12,9 @@ final class BlockStatementTests: BaseTests {
 
         // Arrange
         let name = "title"
-        let expression = LiteralExpression(token: .init(kind: .number, lexeme: "1", literal: 1, line: 2, column: 4))
+        let expression = AnyExpression(
+            LiteralExpression(token: .init(kind: .number, lexeme: "1", literal: 1, line: 2, column: 4))
+        )
 
         // Act
         statement = BlockStatement(name: name, statements: [PrintStatement(expression: expression)])
@@ -20,55 +22,62 @@ final class BlockStatementTests: BaseTests {
         // Assert
         XCTAssertEqual(statement.name, name)
         XCTAssertEqual(statement.statements.count, 1)
-        XCTAssertEqual((statement.statements.first as! PrintStatement).expression as! LiteralExpression, expression)
+        XCTAssertEqual(
+            (statement.statements.first as! PrintStatement).expression,
+            expression
+        )
     }
 }
 
 final class ExpressionStatementTests: BaseTests {
     func testInit() {
         // Arrange
-        let expression = LiteralExpression(token: .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 4))
+        let expression = AnyExpression(
+            LiteralExpression(token: .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 4))
+        )
 
         // Act
         let statement = ExpressionStatement(expression: expression)
 
         // Assert
-        XCTAssertEqual(statement.expression as! LiteralExpression, expression)
+        XCTAssertEqual(statement.expression, expression)
     }
 }
 
 final class ExtendStatementTests: BaseTests {
     func testInit() {
         // Arrange
-        let expression = LiteralExpression(
-            token: .init(kind: .string, lexeme: "base.html", literal: "base.html", line: 1, column: 19)
+        let expression = AnyExpression(
+            LiteralExpression(
+                token: .init(kind: .string, lexeme: "base.html", literal: "base.html", line: 1, column: 19)
+            )
         )
 
         // Act
         let statement = ExtendStatement(expression: expression)
 
         // Assert
-        XCTAssertEqual(statement.expression as! LiteralExpression, expression)
+        XCTAssertEqual(statement.expression, expression)
     }
 }
 
 final class IfStatementTests: BaseTests {
     func testInit() {
         // Arrange
-        let trueCondition = LiteralExpression(
-            token: .init(kind: .true, lexeme: "true", literal: true, line: 1, column: 10)
+        let trueCondition = AnyExpression(
+            LiteralExpression(token: .init(kind: .true, lexeme: "true", literal: true, line: 1, column: 10))
         )
-        let oneExpression = LiteralExpression(
-            token: .init(kind: .number, lexeme: "1", literal: 1, line: 2, column: 4)
+        let oneExpression = AnyExpression(
+            LiteralExpression(token: .init(kind: .number, lexeme: "1", literal: 1, line: 2, column: 4))
         )
-        let falseCondition = LiteralExpression(
-            token: .init(kind: .false, lexeme: "false", literal: false, line: 3, column: 15)
+        let falseCondition = AnyExpression(
+            LiteralExpression(token: .init(kind: .false, lexeme: "false", literal: false, line: 3, column: 15))
         )
-        let twoExpression = LiteralExpression(
-            token: .init(kind: .number, lexeme: "2", literal: 2, line: 4, column: 4)
+        let twoExpression = AnyExpression(
+            LiteralExpression(token: .init(kind: .number, lexeme: "2", literal: 2, line: 4, column: 4))
         )
-        let threeExpression = LiteralExpression(
-            token: .init(kind: .number, lexeme: "3", literal: 3, line: 6, column: 4)
+        let threeExpression = AnyExpression(
+            LiteralExpression(token: .init(kind: .number, lexeme: "3", literal: 3, line: 6, column: 4))
         )
 
         // Act
@@ -85,22 +94,22 @@ final class IfStatementTests: BaseTests {
         )
 
         // Assert
-        XCTAssertEqual(statement.condition as! LiteralExpression, trueCondition)
+        XCTAssertEqual(statement.condition, trueCondition)
         XCTAssertEqual((statement.thenBranch as! BlockStatement).statements.count, 1)
         XCTAssertEqual(
-            ((statement.thenBranch as! BlockStatement).statements.first as! PrintStatement).expression as! LiteralExpression,
+            ((statement.thenBranch as! BlockStatement).statements.first as! PrintStatement).expression,
             oneExpression
         )
         XCTAssertEqual(statement.elseIfBranches.count, 1)
-        XCTAssertEqual(statement.elseIfBranches.first?.condition as! LiteralExpression, falseCondition)
+        XCTAssertEqual(statement.elseIfBranches.first?.condition, falseCondition)
         XCTAssertEqual((statement.elseIfBranches.first?.thenBranch as! BlockStatement).statements.count, 1)
         XCTAssertEqual(
-            ((statement.elseIfBranches.first?.thenBranch as! BlockStatement).statements.first as! PrintStatement).expression as! LiteralExpression,
+            ((statement.elseIfBranches.first?.thenBranch as! BlockStatement).statements.first as! PrintStatement).expression,
             twoExpression
         )
         XCTAssertEqual((statement.elseBranch as! BlockStatement).statements.count, 1)
         XCTAssertEqual(
-            ((statement.elseBranch as! BlockStatement).statements.first as! PrintStatement).expression as! LiteralExpression,
+            ((statement.elseBranch as! BlockStatement).statements.first as! PrintStatement).expression,
             threeExpression
         )
     }
@@ -109,28 +118,32 @@ final class IfStatementTests: BaseTests {
 final class IncludeStatementTests: BaseTests {
     func testInit() {
         // Arrange
-        let expression = LiteralExpression(
-            token: .init(kind: .string, lexeme: "header.html", literal: "header.html", line: 1, column: 20)
+        let expression = AnyExpression(
+            LiteralExpression(
+                token: .init(kind: .string, lexeme: "header.html", literal: "header.html", line: 1, column: 20)
+            )
         )
 
         // Act
         let statement = IncludeStatement(expression: expression)
 
         // Assert
-        XCTAssertEqual(statement.expression as! LiteralExpression, expression)
+        XCTAssertEqual(statement.expression, expression)
     }
 }
 
 final class PrintStatementTests: BaseTests {
     func testInit() {
         // Arrange
-        let expression = LiteralExpression(token: .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 4))
+        let expression = AnyExpression(
+            LiteralExpression(token: .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 4))
+        )
 
         // Act
         let statement = PrintStatement(expression: expression)
 
         // Assert
-        XCTAssertEqual(statement.expression as! LiteralExpression, expression)
+        XCTAssertEqual(statement.expression, expression)
     }
 }
 
@@ -138,25 +151,27 @@ final class VariableStatementTests: BaseTests {
     func testInit() {
         // Arrange
         let token = Token(kind: .identifier, lexeme: "a", line: 1, column: 4)
-        let expression = LiteralExpression(token: .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 8))
+        let expression = AnyExpression(
+            LiteralExpression(token: .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 8))
+        )
 
         // Act
         let statement = VariableStatement(token: token, expression: expression)
 
         // Assert
         XCTAssertEqual(statement.token, token)
-        XCTAssertEqual(statement.expression as! LiteralExpression, expression)
+        XCTAssertEqual(statement.expression, expression)
     }
 }
 
 final class WhileStatementTests: BaseTests {
     func testInit() {
         // Arrange
-        let condition = LiteralExpression(
-            token: .init(kind: .true, lexeme: "true", literal: true, line: 1, column: 16)
+        let condition = AnyExpression(
+            LiteralExpression(token: .init(kind: .true, lexeme: "true", literal: true, line: 1, column: 16))
         )
-        let expression = LiteralExpression(
-            token: .init(kind: .string, lexeme: "true", literal: "true", line: 2, column: 7)
+        let expression = AnyExpression(
+            LiteralExpression(token: .init(kind: .string, lexeme: "true", literal: "true", line: 2, column: 7))
         )
 
         // Act
@@ -166,10 +181,10 @@ final class WhileStatementTests: BaseTests {
         )
 
         // Assert
-        XCTAssertEqual(statement.condition as! LiteralExpression, condition)
+        XCTAssertEqual(statement.condition, condition)
         XCTAssertEqual((statement.body as! BlockStatement).statements.count, 1)
         XCTAssertEqual(
-            ((statement.body as! BlockStatement).statements.first as! PrintStatement).expression as! LiteralExpression,
+            ((statement.body as! BlockStatement).statements.first as! PrintStatement).expression,
             expression
         )
     }

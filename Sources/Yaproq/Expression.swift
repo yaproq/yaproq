@@ -1,8 +1,9 @@
-protocol Expression {
+protocol Expression: Equatable {
     func accept(visitor: ExpressionVisitor) throws -> Any?
 }
 
 protocol ExpressionVisitor {
+    func visitAny(expression: AnyExpression) throws -> Any?
     func visitAssignment(expression: AssignmentExpression) throws -> Any?
     func visitBinary(expression: BinaryExpression) throws -> Any
     func visitGrouping(expression: GroupingExpression) throws -> Any?
@@ -12,11 +13,27 @@ protocol ExpressionVisitor {
     func visitVariable(expression: VariableExpression) throws -> Any?
 }
 
+struct AnyExpression: Expression {
+    let expression: Any
+
+    init<T: Expression>(_ expression: T) {
+        self.expression = expression
+    }
+
+    func accept(visitor: ExpressionVisitor) throws -> Any? {
+        try visitor.visitAny(expression: self)
+    }
+
+    static func ==(lhs: AnyExpression, rhs: AnyExpression) -> Bool {
+        String(describing: lhs.expression) == String(describing: rhs.expression)
+    }
+}
+
 struct AssignmentExpression: Expression {
     let token: Token
-    let value: Expression
+    let value: AnyExpression
 
-    init(token: Token, value: Expression) {
+    init(token: Token, value: AnyExpression) {
         self.token = token
         self.value = value
     }
@@ -27,11 +44,11 @@ struct AssignmentExpression: Expression {
 }
 
 struct BinaryExpression: Expression {
-    let left: Expression
+    let left: AnyExpression
     let token: Token
-    let right: Expression
+    let right: AnyExpression
 
-    init(left: Expression, token: Token, right: Expression) {
+    init(left: AnyExpression, token: Token, right: AnyExpression) {
         self.left = left
         self.token = token
         self.right = right
@@ -43,9 +60,9 @@ struct BinaryExpression: Expression {
 }
 
 struct GroupingExpression: Expression {
-    let expression: Expression
+    let expression: AnyExpression
 
-    init(expression: Expression) {
+    init(expression: AnyExpression) {
         self.expression = expression
     }
 
@@ -54,7 +71,7 @@ struct GroupingExpression: Expression {
     }
 }
 
-struct LiteralExpression: Expression, Equatable {
+struct LiteralExpression: Expression {
     let token: Token
 
     init(token: Token) {
@@ -67,11 +84,11 @@ struct LiteralExpression: Expression, Equatable {
 }
 
 struct LogicalExpression: Expression {
-    let left: Expression
+    let left: AnyExpression
     let token: Token
-    let right: Expression
+    let right: AnyExpression
 
-    init(left: Expression, token: Token, right: Expression) {
+    init(left: AnyExpression, token: Token, right: AnyExpression) {
         self.left = left
         self.token = token
         self.right = right
@@ -84,9 +101,9 @@ struct LogicalExpression: Expression {
 
 struct UnaryExpression: Expression {
     let token: Token
-    let right: Expression
+    let right: AnyExpression
 
-    init(token: Token, right: Expression) {
+    init(token: Token, right: AnyExpression) {
         self.token = token
         self.right = right
     }
@@ -98,9 +115,9 @@ struct UnaryExpression: Expression {
 
 struct VariableExpression: Expression {
     let token: Token
-    let value: Expression?
+    let value: AnyExpression?
 
-    init(token: Token, value: Expression? = nil) {
+    init(token: Token, value: AnyExpression? = nil) {
         self.token = token
         self.value = value
     }

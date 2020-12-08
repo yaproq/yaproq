@@ -104,7 +104,7 @@ extension Interpreter {
     }
 
     @discardableResult
-    private func evaluate(expression: Expression) throws -> Any? {
+    private func evaluate(expression: AnyExpression) throws -> Any? {
         try expression.accept(visitor: self)
     }
 
@@ -121,6 +121,26 @@ extension Interpreter {
 }
 
 extension Interpreter: ExpressionVisitor {
+    func visitAny(expression: AnyExpression) throws -> Any? {
+        if let expression = expression.expression as? AssignmentExpression {
+            return try visitAssignment(expression: expression)
+        } else if let expression = expression.expression as? BinaryExpression {
+            return try visitBinary(expression: expression)
+        } else if let expression = expression.expression as? GroupingExpression {
+            return try visitGrouping(expression: expression)
+        } else if let expression = expression.expression as? LiteralExpression {
+            return try visitLiteral(expression: expression)
+        } else if let expression = expression.expression as? LogicalExpression {
+            return try visitLogical(expression: expression)
+        } else if let expression = expression.expression as? UnaryExpression {
+            return try visitUnary(expression: expression)
+        } else if let expression = expression.expression as? VariableExpression {
+            return try visitVariable(expression: expression)
+        }
+
+        return nil
+    }
+
     func visitAssignment(expression: AssignmentExpression) throws -> Any? {
         let value = try evaluate(expression: expression.value)
         try environment.assign(value: value, toVariableWith: expression.token)
@@ -235,7 +255,7 @@ extension Interpreter: StatementVisitor {
     }
 
     func visitExtend(statement: ExtendStatement) throws {
-        if let expression = statement.expression as? LiteralExpression {
+        if let expression = statement.expression.expression as? LiteralExpression {
             if let path = expression.token.literal as? String {
                 try extendFile(at: path)
             } else {
@@ -246,7 +266,7 @@ extension Interpreter: StatementVisitor {
                     column: token.column
                 )
             }
-        } else if let expression = statement.expression as? VariableExpression {
+        } else if let expression = statement.expression.expression as? VariableExpression {
             if let path = try visitVariable(expression: expression) as? String {
                 try extendFile(at: path)
             } else {
@@ -265,7 +285,7 @@ extension Interpreter: StatementVisitor {
     }
 
     func visitInclude(statement: IncludeStatement) throws {
-        if let expression = statement.expression as? LiteralExpression {
+        if let expression = statement.expression.expression as? LiteralExpression {
             if let path = expression.token.literal as? String {
                 try templating.renderTemplate(at: path)
             } else {
@@ -276,7 +296,7 @@ extension Interpreter: StatementVisitor {
                     column: token.column
                 )
             }
-        } else if let expression = statement.expression as? VariableExpression {
+        } else if let expression = statement.expression.expression as? VariableExpression {
             if let path = try visitVariable(expression: expression) as? String {
                 try templating.renderTemplate(at: path)
             } else {
