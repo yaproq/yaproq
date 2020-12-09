@@ -41,15 +41,10 @@ extension Token {
         case dot = "."
         case leftBrace = "{"
         case leftParenthesis = "("
-        case minus = "-"
         case newline = "\n"
-        case percent = "%"
-        case plus = "+"
         case quote = "\""
         case rightBrace = "}"
         case rightParenthesis = ")"
-        case slash = "/"
-        case star = "*"
         case tab = "\t"
         case whitespace = " "
 
@@ -62,6 +57,16 @@ extension Token {
         case greaterOrEqual = ">="
         case less = "<"
         case lessOrEqual = "<="
+        case minus = "-"
+        case minusEqual = "-="
+        case percent = "%"
+        case percentEqual = "%="
+        case plus = "+"
+        case plusEqual = "+="
+        case slash = "/"
+        case slashEqual = "/="
+        case star = "*"
+        case starEqual = "*="
 
         // Literals.
         case `false`

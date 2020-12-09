@@ -220,11 +220,14 @@ extension Parser {
     private func assignmentExpression() throws -> AnyExpression {
         let expression = try orExpression()
 
-        if match(.equal) {
+        if match(.equal, .minusEqual, .percentEqual, .plusEqual, .slashEqual, .starEqual) {
+            let operatorToken = previous
             let value = try assignmentExpression()
 
-            if let variableExpression = expression.expression as? VariableExpression {
-                return AnyExpression(AssignmentExpression(token: variableExpression.token, value: value))
+            if let expression = expression.expression as? VariableExpression {
+                return AnyExpression(
+                    AssignmentExpression(identifierToken: expression.token, operatorToken: operatorToken, value: value)
+                )
             }
 
             throw SyntaxError("An invalid assignment target.", line: previous.line, column: previous.column)

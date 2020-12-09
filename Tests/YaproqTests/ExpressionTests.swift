@@ -4,18 +4,24 @@ import XCTest
 final class AssignmentExpressionTests: BaseTests {
     func testInit() {
         // Arrange
-        let token = Token(kind: .identifier, lexeme: "number", literal: 1, line: 1, column: 6)
+        let identifierToken = Token(kind: .identifier, lexeme: "bool", line: 1, column: 7)
+        let operatorToken = Token(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 9)
         let value = AnyExpression(
             LiteralExpression(
-                token: .init(kind: .true, lexeme: Token.Kind.true.rawValue, literal: true, line: 1, column: 11)
+                token: .init(kind: .true, lexeme: Token.Kind.true.rawValue, literal: true, line: 1, column: 14)
             )
         )
 
         // Act
-        let expression = AssignmentExpression(token: token, value: value)
+        let expression = AssignmentExpression(
+            identifierToken: identifierToken,
+            operatorToken: operatorToken,
+            value: value
+        )
 
         // Assert
-        XCTAssertEqual(expression.token, token)
+        XCTAssertEqual(expression.identifierToken, identifierToken)
+        XCTAssertEqual(expression.operatorToken, operatorToken)
         XCTAssertEqual(expression.value, value)
     }
 }

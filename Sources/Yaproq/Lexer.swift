@@ -152,19 +152,19 @@ extension Lexer {
         case Token.Kind.less.rawValue:
             addToken(kind: matches(Token.Kind.equal.rawValue) ? .lessOrEqual : .less)
         case Token.Kind.minus.rawValue:
-            addToken(kind: .minus)
+            addToken(kind: matches(Token.Kind.equal.rawValue) ? .minusEqual : .minus)
         case Token.Kind.percent.rawValue:
-            addToken(kind: .percent)
+            addToken(kind: matches(Token.Kind.equal.rawValue) ? .percentEqual : .percent)
         case Token.Kind.plus.rawValue:
-            addToken(kind: .plus)
+            addToken(kind: matches(Token.Kind.equal.rawValue) ? .plusEqual : .plus)
         case Token.Kind.quote.rawValue:
             try addStringToken()
         case Token.Kind.rightParenthesis.rawValue:
             addToken(kind: .rightParenthesis)
         case Token.Kind.slash.rawValue:
-            addToken(kind: .slash)
+            addToken(kind: matches(Token.Kind.equal.rawValue) ? .slashEqual : .slash)
         case Token.Kind.star.rawValue:
-            addToken(kind: .star)
+            addToken(kind: matches(Token.Kind.equal.rawValue) ? .starEqual : .star)
         case Token.Kind.carriageReturn.rawValue,
              Token.Kind.tab.rawValue,
              Token.Kind.whitespace.rawValue:

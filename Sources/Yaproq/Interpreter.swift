@@ -142,10 +142,50 @@ extension Interpreter: ExpressionVisitor {
     }
 
     func visitAssignment(expression: AssignmentExpression) throws -> Any? {
-        let value = try evaluate(expression: expression.value)
-        try environment.assign(value: value, toVariableWith: expression.token)
+        switch expression.operatorToken.kind {
+        case .equal:
+            let value = try evaluate(expression: expression.value)
+            try environment.assign(value: value, toVariableWith: expression.identifierToken)
+            return value
+        case .minusEqual,
+             .percentEqual,
+             .plusEqual,
+             .slashEqual,
+             .starEqual:
+            guard
+                let left = try environment.valueForVariable(with: expression.identifierToken) as? Double,
+                let right = try evaluate(expression: expression.value) as? Double else {
+                throw RuntimeError(
+                    "Operands must be numbers.",
+                    line: expression.operatorToken.line,
+                    column: expression.operatorToken.column
+                )
+            }
 
-        return value
+            let value: Double
+
+            if expression.operatorToken.kind == .minusEqual {
+                value = left - right
+            } else if expression.operatorToken.kind == .percentEqual {
+                value = left.truncatingRemainder(dividingBy: right)
+            } else if expression.operatorToken.kind == .plusEqual {
+                value = left + right
+            } else if expression.operatorToken.kind == .slashEqual {
+                value = left / right
+            } else {
+                value = left * right
+            }
+
+            try environment.assign(value: value, toVariableWith: expression.identifierToken)
+
+            return value
+        default:
+            throw RuntimeError(
+                "An invalid operator `\(expression.operatorToken.kind.rawValue)`.",
+                line: expression.operatorToken.line,
+                column: expression.operatorToken.column
+            )
+        }
     }
 
     func visitBinary(expression: BinaryExpression) throws -> Any {

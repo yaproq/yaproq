@@ -30,11 +30,13 @@ struct AnyExpression: Expression {
 }
 
 struct AssignmentExpression: Expression {
-    let token: Token
+    let identifierToken: Token
+    let operatorToken: Token
     let value: AnyExpression
 
-    init(token: Token, value: AnyExpression) {
-        self.token = token
+    init(identifierToken: Token, operatorToken: Token, value: AnyExpression) {
+        self.identifierToken = identifierToken
+        self.operatorToken = operatorToken
         self.value = value
     }
 
