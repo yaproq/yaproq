@@ -30,6 +30,7 @@ final class TokenTests: BaseTests {
         XCTAssertEqual(Token.Kind.leftParenthesis.rawValue, "(")
         XCTAssertEqual(Token.Kind.minus.rawValue, "-")
         XCTAssertEqual(Token.Kind.newline.rawValue, "\n")
+        XCTAssertEqual(Token.Kind.percent.rawValue, "%")
         XCTAssertEqual(Token.Kind.plus.rawValue, "+")
         XCTAssertEqual(Token.Kind.quote.rawValue, "\"")
         XCTAssertEqual(Token.Kind.rightBrace.rawValue, "}")

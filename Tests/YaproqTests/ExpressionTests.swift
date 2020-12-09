@@ -53,7 +53,7 @@ final class GroupingExpressionTests: BaseTests {
             LiteralExpression(token: .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 4))
         )
         let token = Token(
-            kind: .plus,
+            kind: .star,
             lexeme: Token.Kind.star.rawValue,
             line: 1,
             column: 6
@@ -93,7 +93,7 @@ final class LogicalExpressionTests: BaseTests {
                 token: .init(kind: .true, lexeme: Token.Kind.true.rawValue, literal: true, line: 1, column: 7)
             )
         )
-        let token = Token(kind: .plus, lexeme: Token.Kind.or.rawValue, line: 1, column: 10)
+        let token = Token(kind: .or, lexeme: Token.Kind.or.rawValue, line: 1, column: 10)
         let right = AnyExpression(
             LiteralExpression(
                 token: .init(kind: .false, lexeme: Token.Kind.false.rawValue, literal: false, line: 1, column: 16)
