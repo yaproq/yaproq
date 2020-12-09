@@ -43,6 +43,7 @@ extension Token {
         case leftParenthesis = "("
         case minus = "-"
         case newline = "\n"
+        case percent = "%"
         case plus = "+"
         case quote = "\""
         case rightBrace = "}"

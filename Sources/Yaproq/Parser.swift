@@ -279,7 +279,7 @@ extension Parser {
     private func multiplicationExpression() throws -> AnyExpression {
         var expression = try unaryExpression()
 
-        while match(.slash, .star) {
+        while match(.percent, .slash, .star) {
             expression = AnyExpression(
                 BinaryExpression(left: expression, token: previous, right: try unaryExpression())
             )

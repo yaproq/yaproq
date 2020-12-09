@@ -185,6 +185,13 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Double, let right = right as? Double { return left - right }
             let token = expression.token
             throw RuntimeError("Operands must be numbers.", line: token.line, column: token.column)
+        case .percent:
+            if let left = left as? Double, let right = right as? Double {
+                return left.truncatingRemainder(dividingBy: right)
+            }
+
+            let token = expression.token
+            throw RuntimeError("Operands must be numbers.", line: token.line, column: token.column)
         case .plus:
             if let left = left as? Double, let right = right as? Double { return left + right
             } else if let left = left as? String, let right = right as? String { return left + right }
