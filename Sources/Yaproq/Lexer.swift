@@ -223,7 +223,7 @@ extension Lexer {
             } else if Token.Kind.blockEndKeywords.contains(kind) {
                 addToken(kind: .rightBrace, line: 0, column: 0)
             } else {
-                addToken(kind: kind, lexeme: lexeme)
+                addToken(kind: kind, lexeme: lexeme, literal: kind == .false || kind == .true ? Bool(lexeme) : nil)
             }
         } else {
             addToken(kind: .identifier, lexeme: lexeme)

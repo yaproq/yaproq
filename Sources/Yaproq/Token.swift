@@ -63,9 +63,11 @@ extension Token {
         case lessOrEqual = "<="
 
         // Literals.
+        case `false`
         case identifier
         case number
         case string
+        case `true`
 
         // Keywords.
         case and
@@ -73,7 +75,6 @@ extension Token {
         case `else`
         case elseif
         case extend
-        case `false`
         case `for`
         case `if`
         case include
@@ -81,7 +82,7 @@ extension Token {
         case or
         case print
         case `super` = "@super"
-        case `true`
+
         case `var`
         case `while`
 
