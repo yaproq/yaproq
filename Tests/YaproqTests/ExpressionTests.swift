@@ -4,7 +4,7 @@ import XCTest
 final class AssignmentExpressionTests: BaseTests {
     func testInit() {
         // Arrange
-        let token = Token(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 6)
+        let token = Token(kind: .identifier, lexeme: "number", literal: 1, line: 1, column: 6)
         let value = AnyExpression(
             LiteralExpression(
                 token: .init(kind: .true, lexeme: Token.Kind.true.rawValue, literal: true, line: 1, column: 11)
