@@ -280,9 +280,21 @@ extension Parser {
     }
 
     private func multiplicationExpression() throws -> AnyExpression {
+        var expression = try powerExpression()
+
+        while match(.percent, .slash, .star) {
+            expression = AnyExpression(
+                BinaryExpression(left: expression, token: previous, right: try powerExpression())
+            )
+        }
+
+        return expression
+    }
+
+    private func powerExpression() throws -> AnyExpression {
         var expression = try unaryExpression()
 
-        while match(.percent, .power, .slash, .star) {
+        while match(.power) {
             expression = AnyExpression(
                 BinaryExpression(left: expression, token: previous, right: try unaryExpression())
             )
