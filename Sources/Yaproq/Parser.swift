@@ -251,7 +251,7 @@ extension Parser {
     private func equalityExpression() throws -> AnyExpression {
         var expression = try comparisonExpression()
 
-        while match(.bangEqual, .equalEqual) {
+        while match(.bangEqual, .equalEqual, .questionQuestion) {
             expression = AnyExpression(
                 BinaryExpression(left: expression, token: previous, right: try comparisonExpression())
             )

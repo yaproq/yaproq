@@ -63,6 +63,8 @@ extension Token {
         case percentEqual = "%="
         case plus = "+"
         case plusEqual = "+="
+        case question = "?"
+        case questionQuestion = "??"
         case slash = "/"
         case slashEqual = "/="
         case star = "*"

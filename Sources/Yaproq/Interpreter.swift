@@ -188,7 +188,7 @@ extension Interpreter: ExpressionVisitor {
         }
     }
 
-    func visitBinary(expression: BinaryExpression) throws -> Any {
+    func visitBinary(expression: BinaryExpression) throws -> Any? {
         let left = try evaluate(expression: expression.left)
         let right = try evaluate(expression: expression.right)
 
@@ -233,10 +233,16 @@ extension Interpreter: ExpressionVisitor {
             let token = expression.token
             throw RuntimeError("Operands must be numbers.", line: token.line, column: token.column)
         case .plus:
-            if let left = left as? Double, let right = right as? Double { return left + right
-            } else if let left = left as? String, let right = right as? String { return left + right }
+            if let left = left as? Double, let right = right as? Double {
+                return left + right
+            } else if let left = left as? String, let right = right as? String {
+                return left + right
+            }
+
             let token = expression.token
             throw RuntimeError("Operands must be two numbers or strings.", line: token.line, column: token.column)
+        case .questionQuestion:
+            return left ?? right
         case .slash:
             if let left = left as? Double, let right = right as? Double { return left / right }
             let token = expression.token
