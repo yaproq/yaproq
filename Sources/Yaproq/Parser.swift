@@ -220,7 +220,7 @@ extension Parser {
     private func assignmentExpression() throws -> AnyExpression {
         let expression = try orExpression()
 
-        if match(.equal, .minusEqual, .percentEqual, .plusEqual, .slashEqual, .starEqual) {
+        if match(.equal, .minusEqual, .percentEqual, .plusEqual, .powerEqual, .slashEqual, .starEqual) {
             let operatorToken = previous
             let value = try assignmentExpression()
 
@@ -282,7 +282,7 @@ extension Parser {
     private func multiplicationExpression() throws -> AnyExpression {
         var expression = try unaryExpression()
 
-        while match(.percent, .slash, .star) {
+        while match(.percent, .power, .slash, .star) {
             expression = AnyExpression(
                 BinaryExpression(left: expression, token: previous, right: try unaryExpression())
             )

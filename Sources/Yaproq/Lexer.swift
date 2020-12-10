@@ -157,6 +157,8 @@ extension Lexer {
             addToken(kind: matches(Token.Kind.equal.rawValue) ? .percentEqual : .percent)
         case Token.Kind.plus.rawValue:
             addToken(kind: matches(Token.Kind.equal.rawValue) ? .plusEqual : .plus)
+        case Token.Kind.power.rawValue:
+            addToken(kind: matches(Token.Kind.equal.rawValue) ? .powerEqual : .power)
         case Token.Kind.question.rawValue:
             addToken(kind: matches(Token.Kind.question.rawValue) ? .questionQuestion : .question)
         case Token.Kind.quote.rawValue:

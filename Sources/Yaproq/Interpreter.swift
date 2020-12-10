@@ -150,6 +150,7 @@ extension Interpreter: ExpressionVisitor {
         case .minusEqual,
              .percentEqual,
              .plusEqual,
+             .powerEqual,
              .slashEqual,
              .starEqual:
             guard
@@ -170,6 +171,8 @@ extension Interpreter: ExpressionVisitor {
                 value = left.truncatingRemainder(dividingBy: right)
             } else if expression.operatorToken.kind == .plusEqual {
                 value = left + right
+            } else if expression.operatorToken.kind == .powerEqual {
+                value = pow(left, right)
             } else if expression.operatorToken.kind == .slashEqual {
                 value = left / right
             } else {
@@ -241,6 +244,13 @@ extension Interpreter: ExpressionVisitor {
 
             let token = expression.token
             throw RuntimeError("Operands must be two numbers or strings.", line: token.line, column: token.column)
+        case .power:
+            if let left = left as? Double, let right = right as? Double {
+                return pow(left, right)
+            }
+
+            let token = expression.token
+            throw RuntimeError("Operands must be numbers.", line: token.line, column: token.column)
         case .questionQuestion:
             return left ?? right
         case .slash:

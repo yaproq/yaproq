@@ -49,6 +49,8 @@ final class TokenTests: BaseTests {
         XCTAssertEqual(Token.Kind.percentEqual.rawValue, "%=")
         XCTAssertEqual(Token.Kind.plus.rawValue, "+")
         XCTAssertEqual(Token.Kind.plusEqual.rawValue, "+=")
+        XCTAssertEqual(Token.Kind.power.rawValue, "^")
+        XCTAssertEqual(Token.Kind.powerEqual.rawValue, "^=")
         XCTAssertEqual(Token.Kind.question.rawValue, "?")
         XCTAssertEqual(Token.Kind.questionQuestion.rawValue, "??")
         XCTAssertEqual(Token.Kind.slash.rawValue, "/")
