@@ -3,6 +3,7 @@ import Foundation
 final class Interpreter {
     let templating: Yaproq
     var environment: Environment
+    private var output = ""
     lazy var statements: [Statement] = .init()
 
     init(templating: Yaproq, environment: Environment = .init()) {
@@ -10,7 +11,7 @@ final class Interpreter {
         self.environment = environment
     }
 
-    func interpret() throws {
+    func interpret() throws -> String {
         let extendStatements = statements.filter { $0 is ExtendStatement }
         let count = extendStatements.count
 
@@ -33,6 +34,8 @@ final class Interpreter {
                 try execute(statement: statement)
             }
         }
+
+        return output
     }
 
     private func processBlock(statements: inout [Statement]) {
@@ -361,16 +364,16 @@ extension Interpreter: StatementVisitor {
         let statements = try templating.parse(source)
         self.statements.removeFirst()
         self.statements = statements + self.statements
-        try interpret()
+        output = try interpret()
     }
 
     func visitInclude(statement: IncludeStatement) throws {
         if let expression = statement.expression.expression as? LiteralExpression {
             if let path = expression.token.literal as? String {
                 do {
-                    try templating.renderTemplate(named: path)
+                    output = try templating.renderTemplate(named: path)
                 } catch {
-                    try templating.renderTemplate(at: path)
+                    output = try templating.renderTemplate(at: path)
                 }
             } else {
                 let token = expression.token
@@ -383,9 +386,9 @@ extension Interpreter: StatementVisitor {
         } else if let expression = statement.expression.expression as? VariableExpression {
             if let path = try visitVariable(expression: expression) as? String {
                 do {
-                    try templating.renderTemplate(named: path)
+                    output = try templating.renderTemplate(named: path)
                 } catch {
-                    try templating.renderTemplate(at: path)
+                    output = try templating.renderTemplate(at: path)
                 }
             } else {
                 let token = expression.token
@@ -416,7 +419,7 @@ extension Interpreter: StatementVisitor {
 
     func visitPrint(statement: PrintStatement) throws {
         let value = try evaluate(expression: statement.expression)
-        print(stringify(value), terminator: "")
+        output += stringify(value)
     }
 
     func visitSuper(statement: SuperStatement) throws {}
