@@ -17,7 +17,7 @@ extension Parser {
         var statements: [Statement] = .init()
 
         while !isAtEnd {
-            if let statement = variableDeclarationStatement() {
+            if let statement = try variableDeclarationStatement() {
                 statements.append(statement)
             }
         }
@@ -53,29 +53,6 @@ extension Parser {
 
         return false
     }
-
-    private func synchronize() {
-        advance()
-
-        while !isAtEnd {
-            if previous.kind == .newline { return }
-
-            switch peek.kind {
-            case .block,
-                 .extend,
-                 .for,
-                 .if,
-                 .include,
-                 .print,
-                 .super,
-                 .var,
-                 .while:
-                return
-            default:
-                advance()
-            }
-        }
-    }
 }
 
 extension Parser {
@@ -109,7 +86,7 @@ extension Parser {
         let rightBrace = Token.Kind.rightBrace
 
         while !check(rightBrace) && !isAtEnd {
-            if let statement = variableDeclarationStatement() { statements.append(statement) }
+            if let statement = try variableDeclarationStatement() { statements.append(statement) }
         }
 
         try consume(rightBrace, elseErrorMessage: "Expecting '\(rightBrace.rawValue)' after `block`.")
@@ -117,14 +94,8 @@ extension Parser {
         return statements
     }
 
-    private func variableDeclarationStatement() -> Statement? {
-        do {
-            if match(.var) { return try variableStatement() }
-            return try statement()
-        } catch {
-            synchronize()
-            return nil
-        }
+    private func variableDeclarationStatement() throws -> Statement? {
+        match(.var) ? try variableStatement() : try statement()
     }
 
     private func elseIfStatement() throws -> IfStatement {
@@ -218,7 +189,7 @@ extension Parser {
     }
 
     private func assignmentExpression() throws -> AnyExpression {
-        let expression = try orExpression()
+        let expression = try ternaryExpression()
 
         if match(.equal, .minusEqual, .percentEqual, .plusEqual, .powerEqual, .slashEqual, .starEqual) {
             let operatorToken = previous
@@ -307,7 +278,9 @@ extension Parser {
         var expression = try andExpression()
 
         while match(.or) {
-            expression = AnyExpression(LogicalExpression(left: expression, token: previous, right: try andExpression()))
+            expression = AnyExpression(
+                LogicalExpression(left: expression, token: previous, right: try andExpression())
+            )
         }
 
         return expression
@@ -318,6 +291,42 @@ extension Parser {
         if match(.identifier) { return variableExpression() }
         if match(.leftParenthesis) { return try groupingExpression() }
         throw SyntaxError("Expecting an expression.", line: peek.line, column: peek.column)
+    }
+
+    private func ternaryExpression() throws -> AnyExpression {
+        var expression = try orExpression()
+
+        while match(.question) {
+            let leftToken = previous
+            let left = try orExpression()
+            var isTernary = false
+
+            while match(.colon) {
+                isTernary = true
+                let rightToken = previous
+                let right = try orExpression()
+
+                expression = AnyExpression(
+                    TernaryExpression(
+                        condition: expression,
+                        leftToken: leftToken,
+                        left: left,
+                        rightToken: rightToken,
+                        right: right
+                    )
+                )
+            }
+
+            if !isTernary {
+                throw SyntaxError(
+                    "An unexpected character `\(leftToken.kind.rawValue)`.",
+                    line: leftToken.line,
+                    column: leftToken.column
+                )
+            }
+        }
+
+        return expression
     }
 
     private func unaryExpression() throws -> AnyExpression {

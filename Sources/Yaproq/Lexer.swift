@@ -143,6 +143,8 @@ extension Lexer {
         switch character {
         case Token.Kind.bang.rawValue:
             addToken(kind: matches(Token.Kind.equal.rawValue) ? .bangEqual : .bang)
+        case Token.Kind.colon.rawValue:
+            addToken(kind: .colon)
         case Token.Kind.equal.rawValue:
             addToken(kind: matches(Token.Kind.equal.rawValue) ? .equalEqual : .equal)
         case Token.Kind.greater.rawValue:

@@ -9,6 +9,7 @@ protocol ExpressionVisitor {
     func visitGrouping(expression: GroupingExpression) throws -> Any?
     func visitLiteral(expression: LiteralExpression) throws -> Any?
     func visitLogical(expression: LogicalExpression) throws -> Any?
+    func visitTernary(expression: TernaryExpression) throws -> Any?
     func visitUnary(expression: UnaryExpression) throws -> Any
     func visitVariable(expression: VariableExpression) throws -> Any?
 }
@@ -98,6 +99,26 @@ struct LogicalExpression: Expression {
 
     func accept(visitor: ExpressionVisitor) throws -> Any? {
         try visitor.visitLogical(expression: self)
+    }
+}
+
+struct TernaryExpression: Expression {
+    let condition: AnyExpression
+    let leftToken: Token
+    let left: AnyExpression
+    let rightToken: Token
+    let right: AnyExpression
+
+    init(condition: AnyExpression, leftToken: Token, left: AnyExpression, rightToken: Token, right: AnyExpression) {
+        self.condition = condition
+        self.leftToken = leftToken
+        self.left = left
+        self.rightToken = rightToken
+        self.right = right
+    }
+
+    func accept(visitor: ExpressionVisitor) throws -> Any? {
+        try visitor.visitTernary(expression: self)
     }
 }
 

@@ -24,6 +24,7 @@ final class TokenTests: BaseTests {
     func testKinds() {
         // Assert
         XCTAssertEqual(Token.Kind.carriageReturn.rawValue, "\r")
+        XCTAssertEqual(Token.Kind.colon.rawValue, ":")
         XCTAssertEqual(Token.Kind.comma.rawValue, ",")
         XCTAssertEqual(Token.Kind.dot.rawValue, ".")
         XCTAssertEqual(Token.Kind.leftBrace.rawValue, "{")

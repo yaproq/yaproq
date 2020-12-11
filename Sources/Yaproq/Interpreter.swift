@@ -132,6 +132,8 @@ extension Interpreter: ExpressionVisitor {
             return try visitLiteral(expression: expression)
         } else if let expression = expression.expression as? LogicalExpression {
             return try visitLogical(expression: expression)
+        } else if let expression = expression.expression as? TernaryExpression {
+            return try visitTernary(expression: expression)
         } else if let expression = expression.expression as? UnaryExpression {
             return try visitUnary(expression: expression)
         } else if let expression = expression.expression as? VariableExpression {
@@ -285,6 +287,14 @@ extension Interpreter: ExpressionVisitor {
         }
 
         return try evaluate(expression: expression.right)
+    }
+
+    func visitTernary(expression: TernaryExpression) throws -> Any? {
+        let condition = try evaluate(expression: expression.condition)
+        let left = try evaluate(expression: expression.left)
+        let right = try evaluate(expression: expression.right)
+
+        return isTruthy(condition) ? left : right
     }
 
     func visitUnary(expression: UnaryExpression) throws -> Any {

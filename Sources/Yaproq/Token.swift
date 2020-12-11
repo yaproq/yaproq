@@ -37,6 +37,7 @@ extension Token {
     enum Kind: String {
         // Single-character.
         case carriageReturn = "\r"
+        case colon = ":"
         case comma = ","
         case dot = "."
         case leftBrace = "{"
