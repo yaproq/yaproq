@@ -3,9 +3,7 @@ final class Lexer {
     private let count: Int
     private let delimiters: [Delimiter]
 
-    var peek: String { isAtEnd ? Token.Kind.eof.rawValue : character(at: current) }
-    var peekNext: String { current + 1 >= count ? Token.Kind.eof.rawValue : character(at: current + 1) }
-    var isAtEnd: Bool { current >= count }
+    private var isAtEnd: Bool { current >= count }
     private var start = 0
     private var current = 0
     private var line = 1
@@ -46,12 +44,14 @@ extension Lexer {
 
         return tokens
     }
+}
 
-    func character(at index: Int) -> String {
+extension Lexer {
+    private func character(at index: Int) -> String {
         substring(from: index, to: index + 1)
     }
 
-    func substring(next count: Int) -> String {
+    private func substring(next count: Int) -> String {
         substring(from: current, to: current + count)
     }
 
@@ -65,11 +65,11 @@ extension Lexer {
         return String(source[range])
     }
 
-    func isAlpha(_ character: String) -> Bool {
+    private func isAlpha(_ character: String) -> Bool {
         (character >= "a" && character <= "z") || (character >= "A" && character <= "Z") || character == "_"
     }
 
-    func isNumeric(_ character: String) -> Bool {
+    private func isNumeric(_ character: String) -> Bool {
         Int(character) != nil
     }
 }
@@ -88,6 +88,10 @@ extension Lexer {
         advance()
 
         return true
+    }
+
+    private func peek(next: Int = 0) -> String {
+        current + next >= count ? Token.Kind.eof.rawValue : character(at: current + next)
     }
 }
 
@@ -145,6 +149,18 @@ extension Lexer {
             addToken(kind: matches(Token.Kind.equal.rawValue) ? .bangEqual : .bang)
         case Token.Kind.colon.rawValue:
             addToken(kind: .colon)
+        case Token.Kind.dot.rawValue:
+            if matches(Token.Kind.dot.rawValue) {
+                if matches(Token.Kind.dot.rawValue) {
+                    addToken(kind: .closedRange)
+                } else if matches(Token.Kind.less.rawValue) {
+                    addToken(kind: .halfOpenRange)
+                } else {
+                    fallthrough
+                }
+            } else {
+                fallthrough
+            }
         case Token.Kind.equal.rawValue:
             addToken(kind: matches(Token.Kind.equal.rawValue) ? .equalEqual : .equal)
         case Token.Kind.greater.rawValue:
@@ -193,7 +209,7 @@ extension Lexer {
     }
 
     private func addIdentifierToken() throws {
-        while isAlpha(peek) && !isAtEnd { advance() }
+        while isAlpha(peek()) && !isAtEnd { advance() }
         let lexeme = substring(from: start, to: current)
 
         if let kind = Token.Kind(rawValue: lexeme), Token.Kind.keywords.contains(kind) {
@@ -239,16 +255,16 @@ extension Lexer {
     }
 
     private func addNumberToken() {
-        while isNumeric(peek) && !isAtEnd { advance() }
-        if peek == Token.Kind.dot.rawValue && isNumeric(peekNext) { advance() }
-        while isNumeric(peek) && !isAtEnd { advance() }
+        while isNumeric(peek()) && !isAtEnd { advance() }
+        if peek() == Token.Kind.dot.rawValue && isNumeric(peek(next: 1)) { advance() }
+        while isNumeric(peek()) && !isAtEnd { advance() }
         let lexeme = substring(from: start, to: current)
         let value = Double(lexeme)
         addToken(kind: .number, lexeme: lexeme, literal: value)
     }
 
     private func addStringToken() throws {
-        while peek != Token.Kind.quote.rawValue && !isAtEnd { advance() }
+        while peek() != Token.Kind.quote.rawValue && !isAtEnd { advance() }
         if isAtEnd { throw SyntaxError("An unterminated string.", line: line, column: column) }
         advance()
         let lexeme = substring(from: start, to: current)

@@ -203,6 +203,35 @@ extension Interpreter: ExpressionVisitor {
         switch expression.token.kind {
         case .bangEqual:
             return !isEqual(left, right)
+        case .closedRange,
+             .halfOpenRange:
+            var lowerBound = left as? Double
+            var upperBound = right as? Double
+
+            if lowerBound == nil, let expression = left as? VariableExpression {
+                lowerBound = try visitVariable(expression: expression) as? Double
+            }
+
+            if upperBound == nil, let expression = right as? VariableExpression {
+                upperBound = try visitVariable(expression: expression) as? Double
+            }
+
+            if let lowerBound = lowerBound, let upperBound = upperBound {
+                if expression.token.kind == .closedRange {
+                    let range: CountableClosedRange = Int(lowerBound)...Int(upperBound)
+                    return range
+                } else {
+                    let range: CountableRange = Int(lowerBound)..<Int(upperBound)
+                    return range
+                }
+            }
+
+            let token = expression.token
+            throw RuntimeError(
+                "Operands must be either numbers or variables that evaluate to numbers.",
+                line: token.line,
+                column: token.column
+            )
         case .equalEqual:
             return isEqual(left, right)
         case .greater:

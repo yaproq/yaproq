@@ -52,10 +52,12 @@ extension Token {
         // One or two character.
         case bang = "!"
         case bangEqual = "!="
+        case closedRange = "..."
         case equal = "="
         case equalEqual = "=="
         case greater = ">"
         case greaterOrEqual = ">="
+        case halfOpenRange = "..<"
         case less = "<"
         case lessOrEqual = "<="
         case minus = "-"

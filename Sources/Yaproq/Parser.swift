@@ -251,11 +251,11 @@ extension Parser {
     }
 
     private func multiplicationExpression() throws -> AnyExpression {
-        var expression = try powerExpression()
+        var expression = try rangeExpression()
 
         while match(.percent, .slash, .star) {
             expression = AnyExpression(
-                BinaryExpression(left: expression, token: previous, right: try powerExpression())
+                BinaryExpression(left: expression, token: previous, right: try rangeExpression())
             )
         }
 
@@ -268,6 +268,18 @@ extension Parser {
         while match(.power) {
             expression = AnyExpression(
                 BinaryExpression(left: expression, token: previous, right: try unaryExpression())
+            )
+        }
+
+        return expression
+    }
+
+    private func rangeExpression() throws -> AnyExpression {
+        var expression = try powerExpression()
+
+        while match(.closedRange, .halfOpenRange) {
+            expression = AnyExpression(
+                BinaryExpression(left: expression, token: previous, right: try powerExpression())
             )
         }
 
