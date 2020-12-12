@@ -157,6 +157,5 @@ final class VariableExpressionTests: BaseTests {
 
         // Assert
         XCTAssertEqual(expression.token, token)
-        XCTAssertEqual(expression.value, value)
     }
 }
