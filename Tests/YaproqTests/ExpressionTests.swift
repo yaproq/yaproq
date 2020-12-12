@@ -147,18 +147,13 @@ final class VariableExpressionTests: BaseTests {
         let token = Token(
             kind: .var,
             lexeme: Token.Kind.var.rawValue,
+            literal: 1,
             line: 1,
             column: 6
         )
-        let literal = 1
-        let value = AnyExpression(
-            LiteralExpression(
-                token: .init(kind: .number, lexeme: String(literal), literal: literal, line: 1, column: 12)
-            )
-        )
 
         // Act
-        let expression = VariableExpression(token: token, value: value)
+        let expression = VariableExpression(token: token)
 
         // Assert
         XCTAssertEqual(expression.token, token)
