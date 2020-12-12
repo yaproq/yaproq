@@ -110,6 +110,26 @@ extension Parser {
         ExtendStatement(expression: try self.expression())
     }
 
+    private func forStatement() throws -> Statement {
+        guard let variable = try expression().expression as? VariableExpression else {
+            throw RuntimeError("Expecting a variable name.", line: previous.line, column: previous.column)
+        }
+
+        let keyword: Token
+
+        if match(.in) {
+            keyword = previous
+        } else {
+            throw RuntimeError(
+                "Expecting `\(Token.Kind.in.rawValue)` after a variable name.",
+                line: previous.line,
+                column: previous.column
+            )
+        }
+
+        return ForStatement(variable: variable, keyword: keyword, expression: try expression(), body: try statement())
+    }
+
     private func ifStatement() throws -> Statement {
         let condition = try expression()
         let thenBranch = try statement()
@@ -136,6 +156,7 @@ extension Parser {
     private func statement() throws -> Statement {
         if match(.block) { return try blockStatement() }
         if match(.extend) { return try extendStatement() }
+        if match(.for) { return try forStatement() }
         if match(.if) { return try ifStatement() }
         if match(.include) { return try includeStatement() }
         if match(.leftBrace) { return BlockStatement(statements: try blockStatements()) }

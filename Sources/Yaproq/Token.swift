@@ -1,7 +1,7 @@
 struct Token {
     let kind: Kind
     let lexeme: String
-    let literal: Any?
+    var literal: Any?
     let line: Int
     let column: Int
 
@@ -78,6 +78,7 @@ extension Token {
         // Literals.
         case `false`
         case identifier
+        case `nil`
         case number
         case string
         case `true`
@@ -90,8 +91,8 @@ extension Token {
         case extend
         case `for`
         case `if`
+        case `in`
         case include
-        case `nil`
         case or
         case print
         case `super` = "@super"
@@ -110,7 +111,7 @@ extension Token {
 
         static var keywords: Set<Kind> = [
             .and, .block, .else, .elseif, .endblock, .endfor, .endif, .endwhile, .extend,
-            .false, .for, .if, .include, .nil, .or, .super, .true, .var, .while
+            .false, .for, .if, .in, .include, .nil, .or, .super, .true, .var, .while
         ]
         static var blockStartKeywords: Set<Kind> = [.block, .for, .if, .while]
         static var blockEndKeywords: Set<Kind> = [.endblock, .endfor, .endif, .endwhile]

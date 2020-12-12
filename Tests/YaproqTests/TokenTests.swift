@@ -61,24 +61,25 @@ final class TokenTests: BaseTests {
         XCTAssertEqual(Token.Kind.star.rawValue, "*")
         XCTAssertEqual(Token.Kind.starEqual.rawValue, "*=")
 
+        XCTAssertEqual(Token.Kind.false.rawValue, "false")
         XCTAssertEqual(Token.Kind.identifier.rawValue, "identifier")
+        XCTAssertEqual(Token.Kind.nil.rawValue, "nil")
         XCTAssertEqual(Token.Kind.number.rawValue, "number")
         XCTAssertEqual(Token.Kind.string.rawValue, "string")
+        XCTAssertEqual(Token.Kind.true.rawValue, "true")
 
         XCTAssertEqual(Token.Kind.and.rawValue, "and")
         XCTAssertEqual(Token.Kind.block.rawValue, "block")
         XCTAssertEqual(Token.Kind.else.rawValue, "else")
         XCTAssertEqual(Token.Kind.elseif.rawValue, "elseif")
         XCTAssertEqual(Token.Kind.extend.rawValue, "extend")
-        XCTAssertEqual(Token.Kind.false.rawValue, "false")
         XCTAssertEqual(Token.Kind.for.rawValue, "for")
         XCTAssertEqual(Token.Kind.if.rawValue, "if")
+        XCTAssertEqual(Token.Kind.in.rawValue, "in")
         XCTAssertEqual(Token.Kind.include.rawValue, "include")
-        XCTAssertEqual(Token.Kind.nil.rawValue, "nil")
         XCTAssertEqual(Token.Kind.or.rawValue, "or")
         XCTAssertEqual(Token.Kind.print.rawValue, "print")
         XCTAssertEqual(Token.Kind.super.rawValue, "@super")
-        XCTAssertEqual(Token.Kind.true.rawValue, "true")
         XCTAssertEqual(Token.Kind.var.rawValue, "var")
         XCTAssertEqual(Token.Kind.while.rawValue, "while")
 
@@ -94,11 +95,7 @@ final class TokenTests: BaseTests {
         // Assert
         XCTAssertEqual(Token.Kind.keywords, [
             .and, .block, .else, .elseif, .endblock, .endfor, .endif, .endwhile, .extend,
-            .false, .for, .if, .include, .nil, .or, .super, .true, .var, .while
-        ])
-        XCTAssertEqual(Token.Kind.keywords, [
-            .and, .block, .else, .elseif, .endblock, .endfor, .endif, .endwhile, .extend,
-            .false, .for, .if, .include, .nil, .or, .super, .true, .var, .while
+            .false, .for, .if, .in, .include, .nil, .or, .super, .true, .var, .while
         ])
         XCTAssertEqual(Token.Kind.blockStartKeywords, [.block, .for, .if, .while])
         XCTAssertEqual(Token.Kind.blockEndKeywords, [.endblock, .endfor, .endif, .endwhile])

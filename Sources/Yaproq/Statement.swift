@@ -6,6 +6,7 @@ protocol StatementVisitor {
     func visitBlock(statement: BlockStatement) throws
     func visitExpression(statement: ExpressionStatement) throws
     func visitExtend(statement: ExtendStatement) throws
+    func visitFor(statement: ForStatement) throws
     func visitIf(statement: IfStatement) throws
     func visitInclude(statement: IncludeStatement) throws
     func visitPrint(statement: PrintStatement) throws
@@ -16,10 +17,12 @@ protocol StatementVisitor {
 
 final class BlockStatement: Statement {
     let name: String?
+    var variables: [VariableExpression]
     var statements: [Statement]
 
-    init(name: String? = nil, statements: [Statement] = .init()) {
+    init(name: String? = nil, variables: [VariableExpression] = .init(), statements: [Statement] = .init()) {
         self.name = name
+        self.variables = variables
         self.statements = statements
     }
 
@@ -49,6 +52,24 @@ struct ExtendStatement: Statement {
 
     func accept(visitor: StatementVisitor) throws {
         try visitor.visitExtend(statement: self)
+    }
+}
+
+final class ForStatement: Statement {
+    var variable: VariableExpression
+    let keyword: Token
+    let expression: AnyExpression
+    let body: Statement
+
+    init(variable: VariableExpression, keyword: Token, expression: AnyExpression, body: Statement) {
+        self.variable = variable
+        self.keyword = keyword
+        self.expression = expression
+        self.body = body
+    }
+
+    func accept(visitor: StatementVisitor) throws {
+        try visitor.visitFor(statement: self)
     }
 }
 

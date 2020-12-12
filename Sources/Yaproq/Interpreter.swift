@@ -350,9 +350,32 @@ extension Interpreter: ExpressionVisitor {
     }
 }
 
+extension Interpreter {
+    private func extendFile(at path: String) throws {
+        let source: String
+
+        do {
+            source = try templating.loadTemplate(named: path)
+        } catch {
+            source = try templating.loadTemplate(at: path)
+        }
+
+        let statements = try templating.parse(source)
+        self.statements.removeFirst()
+        self.statements = statements + self.statements
+        output = try interpret()
+    }
+}
+
 extension Interpreter: StatementVisitor {
     func visitBlock(statement: BlockStatement) throws {
-        try execute(statements: statement.statements, in: Environment(parent: environment))
+        let environment = Environment(parent: self.environment)
+
+        for variable in statement.variables {
+            try environment.defineVariable(for: variable.token, with: variable.token.literal)
+        }
+
+        try execute(statements: statement.statements, in: environment)
     }
 
     func visitExpression(statement: ExpressionStatement) throws {
@@ -381,19 +404,28 @@ extension Interpreter: StatementVisitor {
         }
     }
 
-    private func extendFile(at path: String) throws {
-        let source: String
+    func visitFor(statement: ForStatement) throws {
+        let blockStatement = statement.body as! BlockStatement
 
-        do {
-            source = try templating.loadTemplate(named: path)
-        } catch {
-            source = try templating.loadTemplate(at: path)
+        if let expression = statement.expression.expression as? BinaryExpression {
+            if let range = try visitBinary(expression: expression) as? CountableClosedRange<Int> {
+                for index in range {
+                    statement.variable.token.literal = index
+                    blockStatement.variables = [statement.variable]
+                    try visitBlock(statement: blockStatement)
+                }
+            } else if let range = try visitBinary(expression: expression) as? CountableRange<Int> {
+                for index in range {
+                    statement.variable.token.literal = index
+                    blockStatement.variables = [statement.variable]
+                    try visitBlock(statement: blockStatement)
+                }
+            } else {
+                // TODO: handle an edge case
+            }
+        } else if let expression = statement.expression.expression as? VariableExpression {
+            // TODO: implement for a Collection type
         }
-
-        let statements = try templating.parse(source)
-        self.statements.removeFirst()
-        self.statements = statements + self.statements
-        output = try interpret()
     }
 
     func visitInclude(statement: IncludeStatement) throws {
