@@ -228,7 +228,7 @@ extension Interpreter: ExpressionVisitor {
 
             let token = expression.token
             throw RuntimeError(
-                "Operands must be either numbers or variables that evaluate to numbers.",
+                "Operands must be either integers or variables that evaluate to integers.",
                 line: token.line,
                 column: token.column
             )
