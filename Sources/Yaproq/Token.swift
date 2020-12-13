@@ -17,7 +17,11 @@ struct Token {
 extension Token: CustomStringConvertible {
     var description: String {
         var description = "[\(line):\(column)] \(kind), \(lexeme)"
-        if let literal = literal { description += ", \(String(describing: literal))" }
+
+        if let literal = literal {
+            let stringLiteral = String(describing: literal)
+            if !stringLiteral.isEmpty { description += ", \(stringLiteral)" }
+        }
 
         return description
     }
