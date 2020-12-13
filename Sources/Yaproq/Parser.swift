@@ -63,7 +63,7 @@ extension Parser {
         while !check(leftBrace) && !isAtEnd {
             if let expression = try self.expression().expression as? VariableExpression {
                 if name == nil {
-                    name = expression.token.lexeme
+                    name = expression.name.lexeme
                 } else {
                     throw SyntaxError("An invalid name for `block`.", line: previous.line, column: previous.column)
                 }
@@ -218,7 +218,7 @@ extension Parser {
 
             if let expression = expression.expression as? VariableExpression {
                 return AnyExpression(
-                    AssignmentExpression(identifierToken: expression.token, operatorToken: operatorToken, value: value)
+                    AssignmentExpression(identifierToken: expression.name, operatorToken: operatorToken, value: value)
                 )
             }
 
@@ -321,7 +321,7 @@ extension Parser {
 
     private func primaryExpression() throws -> AnyExpression {
         if match(.false, .nil, .number, .string, .true) { return literalExpression() }
-        if match(.identifier) { return variableExpression() }
+        if match(.identifier) { return try variableExpression() }
         if match(.leftParenthesis) { return try groupingExpression() }
         throw SyntaxError("Expecting an expression.", line: peek.line, column: peek.column)
     }
@@ -368,7 +368,20 @@ extension Parser {
             : try primaryExpression()
     }
 
-    private func variableExpression() -> AnyExpression {
-        AnyExpression(VariableExpression(token: previous))
+    private func variableExpression() throws -> AnyExpression {
+        let name = previous
+
+        if match(.leftBracket) {
+            let index = try expression()
+            let rightBracket = Token.Kind.rightBracket
+            try consume(
+                rightBracket,
+                elseErrorMessage: "Expecting '\(rightBracket.rawValue)' after an expression."
+            )
+
+            return AnyExpression(VariableExpression(name: name, index: index))
+        }
+
+        return AnyExpression(VariableExpression(name: name))
     }
 }

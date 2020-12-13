@@ -346,7 +346,28 @@ extension Interpreter: ExpressionVisitor {
     }
 
     func visitVariable(expression: VariableExpression) throws -> Any? {
-        try environment.valueForVariable(with: expression.token)
+        let token = expression.name
+        let value = try environment.valueForVariable(with: expression.name)
+
+        if let index = expression.index {
+            let index = try evaluate(expression: index)
+
+            if let array = value as? Array<Int> {
+                if let index = index as? Double { return array[Int(index)] }
+                throw RuntimeError("The index must be an integer.", line: token.line, column: token.column)
+            } else if let dictionary = value as? Dictionary<AnyHashable, Any> {
+                if let key = index as? AnyHashable { return dictionary[key] }
+                throw RuntimeError("The key must conform to AnyHashable.", line: token.line, column: token.column)
+            }
+
+            throw RuntimeError(
+                "The `\(token.lexeme)` must be either an array or dictionary.",
+                line: token.line,
+                column: token.column
+            )
+        }
+
+        return value
     }
 }
 
@@ -372,7 +393,7 @@ extension Interpreter: StatementVisitor {
         let environment = Environment(parent: self.environment)
 
         for variable in statement.variables {
-            try environment.defineVariable(for: variable.token, with: variable.token.literal)
+            try environment.defineVariable(for: variable.name, with: variable.name.literal)
         }
 
         try execute(statements: statement.statements, in: environment)
@@ -398,7 +419,7 @@ extension Interpreter: StatementVisitor {
             if let path = try visitVariable(expression: expression) as? String {
                 try extendFile(at: path)
             } else {
-                let token = expression.token
+                let token = expression.name
                 throw RuntimeError("This is not a valid path.", line: token.line, column: token.column)
             }
         }
@@ -410,13 +431,13 @@ extension Interpreter: StatementVisitor {
         if let expression = statement.expression.expression as? BinaryExpression {
             if let range = try visitBinary(expression: expression) as? CountableClosedRange<Int> {
                 for index in range {
-                    statement.variable.token.literal = index
+                    statement.variable.name.literal = index
                     blockStatement.variables = [statement.variable]
                     try visitBlock(statement: blockStatement)
                 }
             } else if let range = try visitBinary(expression: expression) as? CountableRange<Int> {
                 for index in range {
-                    statement.variable.token.literal = index
+                    statement.variable.name.literal = index
                     blockStatement.variables = [statement.variable]
                     try visitBlock(statement: blockStatement)
                 }
@@ -452,7 +473,7 @@ extension Interpreter: StatementVisitor {
                     output = try templating.renderTemplate(at: path)
                 }
             } else {
-                let token = expression.token
+                let token = expression.name
                 throw RuntimeError("This is not a valid path.", line: token.line, column: token.column)
             }
         }

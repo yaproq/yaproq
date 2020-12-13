@@ -41,10 +41,12 @@ extension Token {
         case comma = ","
         case dot = "."
         case leftBrace = "{"
+        case leftBracket = "["
         case leftParenthesis = "("
         case newline = "\n"
         case quote = "\""
         case rightBrace = "}"
+        case rightBracket = "]"
         case rightParenthesis = ")"
         case tab = "\t"
         case whitespace = " "
@@ -96,7 +98,6 @@ extension Token {
         case or
         case print
         case `super` = "@super"
-
         case `var`
         case `while`
 

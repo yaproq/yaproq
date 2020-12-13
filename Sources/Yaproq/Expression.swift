@@ -137,10 +137,12 @@ struct UnaryExpression: Expression {
 }
 
 struct VariableExpression: Expression {
-    var token: Token
+    var name: Token
+    var index: AnyExpression?
 
-    init(token: Token) {
-        self.token = token
+    init(name: Token, index: AnyExpression? = nil) {
+        self.name = name
+        self.index = index
     }
 
     func accept(visitor: ExpressionVisitor) throws -> Any? {

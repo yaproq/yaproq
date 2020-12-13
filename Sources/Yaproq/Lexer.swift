@@ -165,6 +165,8 @@ extension Lexer {
             addToken(kind: matches(Token.Kind.equal.rawValue) ? .equalEqual : .equal)
         case Token.Kind.greater.rawValue:
             addToken(kind: matches(Token.Kind.equal.rawValue) ? .greaterOrEqual : .greater)
+        case Token.Kind.leftBracket.rawValue:
+            addToken(kind: .leftBracket)
         case Token.Kind.leftParenthesis.rawValue:
             addToken(kind: .leftParenthesis)
         case Token.Kind.less.rawValue:
@@ -181,6 +183,8 @@ extension Lexer {
             addToken(kind: matches(Token.Kind.question.rawValue) ? .questionQuestion : .question)
         case Token.Kind.quote.rawValue:
             try addStringToken()
+        case Token.Kind.rightBracket.rawValue:
+            addToken(kind: .rightBracket)
         case Token.Kind.rightParenthesis.rawValue:
             addToken(kind: .rightParenthesis)
         case Token.Kind.slash.rawValue:

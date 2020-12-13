@@ -22,7 +22,7 @@ public final class Yaproq {
     }
 
     public func renderTemplate(named name: String, context: [String: Any] = .init()) throws -> String {
-        try renderTemplate(at: configuration.directoryPath + name)
+        try renderTemplate(at: configuration.directoryPath + name, context: context)
     }
 
     public func renderTemplate(at path: String, context: [String: Any] = .init()) throws -> String {

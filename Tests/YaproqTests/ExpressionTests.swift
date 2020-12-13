@@ -144,7 +144,7 @@ final class UnaryExpressionTests: BaseTests {
 final class VariableExpressionTests: BaseTests {
     func testInit() {
         // Arrange
-        let token = Token(
+        let name = Token(
             kind: .var,
             lexeme: Token.Kind.var.rawValue,
             literal: 1,
@@ -153,9 +153,9 @@ final class VariableExpressionTests: BaseTests {
         )
 
         // Act
-        let expression = VariableExpression(token: token)
+        let expression = VariableExpression(name: name)
 
         // Assert
-        XCTAssertEqual(expression.token, token)
+        XCTAssertEqual(expression.name, name)
     }
 }
