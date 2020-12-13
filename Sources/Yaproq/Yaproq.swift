@@ -26,10 +26,13 @@ public final class Yaproq {
     }
 
     public func renderTemplate(at path: String, context: [String: Any] = .init()) throws -> String {
-        let source = try loadTemplate(at: path)
+        try renderTemplate(try loadTemplate(at: path))
+    }
+
+    public func renderTemplate(_ template: String, context: [String: Any] = .init()) throws -> String {
         for (name, value) in context { try interpreter.environment.defineVariable(named: name, with: value) }
-        interpreter.statements = try parse(source)
-        
+        interpreter.statements = try parse(template)
+
         return try interpreter.interpret()
     }
 
