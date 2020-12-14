@@ -56,14 +56,19 @@ struct ExtendStatement: Statement {
 }
 
 final class ForStatement: Statement {
-    var variable: VariableExpression
-    let keyword: Token
+    var key: AnyExpression?
+    var value: AnyExpression
     let expression: AnyExpression
     let body: Statement
 
-    init(variable: VariableExpression, keyword: Token, expression: AnyExpression, body: Statement) {
-        self.variable = variable
-        self.keyword = keyword
+    init(
+        key: AnyExpression? = nil,
+        value: AnyExpression,
+        expression: AnyExpression,
+        body: Statement
+    ) {
+        self.key = key
+        self.value = value
         self.expression = expression
         self.body = body
     }

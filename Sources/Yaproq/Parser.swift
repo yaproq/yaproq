@@ -111,23 +111,25 @@ extension Parser {
     }
 
     private func forStatement() throws -> Statement {
-        guard let variable = try expression().expression as? VariableExpression else {
-            throw RuntimeError("Expecting a variable name.", line: previous.line, column: previous.column)
-        }
+        var key: AnyExpression?
+        let element = try expression()
+        var value: AnyExpression
 
-        let keyword: Token
-
-        if match(.in) {
-            keyword = previous
+        if match(.comma) {
+            key = element
+            value = try expression()
         } else {
-            throw RuntimeError(
-                "Expecting `\(Token.Kind.in.rawValue)` after a variable name.",
-                line: previous.line,
-                column: previous.column
-            )
+            value = element
         }
 
-        return ForStatement(variable: variable, keyword: keyword, expression: try expression(), body: try statement())
+        try consume(.in, elseErrorMessage: "Expecting `\(Token.Kind.in.rawValue)` after a variable name.")
+
+        return ForStatement(
+            key: key,
+            value: value,
+            expression: try expression(),
+            body: try statement()
+        )
     }
 
     private func ifStatement() throws -> Statement {

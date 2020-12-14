@@ -347,7 +347,7 @@ extension Interpreter: ExpressionVisitor {
 
     func visitVariable(expression: VariableExpression) throws -> Any? {
         let token = expression.name
-        let value = try environment.valueForVariable(with: expression.name)
+        let value = try environment.valueForVariable(with: token)
 
         if let index = expression.index {
             let index = try evaluate(expression: index)
@@ -426,26 +426,61 @@ extension Interpreter: StatementVisitor {
     }
 
     func visitFor(statement: ForStatement) throws {
-        let blockStatement = statement.body as! BlockStatement
+        guard let blockStatement = statement.body as? BlockStatement else { return }
+
+        func assign(value: Any, for key: Any) throws {
+            blockStatement.variables = .init()
+
+            if var statementKey = statement.key?.expression as? VariableExpression {
+                statementKey.name.literal = key
+                blockStatement.variables.append(statementKey)
+            } else {
+                // TODO: raise an exception
+            }
+
+            if var statementValue = statement.value.expression as? VariableExpression {
+                statementValue.name.literal = value
+                blockStatement.variables.append(statementValue)
+            } else {
+                // TODO: raise an exception
+            }
+
+            try visitBlock(statement: blockStatement)
+        }
 
         if let expression = statement.expression.expression as? BinaryExpression {
-            if let range = try visitBinary(expression: expression) as? CountableClosedRange<Int> {
-                for index in range {
-                    statement.variable.name.literal = index
-                    blockStatement.variables = [statement.variable]
-                    try visitBlock(statement: blockStatement)
+            let value = try visitBinary(expression: expression)
+
+            if let closedRange = value as? CountableClosedRange<Int> {
+                for (key, value) in closedRange.enumerated() {
+                    try assign(value: value, for: key)
                 }
-            } else if let range = try visitBinary(expression: expression) as? CountableRange<Int> {
-                for index in range {
-                    statement.variable.name.literal = index
-                    blockStatement.variables = [statement.variable]
-                    try visitBlock(statement: blockStatement)
+            } else if let range = value as? CountableRange<Int> {
+                for (key, value) in range.enumerated() {
+                    try assign(value: value, for: key)
                 }
             } else {
                 // TODO: handle an edge case
             }
         } else if let expression = statement.expression.expression as? VariableExpression {
-            // TODO: implement for a Collection type
+            let value = try visitVariable(expression: expression)
+
+            if let array = value as? Array<Any> {
+                for (key, value) in array.enumerated() {
+                    try assign(value: value, for: key)
+                }
+            } else if let dictionary = value as? Dictionary<AnyHashable, Any> {
+                for (key, value) in dictionary {
+                    try assign(value: value, for: key)
+                }
+            } else {
+                let token = expression.name
+                throw RuntimeError(
+                    "The `\(token.lexeme)` must be either an array or dictionary.",
+                    line: token.line,
+                    column: token.column
+                )
+            }
         }
     }
 
