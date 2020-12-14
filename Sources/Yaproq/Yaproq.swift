@@ -26,7 +26,7 @@ public final class Yaproq {
     }
 
     public func renderTemplate(at path: String, context: [String: Any] = .init()) throws -> String {
-        try renderTemplate(try loadTemplate(at: path))
+        try renderTemplate(try loadTemplate(at: path), context: context)
     }
 
     public func renderTemplate(_ template: String, context: [String: Any] = .init()) throws -> String {
