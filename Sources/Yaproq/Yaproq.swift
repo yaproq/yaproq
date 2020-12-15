@@ -16,7 +16,7 @@ public final class Yaproq {
         let fileManager = FileManager.default
         guard fileManager.fileExists(atPath: path),
             let data = fileManager.contents(atPath: path),
-            let source = String(data: data, encoding: .utf8) else { throw TemplateError("An invalid source.") }
+            let source = String(data: data, encoding: .utf8) else { throw TemplateError("An invalid template.") }
 
         return source
     }

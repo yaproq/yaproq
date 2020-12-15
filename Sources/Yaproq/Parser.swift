@@ -65,15 +65,19 @@ extension Parser {
                 if name == nil {
                     name = expression.name.lexeme
                 } else {
-                    throw SyntaxError("An invalid name for `block`.", line: previous.line, column: previous.column)
+                    break
                 }
             } else {
-                throw SyntaxError("An invalid name for `block`.", line: previous.line, column: previous.column)
+                break
             }
         }
 
         if name == nil {
-            throw SyntaxError("An invalid name for `block`.", line: previous.line, column: previous.column)
+            throw SyntaxError(
+                "An invalid name `\(name ?? "")` for `block`.",
+                line: previous.line,
+                column: previous.column
+            )
         }
 
         try consume(leftBrace, elseErrorMessage: "Expecting '\(leftBrace.rawValue)' after a `block` name.")

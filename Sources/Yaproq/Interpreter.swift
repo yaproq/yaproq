@@ -17,11 +17,13 @@ final class Interpreter {
 
         if count > 0 {
             if !(statements.first is ExtendStatement) {
-                throw TemplateError("The 'extend' must the first statement in a template file.")
+                throw TemplateError(
+                    "The '\(Token.Kind.extend.rawValue)' must the first statement in a template file."
+                )
             }
 
             if count > 1 {
-                throw TemplateError("Extending multiple template files is not supported.")
+                throw TemplateError("Extending multiple templates is not supported.")
             }
         }
 
@@ -162,7 +164,7 @@ extension Interpreter: ExpressionVisitor {
                 let left = try environment.valueForVariable(with: expression.identifierToken) as? Double,
                 let right = try evaluate(expression: expression.value) as? Double else {
                 throw RuntimeError(
-                    "Operands must be numbers.",
+                    "The operands must be numbers.",
                     line: expression.operatorToken.line,
                     column: expression.operatorToken.column
                 )
@@ -189,7 +191,7 @@ extension Interpreter: ExpressionVisitor {
             return value
         default:
             throw RuntimeError(
-                "An invalid operator `\(expression.operatorToken.kind.rawValue)`.",
+                "An invalid operator `\(expression.operatorToken.lexeme)`.",
                 line: expression.operatorToken.line,
                 column: expression.operatorToken.column
             )
@@ -228,7 +230,7 @@ extension Interpreter: ExpressionVisitor {
 
             let token = expression.token
             throw RuntimeError(
-                "Operands must be either integers or variables that evaluate to integers.",
+                "The operands must be either integers or variables that evaluate to integers.",
                 line: token.line,
                 column: token.column
             )
@@ -239,36 +241,36 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? String, let right = right as? String { return left > right }
             if let left = left as? Date, let right = right as? Date { return left > right }
             let token = expression.token
-            throw RuntimeError("Operands must be comparable.", line: token.line, column: token.column)
+            throw RuntimeError("The operands must be comparable.", line: token.line, column: token.column)
         case .greaterOrEqual:
             if let left = left as? Double, let right = right as? Double { return left >= right }
             if let left = left as? String, let right = right as? String { return left >= right }
             if let left = left as? Date, let right = right as? Date { return left >= right }
             let token = expression.token
-            throw RuntimeError("Operands must be comparable.", line: token.line, column: token.column)
+            throw RuntimeError("The operands must be comparable.", line: token.line, column: token.column)
         case .less:
             if let left = left as? Double, let right = right as? Double { return left < right }
             if let left = left as? String, let right = right as? String { return left < right }
             if let left = left as? Date, let right = right as? Date { return left < right }
             let token = expression.token
-            throw RuntimeError("Operands must be comparable.", line: token.line, column: token.column)
+            throw RuntimeError("The operands must be comparable.", line: token.line, column: token.column)
         case .lessOrEqual:
             if let left = left as? Double, let right = right as? Double { return left <= right }
             if let left = left as? String, let right = right as? String { return left <= right }
             if let left = left as? Date, let right = right as? Date { return left <= right }
             let token = expression.token
-            throw RuntimeError("Operands must be comparable.", line: token.line, column: token.column)
+            throw RuntimeError("The operands must be comparable.", line: token.line, column: token.column)
         case .minus:
             if let left = left as? Double, let right = right as? Double { return left - right }
             let token = expression.token
-            throw RuntimeError("Operands must be numbers.", line: token.line, column: token.column)
+            throw RuntimeError("The operands must be numbers.", line: token.line, column: token.column)
         case .percent:
             if let left = left as? Double, let right = right as? Double {
                 return left.truncatingRemainder(dividingBy: right)
             }
 
             let token = expression.token
-            throw RuntimeError("Operands must be numbers.", line: token.line, column: token.column)
+            throw RuntimeError("The operands must be numbers.", line: token.line, column: token.column)
         case .plus:
             if let left = left as? Double, let right = right as? Double {
                 return left + right
@@ -277,27 +279,27 @@ extension Interpreter: ExpressionVisitor {
             }
 
             let token = expression.token
-            throw RuntimeError("Operands must be two numbers or strings.", line: token.line, column: token.column)
+            throw RuntimeError("The operands must be two numbers or strings.", line: token.line, column: token.column)
         case .power:
             if let left = left as? Double, let right = right as? Double {
                 return pow(left, right)
             }
 
             let token = expression.token
-            throw RuntimeError("Operands must be numbers.", line: token.line, column: token.column)
+            throw RuntimeError("The operands must be numbers.", line: token.line, column: token.column)
         case .questionQuestion:
             return left ?? right
         case .slash:
             if let left = left as? Double, let right = right as? Double { return left / right }
             let token = expression.token
-            throw RuntimeError("Operands must be numbers.", line: token.line, column: token.column)
+            throw RuntimeError("The operands must be numbers.", line: token.line, column: token.column)
         case .star:
             if let left = left as? Double, let right = right as? Double { return left * right }
             let token = expression.token
-            throw RuntimeError("Operands must be numbers.", line: token.line, column: token.column)
+            throw RuntimeError("The operands must be numbers.", line: token.line, column: token.column)
         default:
             let token = expression.token
-            throw RuntimeError("Invalid operator.", line: token.line, column: token.column)
+            throw RuntimeError("An invalid operator `\(token.lexeme)`.", line: token.line, column: token.column)
         }
     }
 
@@ -338,10 +340,10 @@ extension Interpreter: ExpressionVisitor {
         case .minus:
             if let right = right as? Double { return -right }
             let token = expression.token
-            throw RuntimeError("Operand must be a number.", line: token.line, column: token.column)
+            throw RuntimeError("The operand must be a number.", line: token.line, column: token.column)
         default:
             let token = expression.token
-            throw RuntimeError("Invalid operator.", line: token.line, column: token.column)
+            throw RuntimeError("An invalid operator `\(token.lexeme)`.", line: token.line, column: token.column)
         }
     }
 
@@ -357,7 +359,7 @@ extension Interpreter: ExpressionVisitor {
                 throw RuntimeError("The index must be an integer.", line: token.line, column: token.column)
             } else if let dictionary = value as? Dictionary<AnyHashable, Any> {
                 if let key = index as? AnyHashable { return dictionary[key] }
-                throw RuntimeError("The key must conform to AnyHashable.", line: token.line, column: token.column)
+                throw RuntimeError("The key must be hashable.", line: token.line, column: token.column)
             }
 
             throw RuntimeError(
@@ -420,7 +422,11 @@ extension Interpreter: StatementVisitor {
                 try extendFile(at: path)
             } else {
                 let token = expression.name
-                throw RuntimeError("This is not a valid path.", line: token.line, column: token.column)
+                throw RuntimeError(
+                    "`\(token.literal ?? "")` is not a valid path.",
+                    line: token.line,
+                    column: token.column
+                )
             }
         }
     }
@@ -516,7 +522,11 @@ extension Interpreter: StatementVisitor {
                 }
             } else {
                 let token = expression.name
-                throw RuntimeError("This is not a valid path.", line: token.line, column: token.column)
+                throw RuntimeError(
+                    "`\(token.literal ?? "")` is not a valid path.",
+                    line: token.line,
+                    column: token.column
+                )
             }
         }
     }
