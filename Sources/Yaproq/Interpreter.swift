@@ -431,18 +431,20 @@ extension Interpreter: StatementVisitor {
         func assign(value: Any, for key: Any) throws {
             blockStatement.variables = .init()
 
-            if var statementKey = statement.key?.expression as? VariableExpression {
-                statementKey.name.literal = key
-                blockStatement.variables.append(statementKey)
-            } else {
-                // TODO: raise an exception
+            if let statementKey = statement.key {
+                if var statementKey = statementKey.expression as? VariableExpression {
+                    statementKey.name.literal = key
+                    blockStatement.variables.append(statementKey)
+                } else {
+                    throw RuntimeError("Expecting a variable.", line: 0, column: 0)
+                }
             }
 
             if var statementValue = statement.value.expression as? VariableExpression {
                 statementValue.name.literal = value
                 blockStatement.variables.append(statementValue)
             } else {
-                // TODO: raise an exception
+                throw RuntimeError("Expecting a variable.", line: 0, column: 0)
             }
 
             try visitBlock(statement: blockStatement)
@@ -460,7 +462,12 @@ extension Interpreter: StatementVisitor {
                     try assign(value: value, for: key)
                 }
             } else {
-                // TODO: handle an edge case
+                let token = expression.token
+                throw RuntimeError(
+                    "The `\(token.lexeme)` is not a valid operator.",
+                    line: token.line,
+                    column: token.column
+                )
             }
         } else if let expression = statement.expression.expression as? VariableExpression {
             let value = try visitVariable(expression: expression)
