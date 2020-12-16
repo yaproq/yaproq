@@ -357,13 +357,10 @@ extension Interpreter: ExpressionVisitor {
             if let array = value as? Array<Int> {
                 if let index = index as? Double { return array[Int(index)] }
                 throw RuntimeError("The index must be an integer.", line: token.line, column: token.column)
-            } else if let dictionary = value as? Dictionary<AnyHashable, Any> {
-                if let key = index as? AnyHashable { return dictionary[key] }
-                throw RuntimeError("The key must be hashable.", line: token.line, column: token.column)
             }
 
             throw RuntimeError(
-                "The `\(token.lexeme)` must be either an array or dictionary.",
+                "The `\(token.lexeme)` must be an array.",
                 line: token.line,
                 column: token.column
             )
@@ -478,18 +475,14 @@ extension Interpreter: StatementVisitor {
         } else if let expression = statement.expression.expression as? VariableExpression {
             let value = try visitVariable(expression: expression)
 
-            if let array = value as? Array<Any> {
+            if let array = value as? Array<Encodable> {
                 for (key, value) in array.enumerated() {
-                    try assign(value: value, for: key)
-                }
-            } else if let dictionary = value as? Dictionary<AnyHashable, Any> {
-                for (key, value) in dictionary {
                     try assign(value: value, for: key)
                 }
             } else {
                 let token = expression.name
                 throw RuntimeError(
-                    "The `\(token.lexeme)` must be either an array or dictionary.",
+                    "The `\(token.lexeme)` must be an array.",
                     line: token.line,
                     column: token.column
                 )

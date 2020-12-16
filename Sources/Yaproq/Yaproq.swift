@@ -21,15 +21,15 @@ public final class Yaproq {
         return source
     }
 
-    public func renderTemplate(named name: String, context: [String: Any] = .init()) throws -> String {
+    public func renderTemplate(named name: String, context: [String: Encodable] = .init()) throws -> String {
         try renderTemplate(at: configuration.directoryPath + name, context: context)
     }
 
-    public func renderTemplate(at path: String, context: [String: Any] = .init()) throws -> String {
+    public func renderTemplate(at path: String, context: [String: Encodable] = .init()) throws -> String {
         try renderTemplate(try loadTemplate(at: path), context: context)
     }
 
-    public func renderTemplate(_ template: String, context: [String: Any] = .init()) throws -> String {
+    public func renderTemplate(_ template: String, context: [String: Encodable] = .init()) throws -> String {
         for (name, value) in context { try interpreter.environment.defineVariable(named: name, with: value) }
         interpreter.statements = try parse(template)
 
