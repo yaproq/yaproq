@@ -11,7 +11,7 @@ final class TemplateErrorTests: BaseTests {
         XCTAssertEqual(error.errorDescription, error.message)
 
         // Arrange
-        let message = "An invalid source."
+        let message = "An invalid template."
 
         // Act
         error = TemplateError(message)

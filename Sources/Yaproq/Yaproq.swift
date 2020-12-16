@@ -8,17 +8,17 @@ public final class Yaproq {
         self.configuration = configuration
     }
 
-    public func loadTemplate(named name: String) throws -> String {
+    public func loadTemplate(named name: String) throws -> Template {
         try loadTemplate(at: configuration.directoryPath + name)
     }
 
-    public func loadTemplate(at path: String) throws -> String {
+    public func loadTemplate(at path: String) throws -> Template {
         let fileManager = FileManager.default
         guard fileManager.fileExists(atPath: path),
             let data = fileManager.contents(atPath: path),
             let source = String(data: data, encoding: .utf8) else { throw TemplateError("An invalid template.") }
 
-        return source
+        return Template(stringLiteral: source)
     }
 
     public func renderTemplate(named name: String, context: [String: Encodable] = .init()) throws -> String {
@@ -29,15 +29,15 @@ public final class Yaproq {
         try renderTemplate(try loadTemplate(at: path), context: context)
     }
 
-    public func renderTemplate(_ template: String, context: [String: Encodable] = .init()) throws -> String {
+    public func renderTemplate(_ template: Template, context: [String: Encodable] = .init()) throws -> String {
         for (name, value) in context { try interpreter.environment.defineVariable(named: name, with: value) }
         interpreter.statements = try parse(template)
 
         return try interpreter.interpret()
     }
 
-    func parse(_ source: String) throws -> [Statement] {
-        let lexer = Lexer(source: source)
+    func parse(_ template: Template) throws -> [Statement] {
+        let lexer = Lexer(template: template)
         let tokens = try lexer.scan()
         let parser = Parser(tokens: tokens)
 

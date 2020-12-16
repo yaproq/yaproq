@@ -372,15 +372,15 @@ extension Interpreter: ExpressionVisitor {
 
 extension Interpreter {
     private func extendFile(at path: String) throws {
-        let source: String
+        let template: Template
 
         do {
-            source = try templating.loadTemplate(named: path)
+            template = try templating.loadTemplate(named: path)
         } catch {
-            source = try templating.loadTemplate(at: path)
+            template = try templating.loadTemplate(at: path)
         }
 
-        let statements = try templating.parse(source)
+        let statements = try templating.parse(template)
         self.statements.removeFirst()
         self.statements = statements + self.statements
         output = try interpret()

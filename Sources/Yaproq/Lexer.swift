@@ -1,5 +1,5 @@
 final class Lexer {
-    let source: String
+    let template: Template
     private let count: Int
     private let delimiters: [Delimiter]
 
@@ -11,9 +11,9 @@ final class Lexer {
     private var currentDelimiter: Delimiter?
     private lazy var tokens: [Token] = .init()
 
-    init(source: String) {
-        self.source = source
-        count = source.count
+    init(template: Template) {
+        self.template = template
+        count = template.source.count
         delimiters = Delimiter.allCases
     }
 }
@@ -56,6 +56,7 @@ extension Lexer {
     func substring(from start: Int, to end: Int) -> String {
         if start < 0 || end < 0 || start > end || start > count { return Token.Kind.eof.rawValue }
         let end = end > count ? count : end
+        let source = template.source
         let lowerBound = source.index(source.startIndex, offsetBy: start)
         let upperBound = source.index(source.startIndex, offsetBy: end)
         let range = lowerBound..<upperBound
