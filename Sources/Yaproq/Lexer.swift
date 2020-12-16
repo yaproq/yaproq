@@ -38,9 +38,7 @@ extension Lexer {
             )
         }
 
-        let kind: Token.Kind = .eof
-        let token = Token(kind: kind, lexeme: kind.rawValue, line: line, column: column)
-        tokens.append(token)
+        addToken(kind: .eof, line: line, column: column)
 
         return tokens
     }
