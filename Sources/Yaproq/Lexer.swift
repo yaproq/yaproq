@@ -38,7 +38,7 @@ extension Lexer {
             )
         }
 
-        addToken(kind: .eof, line: line, column: column)
+        addToken(kind: .eof)
 
         return tokens
     }
