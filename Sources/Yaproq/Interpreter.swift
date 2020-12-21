@@ -376,12 +376,8 @@ extension Interpreter {
 
         do {
             template = try templating.loadTemplate(named: path)
-        } catch {
-            if error is TemplateError {
-                template = try templating.loadTemplate(at: path)
-            } else {
-                throw error
-            }
+        } catch is TemplateError {
+            template = try templating.loadTemplate(at: path)
         }
 
         let statements = try templating.parse(template)
@@ -499,12 +495,8 @@ extension Interpreter: StatementVisitor {
             if let path = expression.token.literal as? String {
                 do {
                     output = try templating.renderTemplate(named: path)
-                } catch {
-                    if error is TemplateError {
-                        output = try templating.renderTemplate(at: path)
-                    } else {
-                        throw error
-                    }
+                } catch is TemplateError {
+                    output = try templating.renderTemplate(at: path)
                 }
             } else {
                 let token = expression.token
@@ -518,7 +510,7 @@ extension Interpreter: StatementVisitor {
             if let path = try visitVariable(expression: expression) as? String {
                 do {
                     output = try templating.renderTemplate(named: path)
-                } catch {
+                } catch is TemplateError {
                     output = try templating.renderTemplate(at: path)
                 }
             } else {
