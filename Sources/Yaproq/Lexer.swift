@@ -68,6 +68,10 @@ extension Lexer {
         (character >= "a" && character <= "z") || (character >= "A" && character <= "Z") || character == "_"
     }
 
+    private func isAlphaNumeric(_ character: String) -> Bool {
+        isAlpha(character) || isNumeric(character)
+    }
+
     private func isNumeric(_ character: String) -> Bool {
         Int(character) != nil
     }
@@ -214,7 +218,7 @@ extension Lexer {
     }
 
     private func addIdentifierToken() throws {
-        while isAlpha(peek()) && !isAtEnd { advance() }
+        while isAlphaNumeric(peek()) && !isAtEnd { advance() }
         let lexeme = substring(from: start, to: current)
 
         if let kind = Token.Kind(rawValue: lexeme), Token.Kind.keywords.contains(kind) {
