@@ -218,8 +218,21 @@ extension Lexer {
     }
 
     private func addIdentifierToken() throws {
-        while isAlphaNumeric(peek()) && !isAtEnd { advance() }
+        let dot = Token.Kind.dot.rawValue
+
+        while (isAlphaNumeric(peek()) || peek() == dot) && !isAtEnd {
+            if character(at: current - 1) == dot && peek() == dot {
+                throw SyntaxError("An unexpected character `\(dot)`.", line: line, column: column)
+            }
+
+            advance()
+        }
+
         let lexeme = substring(from: start, to: current)
+
+        if !lexeme.isEmpty && String(lexeme.last!) == dot {
+            throw SyntaxError("An unexpected character `\(dot)`.", line: line, column: column)
+        }
 
         if let kind = Token.Kind(rawValue: lexeme), Token.Kind.keywords.contains(kind) {
             if Token.Kind.blockStartKeywords.contains(kind) {

@@ -30,7 +30,7 @@ public final class Yaproq {
     }
 
     public func renderTemplate(_ template: Template, context: [String: Encodable] = .init()) throws -> String {
-        for (name, value) in context { try interpreter.environment.defineVariable(named: name, with: value) }
+        for (name, value) in context { interpreter.environment.setVariable(named: name, with: value) }
         interpreter.statements = try parse(template)
 
         return try interpreter.interpret()

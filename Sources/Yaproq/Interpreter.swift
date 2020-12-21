@@ -37,7 +37,10 @@ final class Interpreter {
             }
         }
 
-        return output
+        let result = output
+        output = ""
+
+        return result
     }
 
     private func processBlock(statements: inout [Statement]) {
@@ -475,7 +478,7 @@ extension Interpreter: StatementVisitor {
         } else if let expression = statement.expression.expression as? VariableExpression {
             let value = try visitVariable(expression: expression)
 
-            if let array = value as? Array<Encodable> {
+            if let array = value as? Array<Any> {
                 for (key, value) in array.enumerated() {
                     try assign(value: value, for: key)
                 }
