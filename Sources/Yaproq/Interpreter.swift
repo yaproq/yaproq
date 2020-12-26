@@ -357,7 +357,7 @@ extension Interpreter: ExpressionVisitor {
         if let index = expression.index {
             let index = try evaluate(expression: index)
 
-            if let array = value as? Array<Int> {
+            if let array = value as? Array<Any> {
                 if let index = index as? Double { return array[Int(index)] }
                 throw RuntimeError("The index must be an integer.", line: token.line, column: token.column)
             }
@@ -461,11 +461,11 @@ extension Interpreter: StatementVisitor {
 
             if let closedRange = value as? CountableClosedRange<Int> {
                 for (key, value) in closedRange.enumerated() {
-                    try assign(value: value, for: key)
+                    try assign(value: value, for: Double(key))
                 }
             } else if let range = value as? CountableRange<Int> {
                 for (key, value) in range.enumerated() {
-                    try assign(value: value, for: key)
+                    try assign(value: value, for: Double(key))
                 }
             } else {
                 let token = expression.token
@@ -480,7 +480,7 @@ extension Interpreter: StatementVisitor {
 
             if let array = value as? Array<Any> {
                 for (key, value) in array.enumerated() {
-                    try assign(value: value, for: key)
+                    try assign(value: value, for: Double(key))
                 }
             } else {
                 let token = expression.name
