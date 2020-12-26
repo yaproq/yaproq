@@ -83,7 +83,7 @@ extension Interpreter {
         if left == nil && right == nil {
             return true
         } else if let left = left as? AnyHashable, let right = right as? AnyHashable {
-            return left == right
+            return left == right || left.description == right.description
         }
 
         return false
