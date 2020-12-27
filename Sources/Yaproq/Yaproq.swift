@@ -2,10 +2,11 @@ import Foundation
 
 public final class Yaproq {
     public let configuration: Configuration
-    private lazy var interpreter = Interpreter(templating: self)
+    var environment: Environment
 
     public init(configuration: Configuration = .init()) {
         self.configuration = configuration
+        environment = .init()
     }
 
     public func loadTemplate(named name: String) throws -> Template {
@@ -30,8 +31,8 @@ public final class Yaproq {
     }
 
     public func renderTemplate(_ template: Template, context: [String: Encodable] = .init()) throws -> String {
-        for (name, value) in context { interpreter.environment.setVariable(named: name, with: value) }
-        interpreter.statements = try parse(template)
+        for (name, value) in context { environment.setVariable(named: name, with: value) }
+        let interpreter = Interpreter(templating: self, statements: try parse(template))
 
         return try interpreter.interpret()
     }

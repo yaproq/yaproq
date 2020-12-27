@@ -2,13 +2,12 @@ import Foundation
 
 final class Interpreter {
     let templating: Yaproq
-    var environment: Environment
     private var output = ""
-    lazy var statements: [Statement] = .init()
+    private var statements: [Statement]
 
-    init(templating: Yaproq, environment: Environment = .init()) {
+    init(templating: Yaproq, statements: [Statement] = .init()) {
         self.templating = templating
-        self.environment = environment
+        self.statements = statements
     }
 
     func interpret() throws -> String {
@@ -37,10 +36,7 @@ final class Interpreter {
             }
         }
 
-        let result = output
-        output = ""
-
-        return result
+        return output
     }
 
     private func processBlock(statements: inout [Statement]) {
@@ -121,9 +117,9 @@ extension Interpreter {
     }
 
     private func execute(statements: [Statement], in environment: Environment) throws {
-        let previousEnvironment = self.environment
-        self.environment = environment
-        defer { self.environment = previousEnvironment }
+        let previousEnvironment = templating.environment
+        templating.environment = environment
+        defer { templating.environment = previousEnvironment }
         for statement in statements { try execute(statement: statement) }
     }
 }
@@ -155,7 +151,7 @@ extension Interpreter: ExpressionVisitor {
         switch expression.operatorToken.kind {
         case .equal:
             let value = try evaluate(expression: expression.value)
-            try environment.assign(value: value, toVariableWith: expression.identifierToken)
+            try templating.environment.assign(value: value, toVariableWith: expression.identifierToken)
             return value
         case .minusEqual,
              .percentEqual,
@@ -164,7 +160,7 @@ extension Interpreter: ExpressionVisitor {
              .slashEqual,
              .starEqual:
             guard
-                let left = try environment.valueForVariable(with: expression.identifierToken) as? Double,
+                let left = try templating.environment.valueForVariable(with: expression.identifierToken) as? Double,
                 let right = try evaluate(expression: expression.value) as? Double else {
                 throw RuntimeError(
                     "The operands must be numbers.",
@@ -189,7 +185,7 @@ extension Interpreter: ExpressionVisitor {
                 value = left * right
             }
 
-            try environment.assign(value: value, toVariableWith: expression.identifierToken)
+            try templating.environment.assign(value: value, toVariableWith: expression.identifierToken)
 
             return value
         default:
@@ -352,7 +348,7 @@ extension Interpreter: ExpressionVisitor {
 
     func visitVariable(expression: VariableExpression) throws -> Any? {
         let token = expression.name
-        let value = try environment.valueForVariable(with: token)
+        let value = try templating.environment.valueForVariable(with: token)
 
         if let index = expression.index {
             let index = try evaluate(expression: index)
@@ -392,7 +388,7 @@ extension Interpreter {
 
 extension Interpreter: StatementVisitor {
     func visitBlock(statement: BlockStatement) throws {
-        let environment = Environment(parent: self.environment)
+        let environment = Environment(parent: templating.environment)
 
         for variable in statement.variables {
             try environment.defineVariable(for: variable.name, with: variable.name.literal)
@@ -497,9 +493,9 @@ extension Interpreter: StatementVisitor {
         if let expression = statement.expression.expression as? LiteralExpression {
             if let path = expression.token.literal as? String {
                 do {
-                    output = try templating.renderTemplate(named: path)
+                    output += try templating.renderTemplate(named: path)
                 } catch is TemplateError {
-                    output = try templating.renderTemplate(at: path)
+                    output += try templating.renderTemplate(at: path)
                 }
             } else {
                 let token = expression.token
@@ -512,9 +508,9 @@ extension Interpreter: StatementVisitor {
         } else if let expression = statement.expression.expression as? VariableExpression {
             if let path = try visitVariable(expression: expression) as? String {
                 do {
-                    output = try templating.renderTemplate(named: path)
+                    output += try templating.renderTemplate(named: path)
                 } catch is TemplateError {
-                    output = try templating.renderTemplate(at: path)
+                    output += try templating.renderTemplate(at: path)
                 }
             } else {
                 let token = expression.name
@@ -557,7 +553,7 @@ extension Interpreter: StatementVisitor {
     func visitVariable(statement: VariableStatement) throws {
         var value: Any?
         if let expression = statement.expression { value = try evaluate(expression: expression) }
-        try environment.defineVariable(for: statement.token, with: value)
+        try templating.environment.defineVariable(for: statement.token, with: value)
     }
 
     func visitWhile(statement: WhileStatement) throws {
