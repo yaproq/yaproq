@@ -13,31 +13,31 @@ public final class Yaproq {
         try loadTemplate(at: configuration.directoryPath + name)
     }
 
-    public func loadTemplate(at path: String) throws -> Template {
+    public func loadTemplate(at filePath: String) throws -> Template {
         let fileManager = FileManager.default
-        guard fileManager.fileExists(atPath: path),
-            let data = fileManager.contents(atPath: path),
+        guard fileManager.fileExists(atPath: filePath),
+            let data = fileManager.contents(atPath: filePath),
             let source = String(data: data, encoding: .utf8) else { throw TemplateError("An invalid template.") }
 
-        return Template(stringLiteral: source)
+        return Template(source, filePath: filePath)
     }
 
     public func renderTemplate(named name: String, context: [String: Encodable] = .init()) throws -> String {
         try renderTemplate(at: configuration.directoryPath + name, context: context)
     }
 
-    public func renderTemplate(at path: String, context: [String: Encodable] = .init()) throws -> String {
-        try renderTemplate(try loadTemplate(at: path), context: context)
+    public func renderTemplate(at filePath: String, context: [String: Encodable] = .init()) throws -> String {
+        try renderTemplate(try loadTemplate(at: filePath), context: context)
     }
 
     public func renderTemplate(_ template: Template, context: [String: Encodable] = .init()) throws -> String {
         for (name, value) in context { environment.setVariable(named: name, with: value) }
-        let interpreter = Interpreter(templating: self, statements: try parse(template))
+        let interpreter = Interpreter(templating: self, statements: try parseTemplate(template))
 
         return try interpreter.interpret()
     }
 
-    func parse(_ template: Template) throws -> [Statement] {
+    func parseTemplate(_ template: Template) throws -> [Statement] {
         let lexer = Lexer(template: template)
         let tokens = try lexer.scan()
         let parser = Parser(tokens: tokens)
@@ -79,7 +79,7 @@ extension Yaproq {
             )
 
             if updatedRawDelimiters.count != initialRawDelimiters.count {
-                throw TemplateError("Delimiters must be unique.")
+                throw YaproqError("Delimiters must be unique.")
             }
         }
     }

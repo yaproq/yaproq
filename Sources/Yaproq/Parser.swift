@@ -40,7 +40,7 @@ extension Parser {
     @discardableResult
     private func consume(_ kind: Token.Kind, elseErrorMessage message: String) throws -> Token {
         if check(kind) { return advance() }
-        throw SyntaxError(message, line: peek.line, column: peek.column)
+        throw SyntaxError(message, filePath: peek.filePath, line: peek.line, column: peek.column)
     }
 
     private func match(_ kinds: Token.Kind...) -> Bool {
@@ -75,6 +75,7 @@ extension Parser {
         if name == nil {
             throw SyntaxError(
                 "An invalid name `\(name ?? "")` for `block`.",
+                filePath: previous.filePath,
                 line: previous.line,
                 column: previous.column
             )
@@ -228,7 +229,12 @@ extension Parser {
                 )
             }
 
-            throw SyntaxError("An invalid assignment target.", line: previous.line, column: previous.column)
+            throw SyntaxError(
+                "An invalid assignment target.",
+                filePath: previous.filePath,
+                line: previous.line,
+                column: previous.column
+            )
         }
 
         return expression
@@ -329,7 +335,7 @@ extension Parser {
         if match(.false, .nil, .number, .string, .true) { return literalExpression() }
         if match(.identifier) { return try variableExpression() }
         if match(.leftParenthesis) { return try groupingExpression() }
-        throw SyntaxError("Expecting an expression.", line: peek.line, column: peek.column)
+        throw SyntaxError("Expecting an expression.", filePath: peek.filePath, line: peek.line, column: peek.column)
     }
 
     private func ternaryExpression() throws -> AnyExpression {
@@ -359,6 +365,7 @@ extension Parser {
             if !isTernary {
                 throw SyntaxError(
                     "An unexpected character `\(leftToken.kind.rawValue)`.",
+                    filePath: leftToken.filePath,
                     line: leftToken.line,
                     column: leftToken.column
                 )

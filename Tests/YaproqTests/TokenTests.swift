@@ -7,16 +7,18 @@ final class TokenTests: BaseTests {
         let kind = Token.Kind.number
         let literal = 1
         let lexeme = String(literal)
+        let filePath = "/"
         let line = 1
         let column = 3
 
         // Act
-        let token = Token(kind: kind, lexeme: lexeme, literal: literal, line: line, column: column)
+        let token = Token(kind: kind, lexeme: lexeme, literal: literal, filePath: filePath, line: line, column: column)
 
         // Assert
         XCTAssertEqual(token.kind, kind)
         XCTAssertEqual(token.lexeme, lexeme)
         XCTAssertEqual(token.literal! as! Int, literal)
+        XCTAssertEqual(token.filePath, filePath)
         XCTAssertEqual(token.line, line)
         XCTAssertEqual(token.column, column)
     }

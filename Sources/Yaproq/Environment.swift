@@ -19,7 +19,12 @@ final class Environment {
         let name = token.lexeme
 
         if variableNames.contains(name) {
-            throw RuntimeError("A variable '\(name)' already exists.", line: token.line, column: token.column)
+            throw RuntimeError(
+                "A variable '\(name)' already exists.",
+                filePath: token.filePath,
+                line: token.line,
+                column: token.column
+            )
         }
 
         variableNames.insert(name)
@@ -34,7 +39,12 @@ final class Environment {
         } else if let parent = parent {
             try parent.assign(value: value, toVariableWith: token)
         } else {
-            throw RuntimeError("An undefined variable '\(name)'.", line: token.line, column: token.column)
+            throw RuntimeError(
+                "An undefined variable '\(name)'.",
+                filePath: token.filePath,
+                line: token.line,
+                column: token.column
+            )
         }
     }
 
@@ -63,6 +73,11 @@ final class Environment {
         }
 
         if let parent = parent { return try parent.valueForVariable(with: token) }
-        throw RuntimeError("An undefined variable '\(name)'.", line: token.line, column: token.column)
+        throw RuntimeError(
+            "An undefined variable '\(name)'.",
+            filePath: token.filePath,
+            line: token.line,
+            column: token.column
+        )
     }
 }

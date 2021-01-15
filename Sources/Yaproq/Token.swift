@@ -2,13 +2,15 @@ struct Token {
     let kind: Kind
     let lexeme: String
     var literal: Any?
+    let filePath: String?
     let line: Int
     let column: Int
 
-    init(kind: Kind, lexeme: String, literal: Any? = nil, line: Int, column: Int) {
+    init(kind: Kind, lexeme: String, literal: Any? = nil, filePath: String? = nil, line: Int, column: Int) {
         self.kind = kind
         self.lexeme = lexeme
         self.literal = literal
+        self.filePath = filePath
         self.line = line
         self.column = column
     }
@@ -32,6 +34,7 @@ extension Token: Equatable {
         lhs.kind == rhs.kind &&
         lhs.lexeme == rhs.lexeme &&
         String(describing: lhs.literal ?? "") == String(describing: rhs.literal ?? "") &&
+        lhs.filePath == rhs.filePath &&
         lhs.line == rhs.line &&
         lhs.column == rhs.column
     }

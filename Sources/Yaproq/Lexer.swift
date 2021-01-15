@@ -33,6 +33,7 @@ extension Lexer {
         if let delimiter = currentDelimiter {
             throw SyntaxError(
                 "No matching closing delimiter `\(delimiter.end)` is found.",
+                filePath: template.filePath,
                 line: line,
                 column: column
             )
@@ -212,7 +213,12 @@ extension Lexer {
             } else if isAlpha(character) || Token.Kind.super.rawValue.starts(with: character) {
                 try addIdentifierToken()
             } else {
-                throw SyntaxError("An unexpected character `\(character)`.", line: line, column: column)
+                throw SyntaxError(
+                    "An unexpected character `\(character)`.",
+                    filePath: template.filePath,
+                    line: line,
+                    column: column
+                )
             }
         }
     }
@@ -222,7 +228,12 @@ extension Lexer {
 
         while (isAlphaNumeric(peek()) || peek() == dot) && !isAtEnd {
             if character(at: current - 1) == dot && peek() == dot {
-                throw SyntaxError("An unexpected character `\(dot)`.", line: line, column: column)
+                throw SyntaxError(
+                    "An unexpected character `\(dot)`.",
+                    filePath: template.filePath,
+                    line: line,
+                    column: column
+                )
             }
 
             advance()
@@ -231,7 +242,12 @@ extension Lexer {
         let lexeme = substring(from: start, to: current)
 
         if !lexeme.isEmpty && String(lexeme.last!) == dot {
-            throw SyntaxError("An unexpected character `\(dot)`.", line: line, column: column)
+            throw SyntaxError(
+                "An unexpected character `\(dot)`.",
+                filePath: template.filePath,
+                line: line,
+                column: column
+            )
         }
 
         if let kind = Token.Kind(rawValue: lexeme), Token.Kind.keywords.contains(kind) {
@@ -287,7 +303,11 @@ extension Lexer {
 
     private func addStringToken() throws {
         while peek() != Token.Kind.quote.rawValue && !isAtEnd { advance() }
-        if isAtEnd { throw SyntaxError("An unterminated string.", line: line, column: column) }
+
+        if isAtEnd {
+            throw SyntaxError("An unterminated string.", filePath: template.filePath, line: line, column: column)
+        }
+
         advance()
         let lexeme = substring(from: start, to: current)
         let value = substring(from: start + 1, to: current - 1)
@@ -304,7 +324,13 @@ extension Lexer {
         let lexeme = lexeme == nil ? kind.rawValue : lexeme!
         let line = line == nil ? self.line : line!
         let column = column == nil ? self.column : column!
-        let token = Token(kind: kind, lexeme: lexeme, literal: literal, line: line, column: column)
+        let token = Token(
+            kind: kind,
+            lexeme: lexeme,
+            literal: literal,
+            filePath: template.filePath,
+            line: line, column: column
+        )
         tokens.append(token)
         start = current
     }

@@ -164,6 +164,7 @@ extension Interpreter: ExpressionVisitor {
                 let right = try evaluate(expression: expression.value) as? Double else {
                 throw RuntimeError(
                     "The operands must be numbers.",
+                    filePath: expression.operatorToken.filePath,
                     line: expression.operatorToken.line,
                     column: expression.operatorToken.column
                 )
@@ -191,6 +192,7 @@ extension Interpreter: ExpressionVisitor {
         default:
             throw RuntimeError(
                 "An invalid operator `\(expression.operatorToken.lexeme)`.",
+                filePath: expression.operatorToken.filePath,
                 line: expression.operatorToken.line,
                 column: expression.operatorToken.column
             )
@@ -230,6 +232,7 @@ extension Interpreter: ExpressionVisitor {
             let token = expression.token
             throw RuntimeError(
                 "The operands must be either integers or variables that evaluate to integers.",
+                filePath: token.filePath,
                 line: token.line,
                 column: token.column
             )
@@ -240,36 +243,66 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? String, let right = right as? String { return left > right }
             if let left = left as? Date, let right = right as? Date { return left > right }
             let token = expression.token
-            throw RuntimeError("The operands must be comparable.", line: token.line, column: token.column)
+            throw RuntimeError(
+                "The operands must be comparable.",
+                filePath: token.filePath,
+                line: token.line,
+                column: token.column
+            )
         case .greaterOrEqual:
             if let left = left as? Double, let right = right as? Double { return left >= right }
             if let left = left as? String, let right = right as? String { return left >= right }
             if let left = left as? Date, let right = right as? Date { return left >= right }
             let token = expression.token
-            throw RuntimeError("The operands must be comparable.", line: token.line, column: token.column)
+            throw RuntimeError(
+                "The operands must be comparable.",
+                filePath: token.filePath,
+                line: token.line,
+                column: token.column
+            )
         case .less:
             if let left = left as? Double, let right = right as? Double { return left < right }
             if let left = left as? String, let right = right as? String { return left < right }
             if let left = left as? Date, let right = right as? Date { return left < right }
             let token = expression.token
-            throw RuntimeError("The operands must be comparable.", line: token.line, column: token.column)
+            throw RuntimeError(
+                "The operands must be comparable.",
+                filePath: token.filePath,
+                line: token.line,
+                column: token.column
+            )
         case .lessOrEqual:
             if let left = left as? Double, let right = right as? Double { return left <= right }
             if let left = left as? String, let right = right as? String { return left <= right }
             if let left = left as? Date, let right = right as? Date { return left <= right }
             let token = expression.token
-            throw RuntimeError("The operands must be comparable.", line: token.line, column: token.column)
+            throw RuntimeError(
+                "The operands must be comparable.",
+                filePath: token.filePath,
+                line: token.line,
+                column: token.column
+            )
         case .minus:
             if let left = left as? Double, let right = right as? Double { return left - right }
             let token = expression.token
-            throw RuntimeError("The operands must be numbers.", line: token.line, column: token.column)
+            throw RuntimeError(
+                "The operands must be numbers.",
+                filePath: token.filePath,
+                line: token.line,
+                column: token.column
+            )
         case .percent:
             if let left = left as? Double, let right = right as? Double {
                 return left.truncatingRemainder(dividingBy: right)
             }
 
             let token = expression.token
-            throw RuntimeError("The operands must be numbers.", line: token.line, column: token.column)
+            throw RuntimeError(
+                "The operands must be numbers.",
+                filePath: token.filePath,
+                line: token.line,
+                column: token.column
+            )
         case .plus:
             if let left = left as? Double, let right = right as? Double {
                 return left + right
@@ -278,27 +311,52 @@ extension Interpreter: ExpressionVisitor {
             }
 
             let token = expression.token
-            throw RuntimeError("The operands must be two numbers or strings.", line: token.line, column: token.column)
+            throw RuntimeError(
+                "The operands must be two numbers or strings.",
+                filePath: token.filePath,
+                line: token.line,
+                column: token.column
+            )
         case .power:
             if let left = left as? Double, let right = right as? Double {
                 return pow(left, right)
             }
 
             let token = expression.token
-            throw RuntimeError("The operands must be numbers.", line: token.line, column: token.column)
+            throw RuntimeError(
+                "The operands must be numbers.",
+                filePath: token.filePath,
+                line: token.line,
+                column: token.column
+            )
         case .questionQuestion:
             return left ?? right
         case .slash:
             if let left = left as? Double, let right = right as? Double { return left / right }
             let token = expression.token
-            throw RuntimeError("The operands must be numbers.", line: token.line, column: token.column)
+            throw RuntimeError(
+                "The operands must be numbers.",
+                filePath: token.filePath,
+                line: token.line,
+                column: token.column
+            )
         case .star:
             if let left = left as? Double, let right = right as? Double { return left * right }
             let token = expression.token
-            throw RuntimeError("The operands must be numbers.", line: token.line, column: token.column)
+            throw RuntimeError(
+                "The operands must be numbers.",
+                filePath: token.filePath,
+                line: token.line,
+                column: token.column
+            )
         default:
             let token = expression.token
-            throw RuntimeError("An invalid operator `\(token.lexeme)`.", line: token.line, column: token.column)
+            throw RuntimeError(
+                "An invalid operator `\(token.lexeme)`.",
+                filePath: token.filePath,
+                line: token.line,
+                column: token.column
+            )
         }
     }
 
@@ -339,10 +397,20 @@ extension Interpreter: ExpressionVisitor {
         case .minus:
             if let right = right as? Double { return -right }
             let token = expression.token
-            throw RuntimeError("The operand must be a number.", line: token.line, column: token.column)
+            throw RuntimeError(
+                "The operand must be a number.",
+                filePath: token.filePath,
+                line: token.line,
+                column: token.column
+            )
         default:
             let token = expression.token
-            throw RuntimeError("An invalid operator `\(token.lexeme)`.", line: token.line, column: token.column)
+            throw RuntimeError(
+                "An invalid operator `\(token.lexeme)`.",
+                filePath: token.filePath,
+                line: token.line,
+                column: token.column
+            )
         }
     }
 
@@ -355,11 +423,17 @@ extension Interpreter: ExpressionVisitor {
 
             if let array = value as? Array<Any> {
                 if let index = index as? Double { return array[Int(index)] }
-                throw RuntimeError("The index must be an integer.", line: token.line, column: token.column)
+                throw RuntimeError(
+                    "The index must be an integer.",
+                    filePath: token.filePath,
+                    line: token.line,
+                    column: token.column
+                )
             }
 
             throw RuntimeError(
                 "The `\(token.lexeme)` must be an array.",
+                filePath: token.filePath,
                 line: token.line,
                 column: token.column
             )
@@ -370,16 +444,16 @@ extension Interpreter: ExpressionVisitor {
 }
 
 extension Interpreter {
-    private func extendFile(at path: String) throws {
+    private func extendFile(at filePath: String) throws {
         let template: Template
 
         do {
-            template = try templating.loadTemplate(named: path)
+            template = try templating.loadTemplate(named: filePath)
         } catch is TemplateError {
-            template = try templating.loadTemplate(at: path)
+            template = try templating.loadTemplate(at: filePath)
         }
 
-        let statements = try templating.parse(template)
+        let statements = try templating.parseTemplate(template)
         self.statements.removeFirst()
         self.statements = statements + self.statements
         output = try interpret()
@@ -403,23 +477,25 @@ extension Interpreter: StatementVisitor {
 
     func visitExtend(statement: ExtendStatement) throws {
         if let expression = statement.expression.expression as? LiteralExpression {
-            if let path = expression.token.literal as? String {
-                try extendFile(at: path)
+            if let filePath = expression.token.literal as? String {
+                try extendFile(at: filePath)
             } else {
                 let token = expression.token
                 throw RuntimeError(
-                    "`\(expression.token.literal ?? "")` is not a valid path.",
+                    "`\(expression.token.literal ?? "")` is not a valid filePath.",
+                    filePath: token.filePath,
                     line: token.line,
                     column: token.column
                 )
             }
         } else if let expression = statement.expression.expression as? VariableExpression {
-            if let path = try visitVariable(expression: expression) as? String {
-                try extendFile(at: path)
+            if let filePath = try visitVariable(expression: expression) as? String {
+                try extendFile(at: filePath)
             } else {
                 let token = expression.name
                 throw RuntimeError(
-                    "`\(token.literal ?? "")` is not a valid path.",
+                    "`\(token.literal ?? "")` is not a valid filePath.",
+                    filePath: token.filePath,
                     line: token.line,
                     column: token.column
                 )
@@ -438,7 +514,7 @@ extension Interpreter: StatementVisitor {
                     statementKey.name.literal = key
                     blockStatement.variables.append(statementKey)
                 } else {
-                    throw RuntimeError("Expecting a variable.", line: 0, column: 0)
+                    throw RuntimeError("Expecting a variable.", filePath: nil, line: 0, column: 0)
                 }
             }
 
@@ -446,7 +522,7 @@ extension Interpreter: StatementVisitor {
                 statementValue.name.literal = value
                 blockStatement.variables.append(statementValue)
             } else {
-                throw RuntimeError("Expecting a variable.", line: 0, column: 0)
+                throw RuntimeError("Expecting a variable.", filePath: nil, line: 0, column: 0)
             }
 
             try visitBlock(statement: blockStatement)
@@ -467,6 +543,7 @@ extension Interpreter: StatementVisitor {
                 let token = expression.token
                 throw RuntimeError(
                     "The `\(token.lexeme)` is not a valid operator.",
+                    filePath: token.filePath,
                     line: token.line,
                     column: token.column
                 )
@@ -482,6 +559,7 @@ extension Interpreter: StatementVisitor {
                 let token = expression.name
                 throw RuntimeError(
                     "The `\(token.lexeme)` must be an array.",
+                    filePath: token.filePath,
                     line: token.line,
                     column: token.column
                 )
@@ -491,31 +569,33 @@ extension Interpreter: StatementVisitor {
 
     func visitInclude(statement: IncludeStatement) throws {
         if let expression = statement.expression.expression as? LiteralExpression {
-            if let path = expression.token.literal as? String {
+            if let filePath = expression.token.literal as? String {
                 do {
-                    output += try templating.renderTemplate(named: path)
+                    output += try templating.renderTemplate(named: filePath)
                 } catch is TemplateError {
-                    output += try templating.renderTemplate(at: path)
+                    output += try templating.renderTemplate(at: filePath)
                 }
             } else {
                 let token = expression.token
                 throw RuntimeError(
-                    "`\(expression.token.literal ?? "")` is not a valid path.",
+                    "`\(expression.token.literal ?? "")` is not a valid filePath.",
+                    filePath: token.filePath,
                     line: token.line,
                     column: token.column
                 )
             }
         } else if let expression = statement.expression.expression as? VariableExpression {
-            if let path = try visitVariable(expression: expression) as? String {
+            if let filePath = try visitVariable(expression: expression) as? String {
                 do {
-                    output += try templating.renderTemplate(named: path)
+                    output += try templating.renderTemplate(named: filePath)
                 } catch is TemplateError {
-                    output += try templating.renderTemplate(at: path)
+                    output += try templating.renderTemplate(at: filePath)
                 }
             } else {
                 let token = expression.name
                 throw RuntimeError(
-                    "`\(token.literal ?? "")` is not a valid path.",
+                    "`\(token.literal ?? "")` is not a valid filePath.",
+                    filePath: token.filePath, 
                     line: token.line,
                     column: token.column
                 )
