@@ -6,9 +6,9 @@ public struct YaproqError: LocalizedError {
 
     init(_ message: String? = nil) {
         if let message = message {
-            self.message = "Yaproq error: \(message)"
+            self.message = "\(String(describing: type(of: self))): \(message)"
         } else {
-            self.message = "Yaproq error: An unknown error."
+            self.message = "\(String(describing: type(of: self))): An unknown error."
         }
     }
 }
@@ -22,9 +22,9 @@ public struct TemplateError: LocalizedError {
         self.filePath = filePath
 
         if let message = message {
-            self.message = "Template error: \(message)"
+            self.message = "\(String(describing: type(of: self))): \(message)"
         } else {
-            self.message = "Template error: An unknown error."
+            self.message = "\(String(describing: type(of: self))): An unknown error."
         }
     }
 }
@@ -42,9 +42,9 @@ public struct SyntaxError: LocalizedError {
         self.column = column
 
         if let message = message {
-            self.message = "[\(line):\(column)] Syntax error: \(message)"
+            self.message = "[\(line):\(column)] \(String(describing: type(of: self))): \(message)"
         } else {
-            self.message = "[\(line):\(column)] Syntax error: An unknown error."
+            self.message = "[\(line):\(column)] \(String(describing: type(of: self))): An unknown error."
         }
     }
 }
@@ -62,9 +62,9 @@ public struct RuntimeError: LocalizedError {
         self.column = column
 
         if let message = message {
-            self.message = "[\(line):\(column)] Runtime error: \(message)"
+            self.message = "[\(line):\(column)] \(String(describing: type(of: self))): \(message)"
         } else {
-            self.message = "[\(line):\(column)] Runtime error: An unknown error."
+            self.message = "[\(line):\(column)] \(String(describing: type(of: self))): An unknown error."
         }
     }
 }
