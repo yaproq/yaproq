@@ -41,29 +41,29 @@ public final class Yaproq {
         return Template(source, filePath: filePath)
     }
 
-    public func renderTemplate(named name: String, context: [String: Encodable] = .init()) throws -> String {
-        try renderTemplate(at: configuration.directoryPath + name, context: context)
+    public func renderTemplate(named name: String, in context: [String: Encodable] = .init()) throws -> String {
+        try renderTemplate(at: configuration.directoryPath + name, in: context)
     }
 
-    func _renderTemplate(named name: String, context: [String: Encodable] = .init()) throws -> String {
-        try _renderTemplate(at: configuration.directoryPath + name, context: context)
+    func _renderTemplate(named name: String, in context: [String: Encodable] = .init()) throws -> String {
+        try _renderTemplate(at: configuration.directoryPath + name, in: context)
     }
 
-    public func renderTemplate(at filePath: String, context: [String: Encodable] = .init()) throws -> String {
+    public func renderTemplate(at filePath: String, in context: [String: Encodable] = .init()) throws -> String {
         setCurrentEnvironment(for: filePath)
-        return try _renderTemplate(at: filePath, context: context)
+        return try _renderTemplate(at: filePath, in: context)
     }
 
-    func _renderTemplate(at filePath: String, context: [String: Encodable] = .init()) throws -> String {
-        try _renderTemplate(try _loadTemplate(at: filePath), context: context)
+    func _renderTemplate(at filePath: String, in context: [String: Encodable] = .init()) throws -> String {
+        try _renderTemplate(try _loadTemplate(at: filePath), in: context)
     }
 
-    public func renderTemplate(_ template: Template, context: [String: Encodable] = .init()) throws -> String {
+    public func renderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
         setCurrentEnvironment(for: template.filePath)
-        return try _renderTemplate(template, context: context)
+        return try _renderTemplate(template, in: context)
     }
 
-    func _renderTemplate(_ template: Template, context: [String: Encodable] = .init()) throws -> String {
+    func _renderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
         for (name, value) in context { environment.setVariable(named: name, with: value) }
         let interpreter = Interpreter(templating: self, statements: try parseTemplate(template))
 
