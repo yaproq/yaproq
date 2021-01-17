@@ -448,9 +448,9 @@ extension Interpreter {
         let template: Template
 
         do {
-            template = try templating._loadTemplate(named: filePath)
+            template = try templating.loadTemplate(named: filePath)
         } catch is TemplateError {
-            template = try templating._loadTemplate(at: filePath)
+            template = try templating.loadTemplate(at: filePath)
         }
 
         let statements = try templating.parseTemplate(template)

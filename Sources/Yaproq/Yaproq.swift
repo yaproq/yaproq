@@ -18,18 +18,7 @@ public final class Yaproq {
         try loadTemplate(at: configuration.directoryPath + name)
     }
 
-    func _loadTemplate(named name: String) throws -> Template {
-        try _loadTemplate(at: configuration.directoryPath + name)
-    }
-
     public func loadTemplate(at filePath: String) throws -> Template {
-        let template = try _loadTemplate(at: filePath)
-        setCurrentEnvironment(for: filePath)
-
-        return template
-    }
-
-    func _loadTemplate(at filePath: String) throws -> Template {
         let fileManager = FileManager.default
         guard let data = fileManager.contents(atPath: filePath) else {
             throw TemplateError("Can't load a template file at `\(filePath)`.", filePath: filePath)
@@ -55,7 +44,7 @@ public final class Yaproq {
     }
 
     func _renderTemplate(at filePath: String, in context: [String: Encodable] = .init()) throws -> String {
-        try _renderTemplate(try _loadTemplate(at: filePath), in: context)
+        try _renderTemplate(try loadTemplate(at: filePath), in: context)
     }
 
     public func renderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
