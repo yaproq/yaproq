@@ -63,7 +63,7 @@ extension Parser {
         while !check(leftBrace) && !isAtEnd {
             if let expression = try self.expression().expression as? VariableExpression {
                 if name == nil {
-                    name = expression.name.lexeme
+                    name = expression.token.lexeme
                 } else {
                     break
                 }
@@ -225,7 +225,7 @@ extension Parser {
 
             if let expression = expression.expression as? VariableExpression {
                 return AnyExpression(
-                    AssignmentExpression(identifierToken: expression.name, operatorToken: operatorToken, value: value)
+                    AssignmentExpression(identifierToken: expression.token, operatorToken: operatorToken, value: value)
                 )
             }
 
@@ -382,7 +382,7 @@ extension Parser {
     }
 
     private func variableExpression() throws -> AnyExpression {
-        let name = previous
+        let token = previous
 
         if match(.leftBracket) {
             let index = try expression()
@@ -392,9 +392,9 @@ extension Parser {
                 elseErrorMessage: "Expecting '\(rightBracket.rawValue)' after an expression."
             )
 
-            return AnyExpression(VariableExpression(name: name, index: index))
+            return AnyExpression(VariableExpression(token: token, index: index))
         }
 
-        return AnyExpression(VariableExpression(name: name))
+        return AnyExpression(VariableExpression(token: token))
     }
 }

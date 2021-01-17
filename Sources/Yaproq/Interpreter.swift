@@ -415,7 +415,7 @@ extension Interpreter: ExpressionVisitor {
     }
 
     func visitVariable(expression: VariableExpression) throws -> Any? {
-        let token = expression.name
+        let token = expression.token
         let value = try templating.environment.valueForVariable(with: token)
 
         if let index = expression.index {
@@ -465,7 +465,7 @@ extension Interpreter: StatementVisitor {
         let environment = Environment(parent: templating.environment)
 
         for variable in statement.variables {
-            try environment.defineVariable(for: variable.name, with: variable.name.literal)
+            try environment.defineVariable(for: variable.token, with: variable.token.literal)
         }
 
         try execute(statements: statement.statements, in: environment)
@@ -492,7 +492,7 @@ extension Interpreter: StatementVisitor {
             if let filePath = try visitVariable(expression: expression) as? String {
                 try extendFile(at: filePath)
             } else {
-                let token = expression.name
+                let token = expression.token
                 throw RuntimeError(
                     "`\(token.literal ?? "")` is not a valid filePath.",
                     filePath: token.filePath,
@@ -511,7 +511,7 @@ extension Interpreter: StatementVisitor {
 
             if let statementKey = statement.key {
                 if var statementKey = statementKey.expression as? VariableExpression {
-                    statementKey.name.literal = key
+                    statementKey.token.literal = key
                     blockStatement.variables.append(statementKey)
                 } else {
                     throw RuntimeError("Expecting a variable.", filePath: nil, line: 0, column: 0)
@@ -519,7 +519,7 @@ extension Interpreter: StatementVisitor {
             }
 
             if var statementValue = statement.value.expression as? VariableExpression {
-                statementValue.name.literal = value
+                statementValue.token.literal = value
                 blockStatement.variables.append(statementValue)
             } else {
                 throw RuntimeError("Expecting a variable.", filePath: nil, line: 0, column: 0)
@@ -556,7 +556,7 @@ extension Interpreter: StatementVisitor {
                     try assign(value: value, for: Double(key))
                 }
             } else {
-                let token = expression.name
+                let token = expression.token
                 throw RuntimeError(
                     "The `\(token.lexeme)` must be an array.",
                     filePath: token.filePath,
@@ -592,7 +592,7 @@ extension Interpreter: StatementVisitor {
                     output += try templating.renderTemplate(at: filePath)
                 }
             } else {
-                let token = expression.name
+                let token = expression.token
                 throw RuntimeError(
                     "`\(token.literal ?? "")` is not a valid filePath.",
                     filePath: token.filePath, 
