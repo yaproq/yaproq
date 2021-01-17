@@ -5,10 +5,12 @@ public struct YaproqError: LocalizedError {
     public var errorDescription: String? { message }
 
     init(_ message: String? = nil) {
+        let errorType = String(describing: type(of: self))
+
         if let message = message {
-            self.message = "\(String(describing: type(of: self))): \(message)"
+            self.message = "\(errorType): \(message)"
         } else {
-            self.message = "\(String(describing: type(of: self))): An unknown error."
+            self.message = "\(errorType): An unknown error."
         }
     }
 }
@@ -20,11 +22,12 @@ public struct TemplateError: LocalizedError {
 
     init(_ message: String? = nil, filePath: String? = nil) {
         self.filePath = filePath
+        let errorType = String(describing: type(of: self))
 
         if let message = message {
-            self.message = "\(String(describing: type(of: self))): \(message)"
+            self.message = "\(errorType): \(message)"
         } else {
-            self.message = "\(String(describing: type(of: self))): An unknown error."
+            self.message = "\(errorType): An unknown error."
         }
     }
 }
@@ -40,11 +43,12 @@ public struct SyntaxError: LocalizedError {
         self.filePath = filePath
         self.line = line
         self.column = column
+        let errorType = String(describing: type(of: self))
 
         if let message = message {
-            self.message = "[\(line):\(column)] \(String(describing: type(of: self))): \(message)"
+            self.message = "[\(line):\(column)] \(errorType): \(message)"
         } else {
-            self.message = "[\(line):\(column)] \(String(describing: type(of: self))): An unknown error."
+            self.message = "[\(line):\(column)] \(errorType): An unknown error."
         }
     }
 }
@@ -60,11 +64,12 @@ public struct RuntimeError: LocalizedError {
         self.filePath = filePath
         self.line = line
         self.column = column
+        let errorType = String(describing: type(of: self))
 
         if let message = message {
-            self.message = "[\(line):\(column)] \(String(describing: type(of: self))): \(message)"
+            self.message = "\(line):\(column)] \(errorType): \(message)"
         } else {
-            self.message = "[\(line):\(column)] \(String(describing: type(of: self))): An unknown error."
+            self.message = "\(line):\(column)] \(errorType): An unknown error."
         }
     }
 }
