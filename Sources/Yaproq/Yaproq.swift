@@ -31,9 +31,12 @@ public final class Yaproq {
 
     func _loadTemplate(at filePath: String) throws -> Template {
         let fileManager = FileManager.default
-        guard fileManager.fileExists(atPath: filePath),
-            let data = fileManager.contents(atPath: filePath),
-            let source = String(data: data, encoding: .utf8) else { throw TemplateError("An invalid template.") }
+        guard let data = fileManager.contents(atPath: filePath) else {
+            throw TemplateError("Can't load a template file at `\(filePath)`.", filePath: filePath)
+        }
+        guard let source = String(data: data, encoding: .utf8) else {
+            throw TemplateError("A template file at `\(filePath)` must be UTF8 encodable.", filePath: filePath)
+        }
 
         return Template(source, filePath: filePath)
     }
