@@ -448,9 +448,9 @@ extension Interpreter {
         let template: Template
 
         do {
-            template = try templating.loadTemplate(named: filePath)
+            template = try templating._loadTemplate(named: filePath)
         } catch is TemplateError {
-            template = try templating.loadTemplate(at: filePath)
+            template = try templating._loadTemplate(at: filePath)
         }
 
         let statements = try templating.parseTemplate(template)
@@ -571,9 +571,9 @@ extension Interpreter: StatementVisitor {
         if let expression = statement.expression.expression as? LiteralExpression {
             if let filePath = expression.token.literal as? String {
                 do {
-                    output += try templating.renderTemplate(named: filePath)
+                    output += try templating._renderTemplate(named: filePath)
                 } catch is TemplateError {
-                    output += try templating.renderTemplate(at: filePath)
+                    output += try templating._renderTemplate(at: filePath)
                 }
             } else {
                 let token = expression.token
@@ -587,9 +587,9 @@ extension Interpreter: StatementVisitor {
         } else if let expression = statement.expression.expression as? VariableExpression {
             if let filePath = try visitVariable(expression: expression) as? String {
                 do {
-                    output += try templating.renderTemplate(named: filePath)
+                    output += try templating._renderTemplate(named: filePath)
                 } catch is TemplateError {
-                    output += try templating.renderTemplate(at: filePath)
+                    output += try templating._renderTemplate(at: filePath)
                 }
             } else {
                 let token = expression.token
