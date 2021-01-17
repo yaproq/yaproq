@@ -1,13 +1,13 @@
 import Foundation
 
 public struct YaproqError: LocalizedError {
-    let message: String?
+    let message: String
     public var errorDescription: String? { message }
 
     init(_ message: String? = nil) {
         let errorType = String(describing: type(of: self))
 
-        if let message = message {
+        if let message = message, !message.isEmpty {
             self.message = "\(errorType): \(message)"
         } else {
             self.message = "\(errorType): An unknown error."
@@ -17,24 +17,28 @@ public struct YaproqError: LocalizedError {
 
 public struct TemplateError: LocalizedError {
     public let filePath: String?
-    let message: String?
+    private(set) var message: String
     public var errorDescription: String? { message }
 
     init(_ message: String? = nil, filePath: String? = nil) {
         self.filePath = filePath
         let errorType = String(describing: type(of: self))
 
-        if let message = message {
+        if let message = message, !message.isEmpty {
             self.message = "\(errorType): \(message)"
         } else {
             self.message = "\(errorType): An unknown error."
+        }
+
+        if let filePath = filePath {
+            self.message = "[Template: \(filePath)] " + self.message
         }
     }
 }
 
 public struct SyntaxError: LocalizedError {
     public let filePath: String?
-    let message: String?
+    private(set) var message: String
     let line: Int
     let column: Int
     public var errorDescription: String? { message }
@@ -45,17 +49,23 @@ public struct SyntaxError: LocalizedError {
         self.column = column
         let errorType = String(describing: type(of: self))
 
-        if let message = message {
-            self.message = "[\(line):\(column)] \(errorType): \(message)"
+        if let message = message, !message.isEmpty {
+            self.message = "\(errorType): \(message)"
         } else {
-            self.message = "[\(line):\(column)] \(errorType): An unknown error."
+            self.message = "\(errorType): An unknown error."
+        }
+
+        if let filePath = filePath {
+            self.message = "[Template: \(filePath), Line: \(line), Column: \(column)] " + self.message
+        } else {
+            self.message = "[Line: \(line), Column: \(column)] " + self.message
         }
     }
 }
 
 public struct RuntimeError: LocalizedError {
     public let filePath: String?
-    let message: String?
+    private(set) var message: String
     let line: Int
     let column: Int
     public var errorDescription: String? { message }
@@ -66,10 +76,16 @@ public struct RuntimeError: LocalizedError {
         self.column = column
         let errorType = String(describing: type(of: self))
 
-        if let message = message {
-            self.message = "\(line):\(column)] \(errorType): \(message)"
+        if let message = message, !message.isEmpty {
+            self.message = "\(errorType): \(message)"
         } else {
-            self.message = "\(line):\(column)] \(errorType): An unknown error."
+            self.message = "\(errorType): An unknown error."
+        }
+
+        if let filePath = filePath {
+            self.message = "[Template: \(filePath), Line: \(line), Column: \(column)] " + self.message
+        } else {
+            self.message = "[Line: \(line), Column: \(column)] " + self.message
         }
     }
 }
