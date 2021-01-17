@@ -40,7 +40,10 @@ public final class Yaproq {
 
     public func renderTemplate(at filePath: String, in context: [String: Encodable] = .init()) throws -> String {
         setCurrentEnvironment(for: filePath)
-        return try _renderTemplate(at: filePath, in: context)
+        let output = try _renderTemplate(at: filePath, in: context)
+        clearEnvironments()
+
+        return output
     }
 
     func _renderTemplate(at filePath: String, in context: [String: Encodable] = .init()) throws -> String {
@@ -49,7 +52,10 @@ public final class Yaproq {
 
     public func renderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
         setCurrentEnvironment(for: template.filePath)
-        return try _renderTemplate(template, in: context)
+        let output = try _renderTemplate(template, in: context)
+        clearEnvironments()
+
+        return output
     }
 
     func _renderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
@@ -78,6 +84,11 @@ public final class Yaproq {
         } else {
             environment = defaultEnvironment
         }
+    }
+
+    private func clearEnvironments() {
+        environments.removeAll()
+        setCurrentEnvironment()
     }
 }
 
