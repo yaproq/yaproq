@@ -17,7 +17,7 @@ final class Interpreter {
         if count > 0 {
             if !(statements.first is ExtendStatement) {
                 throw TemplateError(
-                    "The '\(Token.Kind.extend.rawValue)' must the first statement in a template file."
+                    "An '\(Token.Kind.extend.rawValue)' must the first statement in a template file."
                 )
             }
 
@@ -482,7 +482,7 @@ extension Interpreter: StatementVisitor {
             } else {
                 let token = expression.token
                 throw RuntimeError(
-                    "`\(expression.token.literal ?? "")` is not a valid filePath.",
+                    "The `\(expression.token.literal ?? "")` is not a valid filePath.",
                     filePath: token.filePath,
                     line: token.line,
                     column: token.column
@@ -494,7 +494,7 @@ extension Interpreter: StatementVisitor {
             } else {
                 let token = expression.token
                 throw RuntimeError(
-                    "`\(token.literal ?? "")` is not a valid filePath.",
+                    "The `\(token.literal ?? "")` is not a valid filePath.",
                     filePath: token.filePath,
                     line: token.line,
                     column: token.column
@@ -578,7 +578,7 @@ extension Interpreter: StatementVisitor {
             } else {
                 let token = expression.token
                 throw RuntimeError(
-                    "`\(expression.token.literal ?? "")` is not a valid filePath.",
+                    "The `\(expression.token.literal ?? "")` is not a valid filePath.",
                     filePath: token.filePath,
                     line: token.line,
                     column: token.column
@@ -594,7 +594,7 @@ extension Interpreter: StatementVisitor {
             } else {
                 let token = expression.token
                 throw RuntimeError(
-                    "`\(token.literal ?? "")` is not a valid filePath.",
+                    "The `\(token.literal ?? "")` is not a valid filePath.",
                     filePath: token.filePath, 
                     line: token.line,
                     column: token.column
