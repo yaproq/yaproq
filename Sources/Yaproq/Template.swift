@@ -6,7 +6,7 @@ public struct Template: Equatable, ExpressibleByStringLiteral {
         self.source = source
     }
 
-    init(_ source: String, filePath: String? = nil) {
+    public init(_ source: String, filePath: String? = nil) {
         self.source = source
         self.filePath = filePath
     }
