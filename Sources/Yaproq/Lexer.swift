@@ -116,12 +116,12 @@ extension Lexer {
         if !lexeme.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             if lexeme.hasPrefix(Token.Kind.newline.rawValue) { lexeme.removeFirst() }
             if lexeme.hasSuffix(Token.Kind.newline.rawValue) { lexeme.removeLast() }
-            addToken(kind: .print, line: 0, column: 0)
+            addToken(kind: .print, line: -1, column: -1)
             addToken(kind: .string, lexeme: lexeme, literal: lexeme)
         }
 
         if let delimiter = currentDelimiter {
-            if delimiter == .output { addToken(kind: .print, line: 0, column: 0) }
+            if delimiter == .output { addToken(kind: .print, line: -1, column: -1) }
             advance(delimiter.start.count)
         }
     }
@@ -263,9 +263,9 @@ extension Lexer {
                     }
                 }
 
-                addToken(kind: .leftBrace, line: 0, column: 0)
+                addToken(kind: .leftBrace, line: -1, column: -1)
             } else if kind == .elseif {
-                addToken(kind: .rightBrace, line: 0, column: 0)
+                addToken(kind: .rightBrace, line: -1, column: -1)
                 addToken(kind: kind)
 
                 while !isAtEnd {
@@ -277,13 +277,13 @@ extension Lexer {
                     }
                 }
 
-                addToken(kind: .leftBrace, line: 0, column: 0)
+                addToken(kind: .leftBrace, line: -1, column: -1)
             } else if kind == .else {
-                addToken(kind: .rightBrace, line: 0, column: 0)
+                addToken(kind: .rightBrace, line: -1, column: -1)
                 addToken(kind: kind)
-                addToken(kind: .leftBrace, line: 0, column: 0)
+                addToken(kind: .leftBrace, line: -1, column: -1)
             } else if Token.Kind.blockEndKeywords.contains(kind) {
-                addToken(kind: .rightBrace, line: 0, column: 0)
+                addToken(kind: .rightBrace, line: -1, column: -1)
             } else {
                 addToken(kind: kind, lexeme: lexeme, literal: kind == .false || kind == .true ? Bool(lexeme) : nil)
             }

@@ -506,7 +506,7 @@ extension Interpreter: StatementVisitor {
     func visitFor(statement: ForStatement) throws {
         guard let blockStatement = statement.body as? BlockStatement else { return }
 
-        func assign(value: Any, for key: Any) throws {
+        func assign(value: Any, for key: Any, on token: Token) throws {
             blockStatement.variables = .init()
 
             if let statementKey = statement.key {
@@ -514,7 +514,7 @@ extension Interpreter: StatementVisitor {
                     statementKey.token.literal = key
                     blockStatement.variables.append(statementKey)
                 } else {
-                    throw RuntimeError("Expecting a variable.", filePath: nil, line: 0, column: 0)
+                    throw RuntimeError("Expecting a variable.", filePath: nil, line: token.line, column: token.column)
                 }
             }
 
@@ -522,7 +522,7 @@ extension Interpreter: StatementVisitor {
                 statementValue.token.literal = value
                 blockStatement.variables.append(statementValue)
             } else {
-                throw RuntimeError("Expecting a variable.", filePath: nil, line: 0, column: 0)
+                throw RuntimeError("Expecting a variable.", filePath: nil, line: token.line, column: token.column)
             }
 
             try visitBlock(statement: blockStatement)
@@ -530,17 +530,17 @@ extension Interpreter: StatementVisitor {
 
         if let expression = statement.expression.expression as? BinaryExpression {
             let value = try visitBinary(expression: expression)
+            let token = expression.token
 
             if let closedRange = value as? CountableClosedRange<Int> {
                 for (key, value) in closedRange.enumerated() {
-                    try assign(value: value, for: Double(key))
+                    try assign(value: value, for: Double(key), on: token)
                 }
             } else if let range = value as? CountableRange<Int> {
                 for (key, value) in range.enumerated() {
-                    try assign(value: value, for: Double(key))
+                    try assign(value: value, for: Double(key), on: token)
                 }
             } else {
-                let token = expression.token
                 throw RuntimeError(
                     "The `\(token.lexeme)` is not a valid operator.",
                     filePath: token.filePath,
@@ -550,13 +550,13 @@ extension Interpreter: StatementVisitor {
             }
         } else if let expression = statement.expression.expression as? VariableExpression {
             let value = try visitVariable(expression: expression)
+            let token = expression.token
 
             if let array = value as? Array<Any> {
                 for (key, value) in array.enumerated() {
-                    try assign(value: value, for: Double(key))
+                    try assign(value: value, for: Double(key), on: token)
                 }
             } else {
-                let token = expression.token
                 throw RuntimeError(
                     "The `\(token.lexeme)` must be an array.",
                     filePath: token.filePath,
