@@ -1,7 +1,7 @@
 # Yaproq - A templating language for Swift
 
-### Template examples
-#### `/templates/base.html`
+## Template examples
+### `/templates/base.html`
 ```html
 <!doctype html>
 <html lang="en">
@@ -20,7 +20,7 @@
 </html>
 ```
 
-#### `/templates/posts.html`
+### `/templates/posts.html`
 ```html
 {% extend "base.html" %}
 
