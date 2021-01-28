@@ -29,7 +29,7 @@
     <link href="/public/css/posts.min.css" rel="stylesheet" />
 {% endblock %}
 
-{% block css %}
+{% block js %}
     {% @super %}
     <script src="/public/js/posts.min.js"></script>
 {% endblock %}
