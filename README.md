@@ -24,8 +24,6 @@
 ```html
 {% extend "base.html" %}
 
-{% block title %}Posts{% endblock %}
-
 {% block css %}
     {% @super %}
     <link href="/public/css/posts.min.css" rel="stylesheet" />
