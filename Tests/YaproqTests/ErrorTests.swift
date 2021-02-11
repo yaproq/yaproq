@@ -1,6 +1,27 @@
 import XCTest
 @testable import Yaproq
 
+final class YaproqErrorTests: BaseTests {
+    func testInit() {
+        // Act
+        var error = YaproqError()
+
+        // Assert
+        XCTAssertEqual(error.message, "\(String(describing: YaproqError.self)): An unknown error.")
+        XCTAssertEqual(error.errorDescription, error.message)
+
+        // Arrange
+        let message = "Delimiters must be unique."
+
+        // Act
+        error = YaproqError(message)
+
+        // Assert
+        XCTAssertEqual(error.message, "\(String(describing: YaproqError.self)): \(message)")
+        XCTAssertEqual(error.errorDescription, error.message)
+    }
+}
+
 final class TemplateErrorTests: BaseTests {
     func testInit() {
         // Act
