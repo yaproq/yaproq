@@ -1,18 +1,17 @@
 final class Environment {
     let parent: Environment?
-    var variables: [String: Any] { mutableVariables }
-    private var mutableVariables: [String: Any]
+    private var variables: [String: Any]
     private var variableNames: Set<String>
 
-    init(parent: Environment? = nil, variables: [String: Any] = .init()) {
+    init(parent: Environment? = nil) {
         self.parent = parent
-        self.mutableVariables = variables
+        variables = .init()
         variableNames = Set(variables.keys)
     }
 
     func setVariable(named name: String, with value: Any? = nil) {
         variableNames.insert(name)
-        mutableVariables[name] = value
+        variables[name] = value
     }
 
     func defineVariable(for token: Token, with value: Any? = nil) throws {
@@ -28,14 +27,14 @@ final class Environment {
         }
 
         variableNames.insert(name)
-        mutableVariables[name] = value
+        variables[name] = value
     }
 
     func assign(value: Any?, toVariableWith token: Token) throws {
         let name = token.lexeme
 
         if variableNames.contains(name) {
-            mutableVariables[name] = value
+            variables[name] = value
         } else if let parent = parent {
             try parent.assign(value: value, toVariableWith: token)
         } else {
@@ -53,7 +52,7 @@ final class Environment {
         let name = components.first!
 
         if variableNames.contains(name) {
-            var value = mutableVariables[name]
+            var value = variables[name]
 
             if components.count > 1 {
                 components.removeFirst()
