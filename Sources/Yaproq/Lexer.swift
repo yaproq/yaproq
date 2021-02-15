@@ -241,7 +241,7 @@ extension Lexer {
 
         let lexeme = substring(from: start, to: current)
 
-        if !lexeme.isEmpty && String(lexeme.last!) == dot {
+        if let lastCharacter = lexeme.last, String(lastCharacter) == dot {
             throw SyntaxError(
                 "An unexpected character `\(dot)`.",
                 filePath: template.filePath,
@@ -321,15 +321,16 @@ extension Lexer {
         line: Int? = nil,
         column: Int? = nil
     ) {
-        let lexeme = lexeme == nil ? kind.rawValue : lexeme!
-        let line = line == nil ? self.line : line!
-        let column = column == nil ? self.column : column!
+        let lexeme = lexeme ?? kind.rawValue
+        let line = line ?? self.line
+        let column = column ?? self.column
         let token = Token(
             kind: kind,
             lexeme: lexeme,
             literal: literal,
             filePath: template.filePath,
-            line: line, column: column
+            line: line,
+            column: column
         )
         tokens.append(token)
         start = current

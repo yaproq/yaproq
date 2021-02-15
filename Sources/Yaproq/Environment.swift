@@ -49,7 +49,7 @@ final class Environment {
 
     func valueForVariable(with token: Token) throws -> Any? {
         var components = token.lexeme.components(separatedBy: Token.Kind.dot.rawValue)
-        let name = components.first!
+        let name = components.first ?? ""
 
         if variableNames.contains(name) {
             var value = variables[name]
