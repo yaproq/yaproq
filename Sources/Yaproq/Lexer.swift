@@ -321,16 +321,13 @@ extension Lexer {
         line: Int? = nil,
         column: Int? = nil
     ) {
-        let lexeme = lexeme ?? kind.rawValue
-        let line = line ?? self.line
-        let column = column ?? self.column
         let token = Token(
             kind: kind,
-            lexeme: lexeme,
+            lexeme: lexeme ?? kind.rawValue,
             literal: literal,
             filePath: template.filePath,
-            line: line,
-            column: column
+            line: line ?? self.line,
+            column: column ?? self.column
         )
         tokens.append(token)
         start = current
