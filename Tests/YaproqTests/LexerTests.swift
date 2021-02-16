@@ -311,4 +311,37 @@ extension LexerTests {
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 5, column: 14)
         ])
     }
+
+    func testCommentStatement() {
+        // Arrange
+        var template: Template = "{# A single-line comment #}"
+        var lexer = Lexer(template: template)
+
+        // Act
+        var tokens = try! lexer.scan()
+
+        // Assert
+        XCTAssertEqual(lexer.template, template)
+        XCTAssertEqual(tokens, [
+            .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 1, column: 27)
+        ])
+
+        // Arrange
+        template = """
+        {#
+            A multi-line
+            comment
+        #}
+        """
+        lexer = Lexer(template: template)
+
+        // Act
+        tokens = try! lexer.scan()
+
+        // Assert
+        XCTAssertEqual(lexer.template, template)
+        XCTAssertEqual(tokens, [
+            .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 4, column: 2)
+        ])
+    }
 }
