@@ -39,8 +39,8 @@ public struct TemplateError: LocalizedError {
 public struct SyntaxError: LocalizedError {
     public let filePath: String?
     private(set) var message: String
-    let line: Int
-    let column: Int
+    public let line: Int
+    public let column: Int
     public var errorDescription: String? { message }
 
     init(_ message: String? = nil, filePath: String? = nil, line: Int, column: Int) {
@@ -66,8 +66,8 @@ public struct SyntaxError: LocalizedError {
 public struct RuntimeError: LocalizedError {
     public let filePath: String?
     private(set) var message: String
-    let line: Int
-    let column: Int
+    public let line: Int
+    public let column: Int
     public var errorDescription: String? { message }
 
     init(_ message: String? = nil, filePath: String? = nil, line: Int, column: Int) {
