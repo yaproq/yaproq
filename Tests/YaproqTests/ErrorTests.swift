@@ -56,7 +56,10 @@ final class SyntaxErrorTests: BaseTests {
         var error = SyntaxError(line: line, column: column)
 
         // Assert
-        XCTAssertEqual(error.message, "[Line: \(line), Column: \(column)] \(String(describing: SyntaxError.self)): An unknown error.")
+        XCTAssertEqual(error.message, """
+        [Line: \(line), Column: \(column)] \(String(describing: SyntaxError.self)): An unknown error.
+        """
+        )
         XCTAssertNil(error.filePath)
         XCTAssertEqual(error.line, line)
         XCTAssertEqual(error.column, column)
@@ -70,7 +73,10 @@ final class SyntaxErrorTests: BaseTests {
         error = SyntaxError(message, filePath: filePath, line: line, column: column)
 
         // Assert
-        XCTAssertEqual(error.message, "[Template: \(filePath), Line: \(line), Column: \(column)] \(String(describing: SyntaxError.self)): \(message)")
+        XCTAssertEqual(error.message, """
+        [Template: \(filePath), Line: \(line), Column: \(column)] \(String(describing: SyntaxError.self)): \(message)
+        """
+        )
         XCTAssertEqual(error.filePath, filePath)
         XCTAssertEqual(error.line, line)
         XCTAssertEqual(error.column, column)
@@ -88,7 +94,10 @@ final class RuntimeErrorTests: BaseTests {
         var error = RuntimeError(line: line, column: column)
 
         // Assert
-        XCTAssertEqual(error.message, "[Line: \(line), Column: \(column)] \(String(describing: RuntimeError.self)): An unknown error.")
+        XCTAssertEqual(error.message, """
+        [Line: \(line), Column: \(column)] \(String(describing: RuntimeError.self)): An unknown error.
+        """
+        )
         XCTAssertNil(error.filePath)
         XCTAssertEqual(error.line, line)
         XCTAssertEqual(error.column, column)
@@ -102,7 +111,10 @@ final class RuntimeErrorTests: BaseTests {
         error = RuntimeError(message, filePath: filePath, line: line, column: column)
 
         // Assert
-        XCTAssertEqual(error.message, "[Template: \(filePath), Line: \(line), Column: \(column)] \(String(describing: RuntimeError.self)): \(message)")
+        XCTAssertEqual(error.message, """
+        [Template: \(filePath), Line: \(line), Column: \(column)] \(String(describing: RuntimeError.self)): \(message)
+        """
+        )
         XCTAssertEqual(error.filePath, filePath)
         XCTAssertEqual(error.line, line)
         XCTAssertEqual(error.column, column)
