@@ -454,4 +454,112 @@ extension LexerTests {
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 9, column: 11)
         ])
     }
+
+    func testOutputStatement() {
+        // Arrange
+        var template: Template = "{{ 1 }}"
+        var lexer = Lexer(template: template)
+
+        // Act
+        var tokens = try! lexer.scan()
+
+        // Assert
+        XCTAssertEqual(lexer.template, template)
+        XCTAssertEqual(tokens, [
+            .init(kind: .print, lexeme: Token.Kind.print.rawValue, line: -1, column: -1),
+            .init(kind: .number, lexeme: "1", literal: 1.0, line: 1, column: 4),
+            .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 1, column: 7)
+        ])
+
+        // Arrange
+        template = """
+        {% var number = 1 %}
+        {{
+            number
+        }}
+        """
+        lexer = Lexer(template: template)
+
+        // Act
+        tokens = try! lexer.scan()
+
+        // Assert
+        XCTAssertEqual(lexer.template, template)
+        XCTAssertEqual(tokens, [
+            .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
+            .init(kind: .identifier, lexeme: "number", line: 1, column: 13),
+            .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 15),
+            .init(kind: .number, lexeme: "1", literal: 1.0, line: 1, column: 17),
+            .init(kind: .print, lexeme: Token.Kind.print.rawValue, line: -1, column: -1),
+            .init(kind: .identifier, lexeme: "number", line: 3, column: 10),
+            .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 4, column: 2)
+        ])
+
+        // Arrange
+        template = "{{ array[0] }}"
+        lexer = Lexer(template: template)
+
+        // Act
+        tokens = try! lexer.scan()
+
+        // Assert
+        XCTAssertEqual(lexer.template, template)
+        XCTAssertEqual(tokens, [
+            .init(kind: .print, lexeme: Token.Kind.print.rawValue, line: -1, column: -1),
+            .init(kind: .identifier, lexeme: "array", line: 1, column: 8),
+            .init(kind: .leftBracket, lexeme: Token.Kind.leftBracket.rawValue, line: 1, column: 9),
+            .init(kind: .number, lexeme: "0", literal: 0.0, line: 1, column: 10),
+            .init(kind: .rightBracket, lexeme: Token.Kind.rightBracket.rawValue, line: 1, column: 11),
+            .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 1, column: 14)
+        ])
+
+        // Arrange
+        template = "{{ object.property }}"
+        lexer = Lexer(template: template)
+
+        // Act
+        tokens = try! lexer.scan()
+
+        // Assert
+        XCTAssertEqual(lexer.template, template)
+        XCTAssertEqual(tokens, [
+            .init(kind: .print, lexeme: Token.Kind.print.rawValue, line: -1, column: -1),
+            .init(kind: .identifier, lexeme: "object.property", line: 1, column: 18),
+            .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 1, column: 21)
+        ])
+
+        // Arrange
+        template = "{{ object. }}"
+        lexer = Lexer(template: template)
+
+        // Act/Assert
+        XCTAssertThrowsError(try lexer.scan()) { error in
+            let error = error as! SyntaxError
+            XCTAssertNil(error.filePath)
+            XCTAssertEqual(error.line, 1)
+            XCTAssertEqual(error.column, 10)
+            XCTAssertEqual(error.errorDescription, """
+            [Line: \(error.line), Column: \(error.column)] \
+            SyntaxError: An unexpected character `\(Token.Kind.dot.rawValue)`.
+            """
+            )
+        }
+
+        // Arrange
+        template = "{{ object.. }}"
+        lexer = Lexer(template: template)
+
+        // Act/Assert
+        XCTAssertThrowsError(try lexer.scan()) { error in
+            let error = error as! SyntaxError
+            XCTAssertNil(error.filePath)
+            XCTAssertEqual(error.line, 1)
+            XCTAssertEqual(error.column, 10)
+            XCTAssertEqual(error.errorDescription, """
+            [Line: \(error.line), Column: \(error.column)] \
+            SyntaxError: An unexpected character `\(Token.Kind.dot.rawValue)`.
+            """
+            )
+        }
+    }
 }
