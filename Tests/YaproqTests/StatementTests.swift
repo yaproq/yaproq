@@ -104,7 +104,8 @@ final class IfStatementTests: BaseTests {
         XCTAssertEqual(statement.elseIfBranches.first?.condition, falseCondition)
         XCTAssertEqual((statement.elseIfBranches.first?.thenBranch as! BlockStatement).statements.count, 1)
         XCTAssertEqual(
-            ((statement.elseIfBranches.first?.thenBranch as! BlockStatement).statements.first as! PrintStatement).expression,
+            ((statement.elseIfBranches.first?.thenBranch as! BlockStatement).statements.first as! PrintStatement)
+                .expression,
             twoExpression
         )
         XCTAssertEqual((statement.elseBranch as! BlockStatement).statements.count, 1)
