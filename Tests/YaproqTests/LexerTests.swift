@@ -344,4 +344,60 @@ extension LexerTests {
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 4, column: 2)
         ])
     }
+
+    func testForStatement() {
+        // Arrange
+        var template: Template = """
+        {% for number in numbers %}
+        {{ number }}
+        {% endfor %}
+        """
+        var lexer = Lexer(template: template)
+
+        // Act
+        var tokens = try! lexer.scan()
+
+        // Assert
+        XCTAssertEqual(lexer.template, template)
+        XCTAssertEqual(tokens, [
+            .init(kind: .for, lexeme: Token.Kind.for.rawValue, line: 1, column: 6),
+            .init(kind: .identifier, lexeme: "number", line: 1, column: 13),
+            .init(kind: .in, lexeme: Token.Kind.in.rawValue, line: 1, column: 16),
+            .init(kind: .identifier, lexeme: "numbers", line: 1, column: 24),
+            .init(kind: .leftBrace, lexeme: Token.Kind.leftBrace.rawValue, line: -1, column: -1),
+            .init(kind: .print, lexeme: Token.Kind.print.rawValue, line: -1, column: -1),
+            .init(kind: .identifier, lexeme: "number", line: 2, column: 9),
+            .init(kind: .rightBrace, lexeme: Token.Kind.rightBrace.rawValue, line: -1, column: -1),
+            .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 3, column: 12)
+        ])
+
+        // Arrange
+        template = """
+        {% for index, number in numbers %}
+        {{ index }}{{ number }}
+        {% endfor %}
+        """
+        lexer = Lexer(template: template)
+
+        // Act
+        tokens = try! lexer.scan()
+
+        // Assert
+        XCTAssertEqual(lexer.template, template)
+        XCTAssertEqual(tokens, [
+            .init(kind: .for, lexeme: Token.Kind.for.rawValue, line: 1, column: 6),
+            .init(kind: .identifier, lexeme: "index", line: 1, column: 12),
+            .init(kind: .comma, lexeme: Token.Kind.comma.rawValue, line: 1, column: 13),
+            .init(kind: .identifier, lexeme: "number", line: 1, column: 20),
+            .init(kind: .in, lexeme: Token.Kind.in.rawValue, line: 1, column: 23),
+            .init(kind: .identifier, lexeme: "numbers", line: 1, column: 31),
+            .init(kind: .leftBrace, lexeme: Token.Kind.leftBrace.rawValue, line: -1, column: -1),
+            .init(kind: .print, lexeme: Token.Kind.print.rawValue, line: -1, column: -1),
+            .init(kind: .identifier, lexeme: "index", line: 2, column: 8),
+            .init(kind: .print, lexeme: Token.Kind.print.rawValue, line: -1, column: -1),
+            .init(kind: .identifier, lexeme: "number", line: 2, column: 20),
+            .init(kind: .rightBrace, lexeme: Token.Kind.rightBrace.rawValue, line: -1, column: -1),
+            .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 3, column: 12)
+        ])
+    }
 }
