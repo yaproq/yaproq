@@ -235,4 +235,48 @@ extension LexerTests {
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 2, column: 37)
         ])
     }
+
+    func testUnaryOperators() {
+        // Arrange
+        var template: Template = "{% var number = 1 %}{% number = -number %}"
+        var lexer = Lexer(template: template)
+
+        // Act
+        var tokens = try! lexer.scan()
+
+        // Assert
+        XCTAssertEqual(lexer.template, template)
+        XCTAssertEqual(tokens, [
+            .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
+            .init(kind: .identifier, lexeme: "number", line: 1, column: 13),
+            .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 15),
+            .init(kind: .number, lexeme: "1", literal: 1.0, line: 1, column: 17),
+            .init(kind: .identifier, lexeme: "number", line: 1, column: 29),
+            .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 31),
+            .init(kind: .minus, lexeme: Token.Kind.minus.rawValue, line: 1, column: 33),
+            .init(kind: .identifier, lexeme: "number", line: 1, column: 39),
+            .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 1, column: 42)
+        ])
+
+        // Arrange
+        template = "{% var bool = true %}{% bool = !bool %}"
+        lexer = Lexer(template: template)
+
+        // Act
+        tokens = try! lexer.scan()
+
+        // Assert
+        XCTAssertEqual(lexer.template, template)
+        XCTAssertEqual(tokens, [
+            .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
+            .init(kind: .identifier, lexeme: "bool", line: 1, column: 11),
+            .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 13),
+            .init(kind: .true, lexeme: Token.Kind.true.rawValue, literal: true, line: 1, column: 18),
+            .init(kind: .identifier, lexeme: "bool", line: 1, column: 28),
+            .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 30),
+            .init(kind: .bang, lexeme: Token.Kind.bang.rawValue, line: 1, column: 32),
+            .init(kind: .identifier, lexeme: "bool", line: 1, column: 36),
+            .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 1, column: 39)
+        ])
+    }
 }
