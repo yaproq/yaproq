@@ -104,4 +104,49 @@ extension LexerTests {
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 6, column: 21)
         ])
     }
+
+    func testCompoundAssignmentOperators() {
+        // Arrange
+        let template: Template = """
+        {% var number = 1 %}
+        {% number += 2 %}
+        {% number -= 3 %}
+        {% number *= 4 %}
+        {% number /= 5 %}
+        {% number %= 6 %}
+        {% number ^= 7 %}
+        """
+        let lexer = Lexer(template: template)
+
+        // Act
+        let tokens = try! lexer.scan()
+
+        // Assert
+        XCTAssertEqual(lexer.template, template)
+        XCTAssertEqual(tokens, [
+            .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
+            .init(kind: .identifier, lexeme: "number", line: 1, column: 13),
+            .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 15),
+            .init(kind: .number, lexeme: "1", literal: 1.0, line: 1, column: 17),
+            .init(kind: .identifier, lexeme: "number", line: 2, column: 9),
+            .init(kind: .plusEqual, lexeme: Token.Kind.plusEqual.rawValue, line: 2, column: 12),
+            .init(kind: .number, lexeme: "2", literal: 2.0, line: 2, column: 14),
+            .init(kind: .identifier, lexeme: "number", line: 3, column: 9),
+            .init(kind: .minusEqual, lexeme: Token.Kind.minusEqual.rawValue, line: 3, column: 12),
+            .init(kind: .number, lexeme: "3", literal: 3.0, line: 3, column: 14),
+            .init(kind: .identifier, lexeme: "number", line: 4, column: 9),
+            .init(kind: .starEqual, lexeme: Token.Kind.starEqual.rawValue, line: 4, column: 12),
+            .init(kind: .number, lexeme: "4", literal: 4.0, line: 4, column: 14),
+            .init(kind: .identifier, lexeme: "number", line: 5, column: 9),
+            .init(kind: .slashEqual, lexeme: Token.Kind.slashEqual.rawValue, line: 5, column: 12),
+            .init(kind: .number, lexeme: "5", literal: 5.0, line: 5, column: 14),
+            .init(kind: .identifier, lexeme: "number", line: 6, column: 9),
+            .init(kind: .percentEqual, lexeme: Token.Kind.percentEqual.rawValue, line: 6, column: 12),
+            .init(kind: .number, lexeme: "6", literal: 6.0, line: 6, column: 14),
+            .init(kind: .identifier, lexeme: "number", line: 7, column: 9),
+            .init(kind: .powerEqual, lexeme: Token.Kind.powerEqual.rawValue, line: 7, column: 12),
+            .init(kind: .number, lexeme: "7", literal: 7.0, line: 7, column: 14),
+            .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 7, column: 17)
+        ])
+    }
 }
