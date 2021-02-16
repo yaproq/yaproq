@@ -562,4 +562,135 @@ extension LexerTests {
             )
         }
     }
+
+    func testVariableStatement() {
+        // Arrange
+        var template: Template = "{% var number = 1 %}{% number = 20.0 %}"
+        var lexer = Lexer(template: template)
+
+        // Act
+        var tokens = try! lexer.scan()
+
+        // Assert
+        XCTAssertEqual(lexer.template, template)
+        XCTAssertEqual(tokens, [
+            .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
+            .init(kind: .identifier, lexeme: "number", line: 1, column: 13),
+            .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 15),
+            .init(kind: .number, lexeme: "1", literal: 1.0, line: 1, column: 17),
+            .init(kind: .identifier, lexeme: "number", line: 1, column: 29),
+            .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 31),
+            .init(kind: .number, lexeme: "20.0", literal: 20.0, line: 1, column: 36),
+            .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 1, column: 39)
+        ])
+
+        // Arrange
+        template = "{% var bool = true %}{% bool = false %}"
+        lexer = Lexer(template: template)
+
+        // Act
+        tokens = try! lexer.scan()
+
+        // Assert
+        XCTAssertEqual(lexer.template, template)
+        XCTAssertEqual(tokens, [
+            .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
+            .init(kind: .identifier, lexeme: "bool", line: 1, column: 11),
+            .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 13),
+            .init(kind: .true, lexeme: Token.Kind.true.rawValue, literal: true, line: 1, column: 18),
+            .init(kind: .identifier, lexeme: "bool", line: 1, column: 28),
+            .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 30),
+            .init(kind: .false, lexeme: Token.Kind.false.rawValue, literal: false, line: 1, column: 36),
+            .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 1, column: 39)
+        ])
+
+        // Arrange
+        template = "{% var string = \"Hello World\" %}"
+        lexer = Lexer(template: template)
+
+        // Act
+        tokens = try! lexer.scan()
+
+        // Assert
+        XCTAssertEqual(lexer.template, template)
+        XCTAssertEqual(tokens, [
+            .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
+            .init(kind: .identifier, lexeme: "string", line: 1, column: 13),
+            .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 15),
+            .init(kind: .string, lexeme: "\"Hello World\"", literal: "Hello World", line: 1, column: 29),
+            .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 1, column: 32)
+        ])
+
+        // Arrange
+        template = "{% var unterminatedString = \"Hello World %}"
+        lexer = Lexer(template: template)
+
+        // Act/Assert
+        XCTAssertThrowsError(try lexer.scan()) { error in
+            let error = error as! SyntaxError
+            XCTAssertNil(error.filePath)
+            XCTAssertEqual(error.line, 1)
+            XCTAssertEqual(error.column, 43)
+            XCTAssertEqual(error.errorDescription, """
+            [Line: \(error.line), Column: \(error.column)] \
+            SyntaxError: An unterminated string.
+            """
+            )
+        }
+
+        // Arrange
+        template = "{% var unclosedDelimiter = \"Hello World\""
+        lexer = Lexer(template: template)
+
+        // Act/Assert
+        XCTAssertThrowsError(try lexer.scan()) { error in
+            let error = error as! SyntaxError
+            XCTAssertNil(error.filePath)
+            XCTAssertEqual(error.line, 1)
+            XCTAssertEqual(error.column, 40)
+            XCTAssertEqual(error.errorDescription, """
+            [Line: \(error.line), Column: \(error.column)] \
+            SyntaxError: No matching closing delimiter `%}` is found.
+            """
+            )
+        }
+
+        // Arrange
+        template = "{% var numberWithTrailingDotAndUnclosedDelimiter = 12."
+        lexer = Lexer(template: template)
+
+        // Act/Assert
+        XCTAssertThrowsError(try lexer.scan()) { error in
+            let error = error as! SyntaxError
+            XCTAssertNil(error.filePath)
+            XCTAssertEqual(error.line, 1)
+            XCTAssertEqual(error.column, 54)
+            XCTAssertEqual(error.errorDescription, """
+            [Line: \(error.line), Column: \(error.column)] \
+            SyntaxError: No matching closing delimiter `%}` is found.
+            """
+            )
+        }
+
+        // Arrange
+        template = """
+        {%
+            var whitespaceAndNewlines = false
+        %}
+        """
+        lexer = Lexer(template: template)
+
+        // Act
+        tokens = try! lexer.scan()
+
+        // Assert
+        XCTAssertEqual(lexer.template, template)
+        XCTAssertEqual(tokens, [
+            .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 2, column: 7),
+            .init(kind: .identifier, lexeme: "whitespaceAndNewlines", line: 2, column: 29),
+            .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 2, column: 31),
+            .init(kind: .false, lexeme: Token.Kind.false.rawValue, literal: false, line: 2, column: 37),
+            .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 3, column: 2)
+        ])
+    }
 }
