@@ -149,4 +149,30 @@ extension LexerTests {
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 7, column: 17)
         ])
     }
+
+    func testNilCoalescingOperator() {
+        // Arrange
+        let message = "The variable `text` is `nil`"
+        let template = Template("""
+        {% var text %}
+        {{ text ?? "\(message)" }}
+        """
+        )
+        let lexer = Lexer(template: template)
+
+        // Act
+        let tokens = try! lexer.scan()
+
+        // Assert
+        XCTAssertEqual(lexer.template, template)
+        XCTAssertEqual(tokens, [
+            .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
+            .init(kind: .identifier, lexeme: "text", line: 1, column: 11),
+            .init(kind: .print, lexeme: Token.Kind.print.rawValue, line: -1, column: -1),
+            .init(kind: .identifier, lexeme: "text", line: 2, column: 7),
+            .init(kind: .questionQuestion, lexeme: Token.Kind.questionQuestion.rawValue, line: 2, column: 10),
+            .init(kind: .string, lexeme: "\"\(message)\"", literal: message, line: 2, column: 41),
+            .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 2, column: 44)
+        ])
+    }
 }
