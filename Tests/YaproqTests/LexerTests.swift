@@ -205,4 +205,34 @@ extension LexerTests {
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 2, column: 31)
         ])
     }
+
+    func testTernaryOperator() {
+        // Arrange
+        let template: Template = """
+        {% var number = 1 %}
+        {{ number == 1 ? "One" : "Not one" }}
+        """
+        let lexer = Lexer(template: template)
+
+        // Act
+        let tokens = try! lexer.scan()
+
+        // Assert
+        XCTAssertEqual(lexer.template, template)
+        XCTAssertEqual(tokens, [
+            .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
+            .init(kind: .identifier, lexeme: "number", line: 1, column: 13),
+            .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 15),
+            .init(kind: .number, lexeme: "1", literal: 1.0, line: 1, column: 17),
+            .init(kind: .print, lexeme: Token.Kind.print.rawValue, line: -1, column: -1),
+            .init(kind: .identifier, lexeme: "number", line: 2, column: 9),
+            .init(kind: .equalEqual, lexeme: Token.Kind.equalEqual.rawValue, line: 2, column: 12),
+            .init(kind: .number, lexeme: "1", literal: 1.0, line: 2, column: 14),
+            .init(kind: .question, lexeme: Token.Kind.question.rawValue, line: 2, column: 16),
+            .init(kind: .string, lexeme: "\"One\"", literal: "One", line: 2, column: 22),
+            .init(kind: .colon, lexeme: Token.Kind.colon.rawValue, line: 2, column: 24),
+            .init(kind: .string, lexeme: "\"Not one\"", literal: "Not one", line: 2, column: 34),
+            .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 2, column: 37)
+        ])
+    }
 }
