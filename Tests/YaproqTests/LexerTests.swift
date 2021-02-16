@@ -280,3 +280,35 @@ extension LexerTests {
         ])
     }
 }
+
+// MARK: - Statements
+
+extension LexerTests {
+    func testBlockStatement() {
+        // Arrange
+        let template: Template = """
+        {% extend "base.html" %}
+
+        {% block title %}
+        {% @super %}
+        {% endblock %}
+        """
+        let lexer = Lexer(template: template)
+
+        // Act
+        let tokens = try! lexer.scan()
+
+        // Assert
+        XCTAssertEqual(lexer.template, template)
+        XCTAssertEqual(tokens, [
+            .init(kind: .extend, lexeme: Token.Kind.extend.rawValue, line: 1, column: 9),
+            .init(kind: .string, lexeme: "\"base.html\"", literal: "base.html", line: 1, column: 21),
+            .init(kind: .block, lexeme: Token.Kind.block.rawValue, line: 3, column: 8),
+            .init(kind: .identifier, lexeme: "title", line: 3, column: 14),
+            .init(kind: .leftBrace, lexeme: Token.Kind.leftBrace.rawValue, line: -1, column: -1),
+            .init(kind: .super, lexeme: Token.Kind.super.rawValue, line: 4, column: 9),
+            .init(kind: .rightBrace, lexeme: Token.Kind.rightBrace.rawValue, line: -1, column: -1),
+            .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 5, column: 14)
+        ])
+    }
+}
