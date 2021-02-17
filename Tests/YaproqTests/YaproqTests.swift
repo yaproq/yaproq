@@ -49,3 +49,17 @@ final class YaproqConfigurationTests: BaseTests {
         }
     }
 }
+
+final class YaproqTests: BaseTests {
+    func testInit() {
+        // Arrange
+        let configuration = Yaproq.Configuration()
+
+        // Act
+        let templating = Yaproq(configuration: configuration)
+
+        // Assert
+        XCTAssertEqual(templating.configuration.directoryPath, configuration.directoryPath)
+        XCTAssertNotNil(templating.environment)
+    }
+}
