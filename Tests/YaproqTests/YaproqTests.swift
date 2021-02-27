@@ -198,4 +198,23 @@ final class YaproqTests: BaseTests {
         XCTAssertTrue(result.contains("two-2"))
         XCTAssertTrue(result.contains("three-3"))
     }
+
+    func testWhileStatement() {
+        // Arrange
+        let template = Template("""
+        {% var number = 0 %}
+        {% var maxNumber = 3 %}
+        {% while number < maxNumber %}
+        {{ number }}
+        {% number += 1 %}
+        {% endwhile %}
+        """
+        )
+
+        // Act
+        let result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "012")
+    }
 }
