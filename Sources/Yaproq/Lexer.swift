@@ -298,8 +298,7 @@ extension Lexer {
         if peek() == Token.Kind.dot.rawValue && isNumeric(peek(next: 1)) { advance() }
         while isNumeric(peek()) && !isAtEnd { advance() }
         let lexeme = substring(from: start, to: current)
-        let value = Double(lexeme)
-        addToken(kind: .number, lexeme: lexeme, literal: value)
+        addToken(kind: .number, lexeme: lexeme, literal: Int(lexeme) ?? Double(lexeme))
     }
 
     private func addStringToken() throws {

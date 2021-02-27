@@ -33,21 +33,21 @@ extension LexerTests {
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
             .init(kind: .identifier, lexeme: "result", line: 1, column: 13),
             .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 15),
-            .init(kind: .number, lexeme: "5", literal: 5.0, line: 1, column: 17),
+            .init(kind: .number, lexeme: "5", literal: 5, line: 1, column: 17),
             .init(kind: .star, lexeme: Token.Kind.star.rawValue, line: 1, column: 19),
-            .init(kind: .number, lexeme: "4", literal: 4.0, line: 1, column: 21),
+            .init(kind: .number, lexeme: "4", literal: 4, line: 1, column: 21),
             .init(kind: .slash, lexeme: Token.Kind.slash.rawValue, line: 1, column: 23),
             .init(kind: .leftParenthesis, lexeme: Token.Kind.leftParenthesis.rawValue, line: 1, column: 25),
-            .init(kind: .number, lexeme: "3", literal: 3.0, line: 1, column: 26),
+            .init(kind: .number, lexeme: "3", literal: 3, line: 1, column: 26),
             .init(kind: .plus, lexeme: Token.Kind.plus.rawValue, line: 1, column: 28),
-            .init(kind: .number, lexeme: "2", literal: 2.0, line: 1, column: 30),
+            .init(kind: .number, lexeme: "2", literal: 2, line: 1, column: 30),
             .init(kind: .rightParenthesis, lexeme: Token.Kind.rightParenthesis.rawValue, line: 1, column: 31),
             .init(kind: .minus, lexeme: Token.Kind.minus.rawValue, line: 1, column: 33),
-            .init(kind: .number, lexeme: "7", literal: 7.0, line: 1, column: 35),
+            .init(kind: .number, lexeme: "7", literal: 7, line: 1, column: 35),
             .init(kind: .percent, lexeme: Token.Kind.percent.rawValue, line: 1, column: 37),
-            .init(kind: .number, lexeme: "2", literal: 2.0, line: 1, column: 39),
+            .init(kind: .number, lexeme: "2", literal: 2, line: 1, column: 39),
             .init(kind: .power, lexeme: Token.Kind.power.rawValue, line: 1, column: 41),
-            .init(kind: .number, lexeme: "2", literal: 2.0, line: 1, column: 43),
+            .init(kind: .number, lexeme: "2", literal: 2, line: 1, column: 43),
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 1, column: 46)
         ])
     }
@@ -73,34 +73,34 @@ extension LexerTests {
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
             .init(kind: .identifier, lexeme: "result", line: 1, column: 13),
             .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 15),
-            .init(kind: .number, lexeme: "2", literal: 2.0, line: 1, column: 17),
+            .init(kind: .number, lexeme: "2", literal: 2, line: 1, column: 17),
             .init(kind: .greater, lexeme: Token.Kind.greater.rawValue, line: 1, column: 19),
-            .init(kind: .number, lexeme: "1", literal: 1.0, line: 1, column: 21),
+            .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 21),
             .init(kind: .identifier, lexeme: "result", line: 2, column: 9),
             .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 2, column: 11),
-            .init(kind: .number, lexeme: "4", literal: 4.0, line: 2, column: 13),
+            .init(kind: .number, lexeme: "4", literal: 4, line: 2, column: 13),
             .init(kind: .less, lexeme: Token.Kind.less.rawValue, line: 2, column: 15),
-            .init(kind: .number, lexeme: "3", literal: 3.0, line: 2, column: 17),
+            .init(kind: .number, lexeme: "3", literal: 3, line: 2, column: 17),
             .init(kind: .identifier, lexeme: "result", line: 3, column: 9),
             .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 3, column: 11),
-            .init(kind: .number, lexeme: "2", literal: 2.0, line: 3, column: 13),
+            .init(kind: .number, lexeme: "2", literal: 2, line: 3, column: 13),
             .init(kind: .greaterOrEqual, lexeme: Token.Kind.greaterOrEqual.rawValue, line: 3, column: 16),
-            .init(kind: .number, lexeme: "1", literal: 1.0, line: 3, column: 18),
+            .init(kind: .number, lexeme: "1", literal: 1, line: 3, column: 18),
             .init(kind: .identifier, lexeme: "result", line: 4, column: 9),
             .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 4, column: 11),
-            .init(kind: .number, lexeme: "4", literal: 4.0, line: 4, column: 13),
+            .init(kind: .number, lexeme: "4", literal: 4, line: 4, column: 13),
             .init(kind: .lessOrEqual, lexeme: Token.Kind.lessOrEqual.rawValue, line: 4, column: 16),
-            .init(kind: .number, lexeme: "3", literal: 3.0, line: 4, column: 18),
+            .init(kind: .number, lexeme: "3", literal: 3, line: 4, column: 18),
             .init(kind: .identifier, lexeme: "result", line: 5, column: 9),
             .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 5, column: 11),
-            .init(kind: .number, lexeme: "1", literal: 1.0, line: 5, column: 13),
+            .init(kind: .number, lexeme: "1", literal: 1, line: 5, column: 13),
             .init(kind: .equalEqual, lexeme: Token.Kind.equalEqual.rawValue, line: 5, column: 16),
-            .init(kind: .number, lexeme: "2", literal: 2.0, line: 5, column: 18),
+            .init(kind: .number, lexeme: "2", literal: 2, line: 5, column: 18),
             .init(kind: .identifier, lexeme: "result", line: 6, column: 9),
             .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 6, column: 11),
-            .init(kind: .number, lexeme: "4", literal: 4.0, line: 6, column: 13),
+            .init(kind: .number, lexeme: "4", literal: 4, line: 6, column: 13),
             .init(kind: .bangEqual, lexeme: Token.Kind.bangEqual.rawValue, line: 6, column: 16),
-            .init(kind: .number, lexeme: "3", literal: 3.0, line: 6, column: 18),
+            .init(kind: .number, lexeme: "3", literal: 3, line: 6, column: 18),
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 6, column: 21)
         ])
     }
@@ -127,25 +127,25 @@ extension LexerTests {
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
             .init(kind: .identifier, lexeme: "number", line: 1, column: 13),
             .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 15),
-            .init(kind: .number, lexeme: "1", literal: 1.0, line: 1, column: 17),
+            .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 17),
             .init(kind: .identifier, lexeme: "number", line: 2, column: 9),
             .init(kind: .plusEqual, lexeme: Token.Kind.plusEqual.rawValue, line: 2, column: 12),
-            .init(kind: .number, lexeme: "2", literal: 2.0, line: 2, column: 14),
+            .init(kind: .number, lexeme: "2", literal: 2, line: 2, column: 14),
             .init(kind: .identifier, lexeme: "number", line: 3, column: 9),
             .init(kind: .minusEqual, lexeme: Token.Kind.minusEqual.rawValue, line: 3, column: 12),
-            .init(kind: .number, lexeme: "3", literal: 3.0, line: 3, column: 14),
+            .init(kind: .number, lexeme: "3", literal: 3, line: 3, column: 14),
             .init(kind: .identifier, lexeme: "number", line: 4, column: 9),
             .init(kind: .starEqual, lexeme: Token.Kind.starEqual.rawValue, line: 4, column: 12),
-            .init(kind: .number, lexeme: "4", literal: 4.0, line: 4, column: 14),
+            .init(kind: .number, lexeme: "4", literal: 4, line: 4, column: 14),
             .init(kind: .identifier, lexeme: "number", line: 5, column: 9),
             .init(kind: .slashEqual, lexeme: Token.Kind.slashEqual.rawValue, line: 5, column: 12),
-            .init(kind: .number, lexeme: "5", literal: 5.0, line: 5, column: 14),
+            .init(kind: .number, lexeme: "5", literal: 5, line: 5, column: 14),
             .init(kind: .identifier, lexeme: "number", line: 6, column: 9),
             .init(kind: .percentEqual, lexeme: Token.Kind.percentEqual.rawValue, line: 6, column: 12),
-            .init(kind: .number, lexeme: "6", literal: 6.0, line: 6, column: 14),
+            .init(kind: .number, lexeme: "6", literal: 6, line: 6, column: 14),
             .init(kind: .identifier, lexeme: "number", line: 7, column: 9),
             .init(kind: .powerEqual, lexeme: Token.Kind.powerEqual.rawValue, line: 7, column: 12),
-            .init(kind: .number, lexeme: "7", literal: 7.0, line: 7, column: 14),
+            .init(kind: .number, lexeme: "7", literal: 7, line: 7, column: 14),
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 7, column: 17)
         ])
     }
@@ -193,15 +193,15 @@ extension LexerTests {
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
             .init(kind: .identifier, lexeme: "halfOpenRange", line: 1, column: 20),
             .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 22),
-            .init(kind: .number, lexeme: "0", literal: 0.0, line: 1, column: 24),
+            .init(kind: .number, lexeme: "0", literal: 0, line: 1, column: 24),
             .init(kind: .halfOpenRange, lexeme: Token.Kind.halfOpenRange.rawValue, line: 1, column: 27),
-            .init(kind: .number, lexeme: "10", literal: 10.0, line: 1, column: 29),
+            .init(kind: .number, lexeme: "10", literal: 10, line: 1, column: 29),
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 2, column: 6),
             .init(kind: .identifier, lexeme: "closedRange", line: 2, column: 18),
             .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 2, column: 20),
-            .init(kind: .number, lexeme: "10", literal: 10.0, line: 2, column: 23),
+            .init(kind: .number, lexeme: "10", literal: 10, line: 2, column: 23),
             .init(kind: .closedRange, lexeme: Token.Kind.closedRange.rawValue, line: 2, column: 26),
-            .init(kind: .number, lexeme: "20", literal: 20.0, line: 2, column: 28),
+            .init(kind: .number, lexeme: "20", literal: 20, line: 2, column: 28),
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 2, column: 31)
         ])
     }
@@ -223,11 +223,11 @@ extension LexerTests {
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
             .init(kind: .identifier, lexeme: "number", line: 1, column: 13),
             .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 15),
-            .init(kind: .number, lexeme: "1", literal: 1.0, line: 1, column: 17),
+            .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 17),
             .init(kind: .print, lexeme: Token.Kind.print.rawValue, line: -1, column: -1),
             .init(kind: .identifier, lexeme: "number", line: 2, column: 9),
             .init(kind: .equalEqual, lexeme: Token.Kind.equalEqual.rawValue, line: 2, column: 12),
-            .init(kind: .number, lexeme: "1", literal: 1.0, line: 2, column: 14),
+            .init(kind: .number, lexeme: "1", literal: 1, line: 2, column: 14),
             .init(kind: .question, lexeme: Token.Kind.question.rawValue, line: 2, column: 16),
             .init(kind: .string, lexeme: "\"One\"", literal: "One", line: 2, column: 22),
             .init(kind: .colon, lexeme: Token.Kind.colon.rawValue, line: 2, column: 24),
@@ -250,7 +250,7 @@ extension LexerTests {
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
             .init(kind: .identifier, lexeme: "number", line: 1, column: 13),
             .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 15),
-            .init(kind: .number, lexeme: "1", literal: 1.0, line: 1, column: 17),
+            .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 17),
             .init(kind: .identifier, lexeme: "number", line: 1, column: 29),
             .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 31),
             .init(kind: .minus, lexeme: Token.Kind.minus.rawValue, line: 1, column: 33),
@@ -425,11 +425,11 @@ extension LexerTests {
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
             .init(kind: .identifier, lexeme: "number", line: 1, column: 13),
             .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 15),
-            .init(kind: .number, lexeme: "1", literal: 1.0, line: 1, column: 17),
+            .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 17),
             .init(kind: .if, lexeme: Token.Kind.if.rawValue, line: 2, column: 5),
             .init(kind: .identifier, lexeme: "number", line: 2, column: 12),
             .init(kind: .greater, lexeme: Token.Kind.greater.rawValue, line: 2, column: 14),
-            .init(kind: .number, lexeme: "1", literal: 1.0, line: 2, column: 16),
+            .init(kind: .number, lexeme: "1", literal: 1, line: 2, column: 16),
             .init(kind: .leftBrace, lexeme: Token.Kind.leftBrace.rawValue, line: -1, column: -1),
             .init(kind: .print, lexeme: Token.Kind.print.rawValue, line: -1, column: -1),
             .init(kind: .string, lexeme: "More than", literal: "More than", line: 4, column: 0),
@@ -439,7 +439,7 @@ extension LexerTests {
             .init(kind: .elseif, lexeme: Token.Kind.elseif.rawValue, line: 5, column: 9),
             .init(kind: .identifier, lexeme: "number", line: 5, column: 16),
             .init(kind: .less, lexeme: Token.Kind.less.rawValue, line: 5, column: 18),
-            .init(kind: .number, lexeme: "1", literal: 1.0, line: 5, column: 20),
+            .init(kind: .number, lexeme: "1", literal: 1, line: 5, column: 20),
             .init(kind: .leftBrace, lexeme: Token.Kind.leftBrace.rawValue, line: -1, column: -1),
             .init(kind: .print, lexeme: Token.Kind.print.rawValue, line: -1, column: -1),
             .init(kind: .string, lexeme: "Less than ", literal: "Less than ", line: 6, column: 10),
@@ -467,7 +467,7 @@ extension LexerTests {
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .print, lexeme: Token.Kind.print.rawValue, line: -1, column: -1),
-            .init(kind: .number, lexeme: "1", literal: 1.0, line: 1, column: 4),
+            .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 4),
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 1, column: 7)
         ])
 
@@ -489,7 +489,7 @@ extension LexerTests {
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
             .init(kind: .identifier, lexeme: "number", line: 1, column: 13),
             .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 15),
-            .init(kind: .number, lexeme: "1", literal: 1.0, line: 1, column: 17),
+            .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 17),
             .init(kind: .print, lexeme: Token.Kind.print.rawValue, line: -1, column: -1),
             .init(kind: .identifier, lexeme: "number", line: 3, column: 10),
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 4, column: 2)
@@ -508,7 +508,7 @@ extension LexerTests {
             .init(kind: .print, lexeme: Token.Kind.print.rawValue, line: -1, column: -1),
             .init(kind: .identifier, lexeme: "array", line: 1, column: 8),
             .init(kind: .leftBracket, lexeme: Token.Kind.leftBracket.rawValue, line: 1, column: 9),
-            .init(kind: .number, lexeme: "0", literal: 0.0, line: 1, column: 10),
+            .init(kind: .number, lexeme: "0", literal: 0, line: 1, column: 10),
             .init(kind: .rightBracket, lexeme: Token.Kind.rightBracket.rawValue, line: 1, column: 11),
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 1, column: 14)
         ])
@@ -554,7 +554,7 @@ extension LexerTests {
             let error = error as! SyntaxError
             XCTAssertNil(error.filePath)
             XCTAssertEqual(error.line, 1)
-            XCTAssertEqual(error.column, 10)
+            XCTAssertEqual(error.column, 11)
             XCTAssertEqual(error.errorDescription, """
             [Line: \(error.line), Column: \(error.column)] \
             SyntaxError: An unexpected character `\(Token.Kind.dot.rawValue)`.
@@ -577,12 +577,14 @@ extension LexerTests {
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
             .init(kind: .identifier, lexeme: "number", line: 1, column: 13),
             .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 15),
-            .init(kind: .number, lexeme: "1", literal: 1.0, line: 1, column: 17),
+            .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 17),
             .init(kind: .identifier, lexeme: "number", line: 1, column: 29),
             .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 31),
             .init(kind: .number, lexeme: "20.0", literal: 20.0, line: 1, column: 36),
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 1, column: 39)
         ])
+
+//        XCTAssertEqual failed: ("[[1:6] var, var, [1:13] identifier, number, [1:15] equal, =, [1:17] number, 1, 1, [1:29] identifier, number, [1:31] equal, =, [1:36] number, 20.0, 20.0, [1:39] eof,
 
         // Arrange
         template = "{% var bool = true %}{% bool = false %}"
@@ -667,7 +669,7 @@ extension LexerTests {
             XCTAssertEqual(error.column, 54)
             XCTAssertEqual(error.errorDescription, """
             [Line: \(error.line), Column: \(error.column)] \
-            SyntaxError: No matching closing delimiter `%}` is found.
+            SyntaxError: An unexpected character `.`.
             """
             )
         }

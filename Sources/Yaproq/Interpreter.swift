@@ -159,36 +159,98 @@ extension Interpreter: ExpressionVisitor {
              .powerEqual,
              .slashEqual,
              .starEqual:
-            guard
-                let left = try templating.environment.valueForVariable(with: expression.identifierToken) as? Double,
-                let right = try evaluate(expression: expression.value) as? Double else {
-                throw RuntimeError(
-                    "The operands must be numbers.",
-                    filePath: expression.operatorToken.filePath,
-                    line: expression.operatorToken.line,
-                    column: expression.operatorToken.column
-                )
+            if let left = try templating.environment.valueForVariable(with: expression.identifierToken) as? Double,
+               let right = try evaluate(expression: expression.value) as? Double {
+                let value: Any
+
+                if expression.operatorToken.kind == .minusEqual {
+                    value = left - right
+                } else if expression.operatorToken.kind == .percentEqual {
+                    value = left.truncatingRemainder(dividingBy: right)
+                } else if expression.operatorToken.kind == .plusEqual {
+                    value = left + right
+                } else if expression.operatorToken.kind == .powerEqual {
+                    value = pow(left, right)
+                } else if expression.operatorToken.kind == .slashEqual {
+                    value = left / right
+                } else {
+                    value = left * right
+                }
+
+                try templating.environment.assign(value: value, toVariableWith: expression.identifierToken)
+
+                return value
+            } else if let left = try templating.environment.valueForVariable(with: expression.identifierToken) as? Double,
+                      let right = try evaluate(expression: expression.value) as? Int {
+                let value: Any
+
+                if expression.operatorToken.kind == .minusEqual {
+                    value = left - Double(right)
+                } else if expression.operatorToken.kind == .percentEqual {
+                    value = left.truncatingRemainder(dividingBy: Double(right))
+                } else if expression.operatorToken.kind == .plusEqual {
+                    value = left + Double(right)
+                } else if expression.operatorToken.kind == .powerEqual {
+                    value = pow(left, Double(right))
+                } else if expression.operatorToken.kind == .slashEqual {
+                    value = left / Double(right)
+                } else {
+                    value = left * Double(right)
+                }
+
+                try templating.environment.assign(value: value, toVariableWith: expression.identifierToken)
+
+                return value
+            } else if let left = try templating.environment.valueForVariable(with: expression.identifierToken) as? Int,
+                      let right = try evaluate(expression: expression.value) as? Double {
+                let value: Any
+
+                if expression.operatorToken.kind == .minusEqual {
+                    value = Double(left) - right
+                } else if expression.operatorToken.kind == .percentEqual {
+                    value = Double(left).truncatingRemainder(dividingBy: right)
+                } else if expression.operatorToken.kind == .plusEqual {
+                    value = Double(left) + right
+                } else if expression.operatorToken.kind == .powerEqual {
+                    value = pow(Double(left), right)
+                } else if expression.operatorToken.kind == .slashEqual {
+                    value = Double(left) / right
+                } else {
+                    value = Double(left) * right
+                }
+
+                try templating.environment.assign(value: value, toVariableWith: expression.identifierToken)
+
+                return value
+            } else if let left = try templating.environment.valueForVariable(with: expression.identifierToken) as? Int,
+                      let right = try evaluate(expression: expression.value) as? Int {
+                let value: Any
+
+                if expression.operatorToken.kind == .minusEqual {
+                    value = left - right
+                } else if expression.operatorToken.kind == .percentEqual {
+                    value = left % right
+                } else if expression.operatorToken.kind == .plusEqual {
+                    value = left + right
+                } else if expression.operatorToken.kind == .powerEqual {
+                    value = pow(Decimal(left), right)
+                } else if expression.operatorToken.kind == .slashEqual {
+                    value = left / right
+                } else {
+                    value = left * right
+                }
+
+                try templating.environment.assign(value: value, toVariableWith: expression.identifierToken)
+
+                return value
             }
 
-            let value: Double
-
-            if expression.operatorToken.kind == .minusEqual {
-                value = left - right
-            } else if expression.operatorToken.kind == .percentEqual {
-                value = left.truncatingRemainder(dividingBy: right)
-            } else if expression.operatorToken.kind == .plusEqual {
-                value = left + right
-            } else if expression.operatorToken.kind == .powerEqual {
-                value = pow(left, right)
-            } else if expression.operatorToken.kind == .slashEqual {
-                value = left / right
-            } else {
-                value = left * right
-            }
-
-            try templating.environment.assign(value: value, toVariableWith: expression.identifierToken)
-
-            return value
+            throw RuntimeError(
+                "The operands must be numbers.",
+                filePath: expression.operatorToken.filePath,
+                line: expression.operatorToken.line,
+                column: expression.operatorToken.column
+            )
         default:
             throw RuntimeError(
                 "An invalid operator `\(expression.operatorToken.lexeme)`.",
@@ -208,24 +270,34 @@ extension Interpreter: ExpressionVisitor {
             return !isEqual(left, right)
         case .closedRange,
              .halfOpenRange:
-            var lowerBound = left as? Double
-            var upperBound = right as? Double
-
-            if lowerBound == nil, let expression = left as? VariableExpression {
-                lowerBound = try visitVariable(expression: expression) as? Double
-            }
-
-            if upperBound == nil, let expression = right as? VariableExpression {
-                upperBound = try visitVariable(expression: expression) as? Double
-            }
-
-            if let lowerBound = lowerBound, let upperBound = upperBound {
+            if let lowerBound = left as? Double, let upperBound = right as? Double {
                 if expression.token.kind == .closedRange {
-                    let range: CountableClosedRange = Int(lowerBound)...Int(upperBound)
-                    return range
-                } else {
-                    let range: CountableRange = Int(lowerBound)..<Int(upperBound)
-                    return range
+                    return lowerBound...upperBound
+                }
+
+                return lowerBound..<upperBound
+            } else if let lowerBound = left as? Int, let upperBound = right as? Int {
+                if expression.token.kind == .closedRange {
+                    return lowerBound...upperBound
+                }
+
+                return lowerBound..<upperBound
+            } else if let leftExpression = left as? VariableExpression,
+                      let rightExpression = right as? VariableExpression {
+                if let lowerBound = try visitVariable(expression: leftExpression) as? Double,
+                   let upperBound = try visitVariable(expression: rightExpression) as? Double {
+                    if expression.token.kind == .closedRange {
+                        return lowerBound...upperBound
+                    }
+
+                    return lowerBound..<upperBound
+                } else if let lowerBound = try visitVariable(expression: leftExpression) as? Int,
+                          let upperBound = try visitVariable(expression: rightExpression) as? Int {
+                    if expression.token.kind == .closedRange {
+                        return lowerBound...upperBound
+                    }
+
+                    return lowerBound..<upperBound
                 }
             }
 
@@ -240,6 +312,7 @@ extension Interpreter: ExpressionVisitor {
             return isEqual(left, right)
         case .greater:
             if let left = left as? Double, let right = right as? Double { return left > right }
+            if let left = left as? Int, let right = right as? Int { return left > right }
             if let left = left as? String, let right = right as? String { return left > right }
             if let left = left as? Date, let right = right as? Date { return left > right }
             let token = expression.token
@@ -251,6 +324,7 @@ extension Interpreter: ExpressionVisitor {
             )
         case .greaterOrEqual:
             if let left = left as? Double, let right = right as? Double { return left >= right }
+            if let left = left as? Int, let right = right as? Int { return left >= right }
             if let left = left as? String, let right = right as? String { return left >= right }
             if let left = left as? Date, let right = right as? Date { return left >= right }
             let token = expression.token
@@ -262,6 +336,7 @@ extension Interpreter: ExpressionVisitor {
             )
         case .less:
             if let left = left as? Double, let right = right as? Double { return left < right }
+            if let left = left as? Int, let right = right as? Int { return left < right }
             if let left = left as? String, let right = right as? String { return left < right }
             if let left = left as? Date, let right = right as? Date { return left < right }
             let token = expression.token
@@ -273,6 +348,7 @@ extension Interpreter: ExpressionVisitor {
             )
         case .lessOrEqual:
             if let left = left as? Double, let right = right as? Double { return left <= right }
+            if let left = left as? Int, let right = right as? Int { return left <= right }
             if let left = left as? String, let right = right as? String { return left <= right }
             if let left = left as? Date, let right = right as? Date { return left <= right }
             let token = expression.token
@@ -284,6 +360,7 @@ extension Interpreter: ExpressionVisitor {
             )
         case .minus:
             if let left = left as? Double, let right = right as? Double { return left - right }
+            if let left = left as? Int, let right = right as? Int { return left - right }
             let token = expression.token
             throw RuntimeError(
                 "The operands must be numbers.",
@@ -294,6 +371,8 @@ extension Interpreter: ExpressionVisitor {
         case .percent:
             if let left = left as? Double, let right = right as? Double {
                 return left.truncatingRemainder(dividingBy: right)
+            } else if let left = left as? Int, let right = right as? Int {
+                return left % right
             }
 
             let token = expression.token
@@ -305,6 +384,8 @@ extension Interpreter: ExpressionVisitor {
             )
         case .plus:
             if let left = left as? Double, let right = right as? Double {
+                return left + right
+            } else if let left = left as? Int, let right = right as? Int {
                 return left + right
             } else if let left = left as? String, let right = right as? String {
                 return left + right
@@ -320,6 +401,8 @@ extension Interpreter: ExpressionVisitor {
         case .power:
             if let left = left as? Double, let right = right as? Double {
                 return pow(left, right)
+            } else if let left = left as? Int, let right = right as? Int {
+                return pow(Decimal(left), right)
             }
 
             let token = expression.token
@@ -333,6 +416,7 @@ extension Interpreter: ExpressionVisitor {
             return left ?? right
         case .slash:
             if let left = left as? Double, let right = right as? Double { return left / right }
+            if let left = left as? Int, let right = right as? Int { return left / right }
             let token = expression.token
             throw RuntimeError(
                 "The operands must be numbers.",
@@ -342,6 +426,7 @@ extension Interpreter: ExpressionVisitor {
             )
         case .star:
             if let left = left as? Double, let right = right as? Double { return left * right }
+            if let left = left as? Int, let right = right as? Int { return left * right }
             let token = expression.token
             throw RuntimeError(
                 "The operands must be numbers.",
@@ -421,7 +506,7 @@ extension Interpreter: ExpressionVisitor {
         if let index = expression.index {
             let index = try evaluate(expression: index)
 
-            if let array = value as? Array<Any> {
+            if let array = value as? [Any] {
                 if let index = index as? Double { return array[Int(index)] }
                 throw RuntimeError(
                     "The index must be an integer.",
@@ -429,10 +514,18 @@ extension Interpreter: ExpressionVisitor {
                     line: token.line,
                     column: token.column
                 )
+            } else if let dictionary = value as? [AnyHashable: Any] {
+                if let key = index as? AnyHashable { return dictionary[key] }
+                throw RuntimeError(
+                    "The key must conform to `AnyHashable`.",
+                    filePath: token.filePath,
+                    line: token.line,
+                    column: token.column
+                )
             }
 
             throw RuntimeError(
-                "The `\(token.lexeme)` must be an array.",
+                "The `\(token.lexeme)` must be an array or dictionary.",
                 filePath: token.filePath,
                 line: token.line,
                 column: token.column
@@ -532,13 +625,13 @@ extension Interpreter: StatementVisitor {
             let value = try visitBinary(expression: expression)
             let token = expression.token
 
-            if let closedRange = value as? CountableClosedRange<Int> {
+            if let closedRange = value as? ClosedRange<Int> {
                 for (key, value) in closedRange.enumerated() {
-                    try assign(value: value, for: Double(key), on: token)
+                    try assign(value: value, for: key, on: token)
                 }
-            } else if let range = value as? CountableRange<Int> {
+            } else if let range = value as? Range<Int> {
                 for (key, value) in range.enumerated() {
-                    try assign(value: value, for: Double(key), on: token)
+                    try assign(value: value, for: key, on: token)
                 }
             } else {
                 throw RuntimeError(
@@ -552,13 +645,17 @@ extension Interpreter: StatementVisitor {
             let value = try visitVariable(expression: expression)
             let token = expression.token
 
-            if let array = value as? Array<Any> {
+            if let array = value as? [Any] {
                 for (key, value) in array.enumerated() {
-                    try assign(value: value, for: Double(key), on: token)
+                    try assign(value: value, for: key, on: token)
+                }
+            } else if let dictionary = value as? [AnyHashable: Any] {
+                for (key, value) in dictionary {
+                    try assign(value: value, for: key, on: token)
                 }
             } else {
                 throw RuntimeError(
-                    "The `\(token.lexeme)` must be an array.",
+                    "The `\(token.lexeme)` must be an array or dictionary.",
                     filePath: token.filePath,
                     line: token.line,
                     column: token.column
