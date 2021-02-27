@@ -89,6 +89,7 @@ public final class Yaproq {
     private func clearEnvironments() {
         environments.removeAll()
         setCurrentEnvironment()
+        environment.reset()
     }
 }
 

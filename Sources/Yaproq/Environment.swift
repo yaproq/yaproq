@@ -79,4 +79,9 @@ final class Environment {
             column: token.column
         )
     }
+
+    func reset() {
+        variables.removeAll()
+        variableNames.removeAll()
+    }
 }
