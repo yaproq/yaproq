@@ -2,14 +2,14 @@ import Foundation
 
 public final class Yaproq {
     public let configuration: Configuration
-    var environment: Environment
+    var currentEnvironment: Environment
     private var defaultEnvironment: Environment
     private var environments: [String: Environment]
 
     public init(configuration: Configuration = .init()) {
         self.configuration = configuration
         defaultEnvironment = .init()
-        environment = defaultEnvironment
+        currentEnvironment = defaultEnvironment
         environments = .init()
         setCurrentEnvironment()
     }
@@ -59,7 +59,7 @@ public final class Yaproq {
     }
 
     func _renderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
-        for (name, value) in context { environment.setVariable(named: name, with: value) }
+        for (name, value) in context { currentEnvironment.setVariable(named: name, with: value) }
         let interpreter = Interpreter(templating: self, statements: try parseTemplate(template))
 
         return try interpreter.interpret()
@@ -76,20 +76,20 @@ public final class Yaproq {
     private func setCurrentEnvironment(for filePath: String? = nil) {
         if let filePath = filePath {
             if let environment = environments[filePath] {
-                self.environment = environment
+                self.currentEnvironment = environment
             } else {
-                environment = .init()
-                environments[filePath] = environment
+                currentEnvironment = .init()
+                environments[filePath] = currentEnvironment
             }
         } else {
-            environment = defaultEnvironment
+            currentEnvironment = defaultEnvironment
         }
     }
 
     private func clearEnvironments() {
         environments.removeAll()
         setCurrentEnvironment()
-        environment.reset()
+        currentEnvironment.reset()
     }
 }
 

@@ -117,9 +117,9 @@ extension Interpreter {
     }
 
     private func execute(statements: [Statement], in environment: Environment) throws {
-        let previousEnvironment = templating.environment
-        templating.environment = environment
-        defer { templating.environment = previousEnvironment }
+        let previousEnvironment = templating.currentEnvironment
+        templating.currentEnvironment = environment
+        defer { templating.currentEnvironment = previousEnvironment }
         for statement in statements { try execute(statement: statement) }
     }
 }
@@ -151,7 +151,7 @@ extension Interpreter: ExpressionVisitor {
         switch expression.operatorToken.kind {
         case .equal:
             let value = try evaluate(expression: expression.value)
-            try templating.environment.assign(value: value, toVariableWith: expression.identifierToken)
+            try templating.currentEnvironment.assign(value: value, toVariableWith: expression.identifierToken)
             return value
         case .minusEqual,
              .percentEqual,
@@ -159,7 +159,7 @@ extension Interpreter: ExpressionVisitor {
              .powerEqual,
              .slashEqual,
              .starEqual:
-            if let left = try templating.environment.valueForVariable(with: expression.identifierToken) as? Double,
+            if let left = try templating.currentEnvironment.valueForVariable(with: expression.identifierToken) as? Double,
                let right = try evaluate(expression: expression.value) as? Double {
                 let value: Any
 
@@ -177,10 +177,10 @@ extension Interpreter: ExpressionVisitor {
                     value = left * right
                 }
 
-                try templating.environment.assign(value: value, toVariableWith: expression.identifierToken)
+                try templating.currentEnvironment.assign(value: value, toVariableWith: expression.identifierToken)
 
                 return value
-            } else if let left = try templating.environment.valueForVariable(with: expression.identifierToken) as? Double,
+            } else if let left = try templating.currentEnvironment.valueForVariable(with: expression.identifierToken) as? Double,
                       let right = try evaluate(expression: expression.value) as? Int {
                 let value: Any
 
@@ -198,10 +198,10 @@ extension Interpreter: ExpressionVisitor {
                     value = left * Double(right)
                 }
 
-                try templating.environment.assign(value: value, toVariableWith: expression.identifierToken)
+                try templating.currentEnvironment.assign(value: value, toVariableWith: expression.identifierToken)
 
                 return value
-            } else if let left = try templating.environment.valueForVariable(with: expression.identifierToken) as? Int,
+            } else if let left = try templating.currentEnvironment.valueForVariable(with: expression.identifierToken) as? Int,
                       let right = try evaluate(expression: expression.value) as? Double {
                 let value: Any
 
@@ -219,10 +219,10 @@ extension Interpreter: ExpressionVisitor {
                     value = Double(left) * right
                 }
 
-                try templating.environment.assign(value: value, toVariableWith: expression.identifierToken)
+                try templating.currentEnvironment.assign(value: value, toVariableWith: expression.identifierToken)
 
                 return value
-            } else if let left = try templating.environment.valueForVariable(with: expression.identifierToken) as? Int,
+            } else if let left = try templating.currentEnvironment.valueForVariable(with: expression.identifierToken) as? Int,
                       let right = try evaluate(expression: expression.value) as? Int {
                 let value: Any
 
@@ -240,7 +240,7 @@ extension Interpreter: ExpressionVisitor {
                     value = left * right
                 }
 
-                try templating.environment.assign(value: value, toVariableWith: expression.identifierToken)
+                try templating.currentEnvironment.assign(value: value, toVariableWith: expression.identifierToken)
 
                 return value
             }
@@ -501,7 +501,7 @@ extension Interpreter: ExpressionVisitor {
 
     func visitVariable(expression: VariableExpression) throws -> Any? {
         let token = expression.token
-        let value = try templating.environment.valueForVariable(with: token)
+        let value = try templating.currentEnvironment.valueForVariable(with: token)
 
         if let index = expression.index {
             let index = try evaluate(expression: index)
@@ -555,7 +555,7 @@ extension Interpreter {
 
 extension Interpreter: StatementVisitor {
     func visitBlock(statement: BlockStatement) throws {
-        let environment = Environment(parent: templating.environment)
+        let environment = Environment(parent: templating.currentEnvironment)
 
         for variable in statement.variables {
             try environment.defineVariable(for: variable.token, with: variable.token.literal)
@@ -730,7 +730,7 @@ extension Interpreter: StatementVisitor {
     func visitVariable(statement: VariableStatement) throws {
         var value: Any?
         if let expression = statement.expression { value = try evaluate(expression: expression) }
-        try templating.environment.defineVariable(for: statement.token, with: value)
+        try templating.currentEnvironment.defineVariable(for: statement.token, with: value)
     }
 
     func visitWhile(statement: WhileStatement) throws {
