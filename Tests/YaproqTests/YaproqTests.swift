@@ -217,4 +217,29 @@ final class YaproqTests: BaseTests {
         // Assert
         XCTAssertEqual(result, "012")
     }
+
+    func testIfStatement() {
+        for number in 0...3 {
+            // Arrange
+            let template = Template("""
+            {% var number = \(number) %}
+            {% if number == 0 %}
+            {{ number }}
+            {% elseif number == 1 %}
+            {{ number }}
+            {% elseif number == 2 %}
+            {{ number }}
+            {% else number == 3 %}
+            {{ number }}
+            {% endif %}
+            """
+            )
+
+            // Act
+            let result = try! templating.renderTemplate(template)
+
+            // Assert
+            XCTAssertEqual(result, "\(number)")
+        }
+    }
 }
