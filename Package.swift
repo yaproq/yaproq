@@ -4,14 +4,14 @@ import PackageDescription
 
 let package = Package(
     name: "yaproq",
-    products: [
-        .library(name: "Yaproq", targets: ["Yaproq"])
-    ],
+    products: [.library(name: "Yaproq", targets: ["Yaproq"])],
     targets: [
         .target(name: "Yaproq"),
-        .testTarget(name: "YaproqTests", dependencies: [
-            .target(name: "Yaproq")
-        ])
+        .testTarget(
+            name: "YaproqTests",
+            dependencies: [.target(name: "Yaproq")],
+            resources: [.process("Resources")]
+        )
     ],
     swiftLanguageVersions: [.v5]
 )
