@@ -299,4 +299,23 @@ final class YaproqTests: BaseTests {
         """.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: "")
         )
     }
+
+    func testIncludeStatement() {
+        // Arrange
+        let template = Template("""
+        {% include "footer.html" %}
+        """
+        )
+
+        // Act
+        let result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, """
+        <footer class="footer text-center">
+            <div class="inner"><p class="text-muted">Copyright &copy; 2020-2021.</p></div>
+        </footer>
+        """
+        )
+    }
 }
