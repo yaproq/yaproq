@@ -162,10 +162,20 @@ extension Lexer {
                 } else if matches(Token.Kind.less.rawValue) {
                     addToken(kind: .halfOpenRange)
                 } else {
-                    fallthrough
+                    throw SyntaxError(
+                        "An unexpected character `\(character)`.",
+                        filePath: template.filePath,
+                        line: line,
+                        column: column
+                    )
                 }
             } else {
-                fallthrough
+                throw SyntaxError(
+                    "An unexpected character `\(character)`.",
+                    filePath: template.filePath,
+                    line: line,
+                    column: column
+                )
             }
         case Token.Kind.equal.rawValue:
             addToken(kind: matches(Token.Kind.equal.rawValue) ? .equalEqual : .equal)
@@ -226,16 +236,7 @@ extension Lexer {
     private func addIdentifierToken() throws {
         let dot = Token.Kind.dot.rawValue
 
-        while (isAlphaNumeric(peek()) || peek() == dot) && !isAtEnd {
-            if character(at: current - 1) == dot && peek() == dot {
-                throw SyntaxError(
-                    "An unexpected character `\(dot)`.",
-                    filePath: template.filePath,
-                    line: line,
-                    column: column
-                )
-            }
-
+        while (isAlphaNumeric(peek()) || (peek() == dot && peek(next: 1) != dot)) && !isAtEnd {
             advance()
         }
 
