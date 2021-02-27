@@ -242,4 +242,61 @@ final class YaproqTests: BaseTests {
             XCTAssertEqual(result, "\(number)")
         }
     }
+
+    func testExtendStatement() {
+        // Arrange
+        let template = Template("""
+        {% extend "content.html" %}
+        {% block title %}Home{% endblock %}
+        {% block body %}
+            {% @super %}
+            {% block content %}Content{% endblock %}
+        {% endblock %}
+        """
+        )
+
+        // Act
+        let result = try! templating.renderTemplate(template, in: ["pages": [
+            Page(title: "Home", url: URL(string: "/")!),
+            Page(title: "Blog", url: URL(string: "/blog")!),
+            Page(title: "Projects", url: URL(string: "/projects")!)
+        ]]).replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: "")
+
+        // Assert
+        XCTAssertEqual(result, """
+        <!doctype html>
+        <html lang="en">
+            <head>
+                <title>Home</title>
+            </head>
+            <body>
+                <nav class="navbar navbar-expand-sm navbar-dark sticky-top">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar" aria-controls="collapsibleNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-center" id="collapsibleNavbar">
+                        <ul class="text-center navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link font-weight-bold" href="/">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link font-weight-bold" href="/blog">Blog</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link font-weight-bold" href="/projects">Projects</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="container">
+                    Content
+                </div>
+                <footer class="footer text-center">
+                    <div class="inner"><p class="text-muted">Copyright &copy; 2020-2021.</p></div>
+                </footer>
+            </body>
+        </html>
+        """.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: "")
+        )
+    }
 }

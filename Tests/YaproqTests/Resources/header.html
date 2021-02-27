@@ -1,0 +1,14 @@
+<nav class="navbar navbar-expand-sm navbar-dark sticky-top">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar" aria-controls="collapsibleNavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-center" id="collapsibleNavbar">
+        <ul class="text-center navbar-nav">
+            {% for page in pages %}
+            <li class="nav-item">
+                <a class="nav-link font-weight-bold" href="{{ page.url }}">{{ page.title }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</nav>
