@@ -179,7 +179,7 @@ extension LexerTests {
     func testRangeOperators() {
         // Arrange
         let template: Template = """
-        {% var halfOpenRange = 0..<10 %}
+        {% var range = 0..<10 %}
         {% var closedRange = 10...20 %}
         """
         let lexer = Lexer(template: template)
@@ -191,11 +191,11 @@ extension LexerTests {
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
-            .init(kind: .identifier, lexeme: "halfOpenRange", line: 1, column: 20),
-            .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 22),
-            .init(kind: .number, lexeme: "0", literal: 0, line: 1, column: 24),
-            .init(kind: .halfOpenRange, lexeme: Token.Kind.halfOpenRange.rawValue, line: 1, column: 27),
-            .init(kind: .number, lexeme: "10", literal: 10, line: 1, column: 29),
+            .init(kind: .identifier, lexeme: "range", line: 1, column: 12),
+            .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 1, column: 14),
+            .init(kind: .number, lexeme: "0", literal: 0, line: 1, column: 16),
+            .init(kind: .range, lexeme: Token.Kind.range.rawValue, line: 1, column: 19),
+            .init(kind: .number, lexeme: "10", literal: 10, line: 1, column: 21),
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 2, column: 6),
             .init(kind: .identifier, lexeme: "closedRange", line: 2, column: 18),
             .init(kind: .equal, lexeme: Token.Kind.equal.rawValue, line: 2, column: 20),

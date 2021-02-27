@@ -66,7 +66,7 @@ extension Token {
         case equalEqual = "=="
         case greater = ">"
         case greaterOrEqual = ">="
-        case halfOpenRange = "..<"
+        case range = "..<"
         case less = "<"
         case lessOrEqual = "<="
         case minus = "-"

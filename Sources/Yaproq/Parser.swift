@@ -310,7 +310,7 @@ extension Parser {
     private func rangeExpression() throws -> AnyExpression {
         var expression = try powerExpression()
 
-        while match(.closedRange, .halfOpenRange) {
+        while match(.closedRange, .range) {
             expression = AnyExpression(
                 BinaryExpression(left: expression, token: previous, right: try powerExpression())
             )

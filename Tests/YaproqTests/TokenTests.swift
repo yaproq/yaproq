@@ -47,7 +47,7 @@ final class TokenTests: BaseTests {
         XCTAssertEqual(Token.Kind.equalEqual.rawValue, "==")
         XCTAssertEqual(Token.Kind.greater.rawValue, ">")
         XCTAssertEqual(Token.Kind.greaterOrEqual.rawValue, ">=")
-        XCTAssertEqual(Token.Kind.halfOpenRange.rawValue, "..<")
+        XCTAssertEqual(Token.Kind.range.rawValue, "..<")
         XCTAssertEqual(Token.Kind.less.rawValue, "<")
         XCTAssertEqual(Token.Kind.lessOrEqual.rawValue, "<=")
         XCTAssertEqual(Token.Kind.minus.rawValue, "-")

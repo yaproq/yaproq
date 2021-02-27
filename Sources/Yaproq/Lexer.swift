@@ -160,7 +160,7 @@ extension Lexer {
                 if matches(Token.Kind.dot.rawValue) {
                     addToken(kind: .closedRange)
                 } else if matches(Token.Kind.less.rawValue) {
-                    addToken(kind: .halfOpenRange)
+                    addToken(kind: .range)
                 } else {
                     throw SyntaxError(
                         "An unexpected character `\(character)`.",

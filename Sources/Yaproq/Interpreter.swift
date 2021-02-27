@@ -269,7 +269,7 @@ extension Interpreter: ExpressionVisitor {
         case .bangEqual:
             return !isEqual(left, right)
         case .closedRange,
-             .halfOpenRange:
+             .range:
             if let lowerBound = left as? Double, let upperBound = right as? Double {
                 if expression.token.kind == .closedRange {
                     return lowerBound...upperBound
