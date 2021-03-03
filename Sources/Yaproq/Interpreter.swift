@@ -180,6 +180,27 @@ extension Interpreter: ExpressionVisitor {
                 try templating.currentEnvironment.assign(value: value, toVariableWith: expression.identifierToken)
 
                 return value
+            } else if let left = try templating.currentEnvironment.valueForVariable(with: expression.identifierToken) as? Int,
+                      let right = try evaluate(expression: expression.value) as? Int {
+                let value: Any
+
+                if expression.operatorToken.kind == .minusEqual {
+                    value = left - right
+                } else if expression.operatorToken.kind == .percentEqual {
+                    value = left % right
+                } else if expression.operatorToken.kind == .plusEqual {
+                    value = left + right
+                } else if expression.operatorToken.kind == .powerEqual {
+                    value = pow(Decimal(left), right)
+                } else if expression.operatorToken.kind == .slashEqual {
+                    value = left / right
+                } else {
+                    value = left * right
+                }
+
+                try templating.currentEnvironment.assign(value: value, toVariableWith: expression.identifierToken)
+
+                return value
             } else if let left = try templating.currentEnvironment.valueForVariable(with: expression.identifierToken) as? Double,
                       let right = try evaluate(expression: expression.value) as? Int {
                 let value: Any
@@ -217,27 +238,6 @@ extension Interpreter: ExpressionVisitor {
                     value = Double(left) / right
                 } else {
                     value = Double(left) * right
-                }
-
-                try templating.currentEnvironment.assign(value: value, toVariableWith: expression.identifierToken)
-
-                return value
-            } else if let left = try templating.currentEnvironment.valueForVariable(with: expression.identifierToken) as? Int,
-                      let right = try evaluate(expression: expression.value) as? Int {
-                let value: Any
-
-                if expression.operatorToken.kind == .minusEqual {
-                    value = left - right
-                } else if expression.operatorToken.kind == .percentEqual {
-                    value = left % right
-                } else if expression.operatorToken.kind == .plusEqual {
-                    value = left + right
-                } else if expression.operatorToken.kind == .powerEqual {
-                    value = pow(Decimal(left), right)
-                } else if expression.operatorToken.kind == .slashEqual {
-                    value = left / right
-                } else {
-                    value = left * right
                 }
 
                 try templating.currentEnvironment.assign(value: value, toVariableWith: expression.identifierToken)
@@ -313,6 +313,8 @@ extension Interpreter: ExpressionVisitor {
         case .greater:
             if let left = left as? Double, let right = right as? Double { return left > right }
             if let left = left as? Int, let right = right as? Int { return left > right }
+            if let left = left as? Double, let right = right as? Int { return left > Double(right) }
+            if let left = left as? Int, let right = right as? Double { return Double(left) > right }
             if let left = left as? String, let right = right as? String { return left > right }
             if let left = left as? Date, let right = right as? Date { return left > right }
             let token = expression.token
@@ -325,6 +327,8 @@ extension Interpreter: ExpressionVisitor {
         case .greaterOrEqual:
             if let left = left as? Double, let right = right as? Double { return left >= right }
             if let left = left as? Int, let right = right as? Int { return left >= right }
+            if let left = left as? Double, let right = right as? Int { return left >= Double(right) }
+            if let left = left as? Int, let right = right as? Double { return Double(left) >= right }
             if let left = left as? String, let right = right as? String { return left >= right }
             if let left = left as? Date, let right = right as? Date { return left >= right }
             let token = expression.token
@@ -337,6 +341,8 @@ extension Interpreter: ExpressionVisitor {
         case .less:
             if let left = left as? Double, let right = right as? Double { return left < right }
             if let left = left as? Int, let right = right as? Int { return left < right }
+            if let left = left as? Double, let right = right as? Int { return left < Double(right) }
+            if let left = left as? Int, let right = right as? Double { return Double(left) < right }
             if let left = left as? String, let right = right as? String { return left < right }
             if let left = left as? Date, let right = right as? Date { return left < right }
             let token = expression.token
@@ -349,6 +355,8 @@ extension Interpreter: ExpressionVisitor {
         case .lessOrEqual:
             if let left = left as? Double, let right = right as? Double { return left <= right }
             if let left = left as? Int, let right = right as? Int { return left <= right }
+            if let left = left as? Double, let right = right as? Int { return left <= Double(right) }
+            if let left = left as? Int, let right = right as? Double { return Double(left) <= right }
             if let left = left as? String, let right = right as? String { return left <= right }
             if let left = left as? Date, let right = right as? Date { return left <= right }
             let token = expression.token
@@ -361,6 +369,8 @@ extension Interpreter: ExpressionVisitor {
         case .minus:
             if let left = left as? Double, let right = right as? Double { return left - right }
             if let left = left as? Int, let right = right as? Int { return left - right }
+            if let left = left as? Double, let right = right as? Int { return left - Double(right) }
+            if let left = left as? Int, let right = right as? Double { return Double(left) - right }
             let token = expression.token
             throw RuntimeError(
                 "The operands must be numbers.",
@@ -373,6 +383,10 @@ extension Interpreter: ExpressionVisitor {
                 return left.truncatingRemainder(dividingBy: right)
             } else if let left = left as? Int, let right = right as? Int {
                 return left % right
+            } else if let left = left as? Double, let right = right as? Int {
+                return left.truncatingRemainder(dividingBy: Double(right))
+            } else if let left = left as? Int, let right = right as? Double {
+                return Double(left).truncatingRemainder(dividingBy: right)
             }
 
             let token = expression.token
@@ -387,6 +401,10 @@ extension Interpreter: ExpressionVisitor {
                 return left + right
             } else if let left = left as? Int, let right = right as? Int {
                 return left + right
+            } else if let left = left as? Double, let right = right as? Int {
+                return left + Double(right)
+            } else if let left = left as? Int, let right = right as? Double {
+                return Double(left) + right
             } else if let left = left as? String, let right = right as? String {
                 return left + right
             }
@@ -402,7 +420,11 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Double, let right = right as? Double {
                 return pow(left, right)
             } else if let left = left as? Int, let right = right as? Int {
-                return pow(Decimal(left), right)
+                return Double(truncating: pow(Decimal(left), right) as NSNumber)
+            } else if let left = left as? Double, let right = right as? Int {
+                return pow(left, Double(right))
+            } else if let left = left as? Int, let right = right as? Double {
+                return pow(Double(left), right)
             }
 
             let token = expression.token
@@ -417,6 +439,8 @@ extension Interpreter: ExpressionVisitor {
         case .slash:
             if let left = left as? Double, let right = right as? Double { return left / right }
             if let left = left as? Int, let right = right as? Int { return left / right }
+            if let left = left as? Double, let right = right as? Int { return left / Double(right) }
+            if let left = left as? Int, let right = right as? Double { return Double(left) / right }
             let token = expression.token
             throw RuntimeError(
                 "The operands must be numbers.",
@@ -427,6 +451,8 @@ extension Interpreter: ExpressionVisitor {
         case .star:
             if let left = left as? Double, let right = right as? Double { return left * right }
             if let left = left as? Int, let right = right as? Int { return left * right }
+            if let left = left as? Double, let right = right as? Int { return left * Double(right) }
+            if let left = left as? Int, let right = right as? Double { return Double(left) * right }
             let token = expression.token
             throw RuntimeError(
                 "The operands must be numbers.",
