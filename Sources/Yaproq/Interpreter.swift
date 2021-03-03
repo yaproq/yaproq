@@ -271,39 +271,14 @@ extension Interpreter: ExpressionVisitor {
         case .closedRange,
              .range:
             if let lowerBound = left as? Double, let upperBound = right as? Double {
-                if expression.token.kind == .closedRange {
-                    return lowerBound...upperBound
-                }
-
-                return lowerBound..<upperBound
+                return expression.token.kind == .closedRange ? lowerBound...upperBound : lowerBound..<upperBound
             } else if let lowerBound = left as? Int, let upperBound = right as? Int {
-                if expression.token.kind == .closedRange {
-                    return lowerBound...upperBound
-                }
-
-                return lowerBound..<upperBound
-            } else if let leftExpression = left as? VariableExpression,
-                      let rightExpression = right as? VariableExpression {
-                if let lowerBound = try visitVariable(expression: leftExpression) as? Double,
-                   let upperBound = try visitVariable(expression: rightExpression) as? Double {
-                    if expression.token.kind == .closedRange {
-                        return lowerBound...upperBound
-                    }
-
-                    return lowerBound..<upperBound
-                } else if let lowerBound = try visitVariable(expression: leftExpression) as? Int,
-                          let upperBound = try visitVariable(expression: rightExpression) as? Int {
-                    if expression.token.kind == .closedRange {
-                        return lowerBound...upperBound
-                    }
-
-                    return lowerBound..<upperBound
-                }
+                return expression.token.kind == .closedRange ? lowerBound...upperBound : lowerBound..<upperBound
             }
 
             let token = expression.token
             throw RuntimeError(
-                "The operands must be integers, doubles or variables that evaluate to integers or doubles.",
+                "The operands must be either integers or doubles.",
                 filePath: token.filePath,
                 line: token.line,
                 column: token.column
