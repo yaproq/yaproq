@@ -303,7 +303,7 @@ extension Interpreter: ExpressionVisitor {
 
             let token = expression.token
             throw RuntimeError(
-                "The operands must be either integers or variables that evaluate to integers.",
+                "The operands must be integers, doubles or variables that evaluate to integers or doubles.",
                 filePath: token.filePath,
                 line: token.line,
                 column: token.column
