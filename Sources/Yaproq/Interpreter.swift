@@ -482,6 +482,7 @@ extension Interpreter: ExpressionVisitor {
             return !isTruthy(right)
         case .minus:
             if let right = right as? Double { return -right }
+            if let right = right as? Int { return -right }
             let token = expression.token
             throw RuntimeError(
                 "The operand must be a number.",
