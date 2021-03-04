@@ -104,17 +104,23 @@ struct LogicalExpression: Expression {
 
 struct TernaryExpression: Expression {
     let condition: AnyExpression
-    let leftToken: Token
-    let left: AnyExpression
-    let rightToken: Token
-    let right: AnyExpression
+    let firstToken: Token
+    let first: AnyExpression
+    let secondToken: Token
+    let second: AnyExpression
 
-    init(condition: AnyExpression, leftToken: Token, left: AnyExpression, rightToken: Token, right: AnyExpression) {
+    init(
+        condition: AnyExpression,
+        firstToken: Token,
+        first: AnyExpression,
+        secondToken: Token,
+        second: AnyExpression
+    ) {
         self.condition = condition
-        self.leftToken = leftToken
-        self.left = left
-        self.rightToken = rightToken
-        self.right = right
+        self.firstToken = firstToken
+        self.first = first
+        self.secondToken = secondToken
+        self.second = second
     }
 
     func accept(visitor: ExpressionVisitor) throws -> Any? {

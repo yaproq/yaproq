@@ -342,32 +342,32 @@ extension Parser {
         var expression = try orExpression()
 
         while match(.question) {
-            let leftToken = previous
-            let left = try orExpression()
+            let firstToken = previous
+            let first = try orExpression()
             var isTernary = false
 
             while match(.colon) {
                 isTernary = true
-                let rightToken = previous
-                let right = try orExpression()
+                let secondToken = previous
+                let second = try orExpression()
 
                 expression = AnyExpression(
                     TernaryExpression(
                         condition: expression,
-                        leftToken: leftToken,
-                        left: left,
-                        rightToken: rightToken,
-                        right: right
+                        firstToken: firstToken,
+                        first: first,
+                        secondToken: secondToken,
+                        second: second
                     )
                 )
             }
 
             if !isTernary {
                 throw SyntaxError(
-                    "An unexpected character `\(leftToken.kind.rawValue)`.",
-                    filePath: leftToken.filePath,
-                    line: leftToken.line,
-                    column: leftToken.column
+                    "An unexpected character `\(firstToken.kind.rawValue)`.",
+                    filePath: firstToken.filePath,
+                    line: firstToken.line,
+                    column: firstToken.column
                 )
             }
         }

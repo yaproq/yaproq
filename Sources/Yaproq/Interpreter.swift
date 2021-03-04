@@ -463,10 +463,10 @@ extension Interpreter: ExpressionVisitor {
 
     func visitTernary(expression: TernaryExpression) throws -> Any? {
         let condition = try evaluate(expression: expression.condition)
-        let left = try evaluate(expression: expression.left)
-        let right = try evaluate(expression: expression.right)
+        let first = try evaluate(expression: expression.first)
+        let second = try evaluate(expression: expression.second)
 
-        return isTruthy(condition) ? left : right
+        return isTruthy(condition) ? first : second
     }
 
     func visitUnary(expression: UnaryExpression) throws -> Any {
