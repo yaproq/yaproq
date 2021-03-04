@@ -455,15 +455,10 @@ extension Interpreter: ExpressionVisitor {
     }
 
     func visitLogical(expression: LogicalExpression) throws -> Any? {
-        let left = try evaluate(expression: expression.left)
+        let left = isTruthy(try evaluate(expression: expression.left))
+        let right = isTruthy(try evaluate(expression: expression.right))
 
-        if expression.token.kind == .or {
-            if isTruthy(left) { return left }
-        } else {
-            if !isTruthy(left) { return left }
-        }
-
-        return try evaluate(expression: expression.right)
+        return expression.token.kind == .and ? left && right : left || right
     }
 
     func visitTernary(expression: TernaryExpression) throws -> Any? {
