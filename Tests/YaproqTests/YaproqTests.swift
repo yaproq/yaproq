@@ -52,12 +52,18 @@ final class YaproqConfigurationTests: BaseTests {
 
 final class YaproqTests: BaseTests {
     var templating: Yaproq!
+    var pages: [Page]!
 
     override func setUp() {
         super.setUp()
 
         let configuration = Yaproq.Configuration(directoryPath: Bundle.module.resourcePath!)
         templating = Yaproq(configuration: configuration)
+        pages = [
+            Page(title: "Home", url: URL(string: "/")!),
+            Page(title: "Blog", url: URL(string: "/blog")!),
+            Page(title: "Projects", url: URL(string: "/projects")!)
+        ]
     }
 
     func testForStatement() {
@@ -256,14 +262,10 @@ final class YaproqTests: BaseTests {
         )
 
         // Act
-        let result = try! templating.renderTemplate(template, in: ["pages": [
-            Page(title: "Home", url: URL(string: "/")!),
-            Page(title: "Blog", url: URL(string: "/blog")!),
-            Page(title: "Projects", url: URL(string: "/projects")!)
-        ]]).replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: "")
+        let result = try! templating.renderTemplate(template, in: ["pages": pages])
 
         // Assert
-        XCTAssertEqual(result, """
+        XCTAssertEqual(result.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: ""), """
         <!doctype html>
         <html lang="en">
             <head>
