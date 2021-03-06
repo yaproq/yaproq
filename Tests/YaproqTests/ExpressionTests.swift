@@ -116,6 +116,39 @@ final class LogicalExpressionTests: BaseTests {
     }
 }
 
+final class TernaryExpressionTests: BaseTests {
+    func testInit() {
+        // Arrange
+        let condition = AnyExpression(
+            LiteralExpression(token: .init(kind: .true, lexeme: Token.Kind.true.rawValue, line: 1, column: 7))
+        )
+        let firstToken = Token(kind: .question, lexeme: Token.Kind.question.rawValue, line: 1, column: 9)
+        let first = AnyExpression(
+            LiteralExpression(token: .init(kind: .number, lexeme: "1", literal: 1, line: 1, column: 11))
+        )
+        let secondToken = Token(kind: .colon, lexeme: Token.Kind.colon.rawValue, line: 1, column: 13)
+        let second = AnyExpression(
+            LiteralExpression(token: .init(kind: .number, lexeme: "0", literal: 0, line: 1, column: 15))
+        )
+
+        // Act
+        let expression = TernaryExpression(
+            condition: condition,
+            firstToken: firstToken,
+            first: first,
+            secondToken: secondToken,
+            second: second
+        )
+
+        // Assert
+        XCTAssertEqual(expression.condition, condition)
+        XCTAssertEqual(expression.firstToken, firstToken)
+        XCTAssertEqual(expression.first, first)
+        XCTAssertEqual(expression.secondToken, secondToken)
+        XCTAssertEqual(expression.second, second)
+    }
+}
+
 final class UnaryExpressionTests: BaseTests {
     func testInit() {
         // Arrange
