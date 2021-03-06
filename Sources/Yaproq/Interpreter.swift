@@ -137,21 +137,21 @@ extension Interpreter {
 extension Interpreter: ExpressionVisitor {
     func visitAny(expression: AnyExpression) throws -> Any? {
         if let expression = expression.expression as? AssignmentExpression {
-            return try visitAssignment(expression: expression)
+            return try expression.accept(visitor: self)
         } else if let expression = expression.expression as? BinaryExpression {
-            return try visitBinary(expression: expression)
+            return try expression.accept(visitor: self)
         } else if let expression = expression.expression as? GroupingExpression {
-            return try visitGrouping(expression: expression)
+            return try expression.accept(visitor: self)
         } else if let expression = expression.expression as? LiteralExpression {
-            return try visitLiteral(expression: expression)
+            return try expression.accept(visitor: self)
         } else if let expression = expression.expression as? LogicalExpression {
-            return try visitLogical(expression: expression)
+            return try expression.accept(visitor: self)
         } else if let expression = expression.expression as? TernaryExpression {
-            return try visitTernary(expression: expression)
+            return try expression.accept(visitor: self)
         } else if let expression = expression.expression as? UnaryExpression {
-            return try visitUnary(expression: expression)
+            return try expression.accept(visitor: self)
         } else if let expression = expression.expression as? VariableExpression {
-            return try visitVariable(expression: expression)
+            return try expression.accept(visitor: self)
         }
 
         return nil
