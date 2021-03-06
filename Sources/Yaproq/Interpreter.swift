@@ -85,8 +85,18 @@ extension Interpreter {
         return false
     }
 
-    private func isTruthy(_ value: Any?) -> Bool {
+    private func isTruthy(_ value: Any?, for token: Token? = nil) throws -> Bool {
         if let value = value as? Bool { return value }
+
+        if let token = token {
+            throw RuntimeError(
+                "The `\(token.lexeme)` must be a boolean.",
+                filePath: token.filePath,
+                line: token.line,
+                column: token.column
+            )
+        }
+
         return false
     }
 
@@ -455,10 +465,11 @@ extension Interpreter: ExpressionVisitor {
     }
 
     func visitLogical(expression: LogicalExpression) throws -> Any? {
-        let left = isTruthy(try evaluate(expression: expression.left))
-        let right = isTruthy(try evaluate(expression: expression.right))
+        let token = expression.token
+        let left = try isTruthy(try evaluate(expression: expression.left), for: token)
+        let right = try isTruthy(try evaluate(expression: expression.right), for: token)
 
-        return expression.token.kind == .and ? left && right : left || right
+        return token.kind == .and ? left && right : left || right
     }
 
     func visitTernary(expression: TernaryExpression) throws -> Any? {
@@ -466,19 +477,19 @@ extension Interpreter: ExpressionVisitor {
         let first = try evaluate(expression: expression.first)
         let second = try evaluate(expression: expression.second)
 
-        return isTruthy(condition) ? first : second
+        return try isTruthy(condition) ? first : second
     }
 
     func visitUnary(expression: UnaryExpression) throws -> Any {
+        let token = expression.token
         let right = try evaluate(expression: expression.right)
 
-        switch expression.token.kind {
+        switch token.kind {
         case .bang:
-            return !isTruthy(right)
+            return try !isTruthy(right, for: token)
         case .minus:
             if let right = right as? Double { return -right }
             if let right = right as? Int { return -right }
-            let token = expression.token
             throw RuntimeError(
                 "The operand must be a number.",
                 filePath: token.filePath,
@@ -486,7 +497,6 @@ extension Interpreter: ExpressionVisitor {
                 column: token.column
             )
         default:
-            let token = expression.token
             throw RuntimeError(
                 "An invalid operator `\(token.lexeme)`.",
                 filePath: token.filePath,
@@ -698,13 +708,13 @@ extension Interpreter: StatementVisitor {
     }
 
     func visitIf(statement: IfStatement) throws {
-        if isTruthy(try evaluate(expression: statement.condition)) {
+        if try isTruthy(try evaluate(expression: statement.condition)) {
             try execute(statement: statement.thenBranch)
         } else {
             var isTruthy = false
 
             for elseIfBranch in statement.elseIfBranches {
-                if self.isTruthy(try evaluate(expression: elseIfBranch.condition)) {
+                if try self.isTruthy(try evaluate(expression: elseIfBranch.condition)) {
                     isTruthy = true
                     try execute(statement: elseIfBranch.thenBranch)
                     break
@@ -731,7 +741,7 @@ extension Interpreter: StatementVisitor {
     }
 
     func visitWhile(statement: WhileStatement) throws {
-        while isTruthy(try evaluate(expression: statement.condition)) {
+        while try isTruthy(try evaluate(expression: statement.condition)) {
             try execute(statement: statement.body)
         }
     }
