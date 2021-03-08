@@ -27,7 +27,7 @@ final class Interpreter {
         }
 
         if let extendStatement = statements.first as? ExtendStatement {
-            try visitExtend(statement: extendStatement)
+            try extendStatement.accept(visitor: self)
         } else {
             processBlock(statements: &statements)
 
@@ -273,9 +273,10 @@ extension Interpreter: ExpressionVisitor {
 
     func visitBinary(expression: BinaryExpression) throws -> Any? {
         let left = try evaluate(expression: expression.left)
+        let token = expression.token
         let right = try evaluate(expression: expression.right)
 
-        switch expression.token.kind {
+        switch token.kind {
         case .bangEqual:
             return !isEqual(left, right)
         case .closedRange,
@@ -286,7 +287,6 @@ extension Interpreter: ExpressionVisitor {
                 return expression.token.kind == .closedRange ? lowerBound...upperBound : lowerBound..<upperBound
             }
 
-            let token = expression.token
             throw RuntimeError(
                 "The operands must be either integers or doubles.",
                 filePath: token.filePath,
@@ -302,7 +302,6 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Int, let right = right as? Double { return Double(left) > right }
             if let left = left as? String, let right = right as? String { return left > right }
             if let left = left as? Date, let right = right as? Date { return left > right }
-            let token = expression.token
             throw RuntimeError(
                 "The operands must be comparable.",
                 filePath: token.filePath,
@@ -316,7 +315,6 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Int, let right = right as? Double { return Double(left) >= right }
             if let left = left as? String, let right = right as? String { return left >= right }
             if let left = left as? Date, let right = right as? Date { return left >= right }
-            let token = expression.token
             throw RuntimeError(
                 "The operands must be comparable.",
                 filePath: token.filePath,
@@ -330,7 +328,6 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Int, let right = right as? Double { return Double(left) < right }
             if let left = left as? String, let right = right as? String { return left < right }
             if let left = left as? Date, let right = right as? Date { return left < right }
-            let token = expression.token
             throw RuntimeError(
                 "The operands must be comparable.",
                 filePath: token.filePath,
@@ -344,7 +341,6 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Int, let right = right as? Double { return Double(left) <= right }
             if let left = left as? String, let right = right as? String { return left <= right }
             if let left = left as? Date, let right = right as? Date { return left <= right }
-            let token = expression.token
             throw RuntimeError(
                 "The operands must be comparable.",
                 filePath: token.filePath,
@@ -356,7 +352,6 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Int, let right = right as? Int { return left - right }
             if let left = left as? Double, let right = right as? Int { return left - Double(right) }
             if let left = left as? Int, let right = right as? Double { return Double(left) - right }
-            let token = expression.token
             throw RuntimeError(
                 "The operands must be numbers.",
                 filePath: token.filePath,
@@ -374,7 +369,6 @@ extension Interpreter: ExpressionVisitor {
                 return Double(left).truncatingRemainder(dividingBy: right)
             }
 
-            let token = expression.token
             throw RuntimeError(
                 "The operands must be numbers.",
                 filePath: token.filePath,
@@ -394,7 +388,6 @@ extension Interpreter: ExpressionVisitor {
                 return left + right
             }
 
-            let token = expression.token
             throw RuntimeError(
                 "The operands must be two numbers or strings.",
                 filePath: token.filePath,
@@ -412,7 +405,6 @@ extension Interpreter: ExpressionVisitor {
                 return pow(Double(left), right)
             }
 
-            let token = expression.token
             throw RuntimeError(
                 "The operands must be numbers.",
                 filePath: token.filePath,
@@ -426,7 +418,6 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Int, let right = right as? Int { return left / right }
             if let left = left as? Double, let right = right as? Int { return left / Double(right) }
             if let left = left as? Int, let right = right as? Double { return Double(left) / right }
-            let token = expression.token
             throw RuntimeError(
                 "The operands must be numbers.",
                 filePath: token.filePath,
@@ -438,7 +429,6 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Int, let right = right as? Int { return left * right }
             if let left = left as? Double, let right = right as? Int { return left * Double(right) }
             if let left = left as? Int, let right = right as? Double { return Double(left) * right }
-            let token = expression.token
             throw RuntimeError(
                 "The operands must be numbers.",
                 filePath: token.filePath,
@@ -446,7 +436,6 @@ extension Interpreter: ExpressionVisitor {
                 column: token.column
             )
         default:
-            let token = expression.token
             throw RuntimeError(
                 "An invalid operator `\(token.lexeme)`.",
                 filePath: token.filePath,
@@ -625,7 +614,7 @@ extension Interpreter: StatementVisitor {
                 throw RuntimeError("Expecting a variable.", filePath: nil, line: token.line, column: token.column)
             }
 
-            try visitBlock(statement: blockStatement)
+            try blockStatement.accept(visitor: self)
         }
 
         if let expression = statement.expression.expression as? BinaryExpression {
