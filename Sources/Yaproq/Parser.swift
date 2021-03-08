@@ -108,11 +108,11 @@ extension Parser {
     }
 
     private func expressionStatement() throws -> Statement {
-        ExpressionStatement(expression: try self.expression())
+        ExpressionStatement(expression: try expression())
     }
 
     private func extendStatement() throws -> Statement {
-        ExtendStatement(expression: try self.expression())
+        ExtendStatement(expression: try expression())
     }
 
     private func forStatement() throws -> Statement {
@@ -153,11 +153,11 @@ extension Parser {
     }
 
     private func includeStatement() throws -> Statement {
-        IncludeStatement(expression: try self.expression())
+        IncludeStatement(expression: try expression())
     }
 
     private func printStatement() throws -> Statement {
-        PrintStatement(expression: try self.expression())
+        PrintStatement(expression: try expression())
     }
 
     private func statement() throws -> Statement {
