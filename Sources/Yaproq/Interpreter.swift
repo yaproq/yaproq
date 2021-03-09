@@ -578,7 +578,7 @@ extension Interpreter: StatementVisitor {
                 )
             }
         } else if let expression = statement.expression.expression as? VariableExpression {
-            if let filePath = try visitVariable(expression: expression) as? String {
+            if let filePath = try expression.accept(visitor: self) as? String {
                 try extendFile(at: filePath)
             } else {
                 let token = expression.token
@@ -618,7 +618,7 @@ extension Interpreter: StatementVisitor {
         }
 
         if let expression = statement.expression.expression as? BinaryExpression {
-            let value = try visitBinary(expression: expression)
+            let value = try expression.accept(visitor: self)
             let token = expression.token
 
             if let closedRange = value as? ClosedRange<Int> {
@@ -638,7 +638,7 @@ extension Interpreter: StatementVisitor {
                 )
             }
         } else if let expression = statement.expression.expression as? VariableExpression {
-            let value = try visitVariable(expression: expression)
+            let value = try expression.accept(visitor: self)
             let token = expression.token
 
             if let array = value as? [Any] {
@@ -678,7 +678,7 @@ extension Interpreter: StatementVisitor {
                 )
             }
         } else if let expression = statement.expression.expression as? VariableExpression {
-            if let filePath = try visitVariable(expression: expression) as? String {
+            if let filePath = try expression.accept(visitor: self) as? String {
                 do {
                     output += try templating._renderTemplate(named: filePath)
                 } catch is TemplateError {
