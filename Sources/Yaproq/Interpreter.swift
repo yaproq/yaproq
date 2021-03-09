@@ -415,7 +415,7 @@ extension Interpreter: ExpressionVisitor {
             return left ?? right
         case .slash:
             if let left = left as? Double, let right = right as? Double { return left / right }
-            if let left = left as? Int, let right = right as? Int { return left / right }
+            if let left = left as? Int, let right = right as? Int { return Double(left) / Double(right) }
             if let left = left as? Double, let right = right as? Int { return left / Double(right) }
             if let left = left as? Int, let right = right as? Double { return Double(left) / right }
             throw RuntimeError(
