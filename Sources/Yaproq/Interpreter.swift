@@ -389,7 +389,7 @@ extension Interpreter: ExpressionVisitor {
             }
 
             throw RuntimeError(
-                "The operands must be two numbers or strings.",
+                "The operands must be numbers or strings.",
                 filePath: token.filePath,
                 line: token.line,
                 column: token.column
