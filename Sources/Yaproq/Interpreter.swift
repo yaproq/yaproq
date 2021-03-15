@@ -90,7 +90,7 @@ extension Interpreter {
 
         if let token = token {
             throw RuntimeError(
-                "The `\(token.lexeme)` must be a boolean.",
+                "The operand must be a boolean.",
                 filePath: token.filePath,
                 line: token.line,
                 column: token.column
