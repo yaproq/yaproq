@@ -499,11 +499,11 @@ extension Interpreter: ExpressionVisitor {
         let token = expression.token
         let value = try templating.currentEnvironment.valueForVariable(with: token)
 
-        if let index = expression.index {
-            let index = try evaluate(expression: index)
+        if let key = expression.key {
+            let key = try evaluate(expression: key)
 
             if let array = value as? [Any] {
-                if let index = index as? Double { return array[Int(index)] }
+                if let index = key as? Double { return array[Int(index)] }
                 throw RuntimeError(
                     "The index must be an integer.",
                     filePath: token.filePath,
@@ -511,7 +511,7 @@ extension Interpreter: ExpressionVisitor {
                     column: token.column
                 )
             } else if let dictionary = value as? [AnyHashable: Any] {
-                if let key = index as? AnyHashable { return dictionary[key] }
+                if let key = key as? AnyHashable { return dictionary[key] }
                 throw RuntimeError(
                     "The key must conform to `AnyHashable`.",
                     filePath: token.filePath,

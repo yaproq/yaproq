@@ -385,14 +385,14 @@ extension Parser {
         let token = previous
 
         if match(.leftBracket) {
-            let index = try expression()
+            let key = try expression()
             let rightBracket = Token.Kind.rightBracket
             try consume(
                 rightBracket,
                 elseErrorMessage: "Expecting '\(rightBracket.rawValue)' after an expression."
             )
 
-            return AnyExpression(VariableExpression(token: token, index: index))
+            return AnyExpression(VariableExpression(token: token, key: key))
         }
 
         return AnyExpression(VariableExpression(token: token))
