@@ -40,10 +40,16 @@ public final class Yaproq {
 
     public func renderTemplate(at filePath: String, in context: [String: Encodable] = .init()) throws -> String {
         setCurrentEnvironment(for: filePath)
-        let output = try _renderTemplate(at: filePath, in: context)
-        clearEnvironments()
 
-        return output
+        do {
+            let output = try _renderTemplate(at: filePath, in: context)
+            clearEnvironments()
+
+            return output
+        } catch {
+            clearEnvironments()
+            throw error
+        }
     }
 
     func _renderTemplate(at filePath: String, in context: [String: Encodable] = .init()) throws -> String {
@@ -52,10 +58,16 @@ public final class Yaproq {
 
     public func renderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
         setCurrentEnvironment(for: template.filePath)
-        let output = try _renderTemplate(template, in: context)
-        clearEnvironments()
 
-        return output
+        do {
+            let output = try _renderTemplate(template, in: context)
+            clearEnvironments()
+
+            return output
+        } catch {
+            clearEnvironments()
+            throw error
+        }
     }
 
     func _renderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
@@ -135,5 +147,11 @@ extension Yaproq {
         private func normalize(path: String) -> String {
             path.last == Character("/") ? path : path + "/"
         }
+    }
+}
+
+extension Yaproq {
+    static func runtimeError(for token: Token, with message: String) -> RuntimeError {
+        RuntimeError(message, filePath: token.filePath, line: token.line, column: token.column)
     }
 }

@@ -89,12 +89,7 @@ extension Interpreter {
         if let value = value as? Bool { return value }
 
         if let token = token {
-            throw RuntimeError(
-                "The operand must be a boolean.",
-                filePath: token.filePath,
-                line: token.line,
-                column: token.column
-            )
+            throw Yaproq.runtimeError(for: token, with: "The operand must be a boolean.")
         }
 
         return false
@@ -255,18 +250,11 @@ extension Interpreter: ExpressionVisitor {
                 return value
             }
 
-            throw RuntimeError(
-                "The operands must be numbers.",
-                filePath: expression.operatorToken.filePath,
-                line: expression.operatorToken.line,
-                column: expression.operatorToken.column
-            )
+            throw Yaproq.runtimeError(for: expression.operatorToken, with: "The operands must be numbers.")
         default:
-            throw RuntimeError(
-                "An invalid operator `\(expression.operatorToken.lexeme)`.",
-                filePath: expression.operatorToken.filePath,
-                line: expression.operatorToken.line,
-                column: expression.operatorToken.column
+            throw Yaproq.runtimeError(
+                for: expression.operatorToken,
+                with: "An invalid operator `\(expression.operatorToken.lexeme)`."
             )
         }
     }
@@ -287,12 +275,7 @@ extension Interpreter: ExpressionVisitor {
                 return expression.token.kind == .closedRange ? lowerBound...upperBound : lowerBound..<upperBound
             }
 
-            throw RuntimeError(
-                "The operands must be either integers or doubles.",
-                filePath: token.filePath,
-                line: token.line,
-                column: token.column
-            )
+            throw Yaproq.runtimeError(for: token, with: "The operands must be either integers or doubles.")
         case .equalEqual:
             return isEqual(left, right)
         case .greater:
@@ -302,12 +285,7 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Int, let right = right as? Double { return Double(left) > right }
             if let left = left as? String, let right = right as? String { return left > right }
             if let left = left as? Date, let right = right as? Date { return left > right }
-            throw RuntimeError(
-                "The operands must be comparable.",
-                filePath: token.filePath,
-                line: token.line,
-                column: token.column
-            )
+            throw Yaproq.runtimeError(for: token, with: "The operands must be comparable.")
         case .greaterOrEqual:
             if let left = left as? Double, let right = right as? Double { return left >= right }
             if let left = left as? Int, let right = right as? Int { return left >= right }
@@ -315,12 +293,7 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Int, let right = right as? Double { return Double(left) >= right }
             if let left = left as? String, let right = right as? String { return left >= right }
             if let left = left as? Date, let right = right as? Date { return left >= right }
-            throw RuntimeError(
-                "The operands must be comparable.",
-                filePath: token.filePath,
-                line: token.line,
-                column: token.column
-            )
+            throw Yaproq.runtimeError(for: token, with: "The operands must be comparable.")
         case .less:
             if let left = left as? Double, let right = right as? Double { return left < right }
             if let left = left as? Int, let right = right as? Int { return left < right }
@@ -328,12 +301,7 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Int, let right = right as? Double { return Double(left) < right }
             if let left = left as? String, let right = right as? String { return left < right }
             if let left = left as? Date, let right = right as? Date { return left < right }
-            throw RuntimeError(
-                "The operands must be comparable.",
-                filePath: token.filePath,
-                line: token.line,
-                column: token.column
-            )
+            throw Yaproq.runtimeError(for: token, with: "The operands must be comparable.")
         case .lessOrEqual:
             if let left = left as? Double, let right = right as? Double { return left <= right }
             if let left = left as? Int, let right = right as? Int { return left <= right }
@@ -341,23 +309,13 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Int, let right = right as? Double { return Double(left) <= right }
             if let left = left as? String, let right = right as? String { return left <= right }
             if let left = left as? Date, let right = right as? Date { return left <= right }
-            throw RuntimeError(
-                "The operands must be comparable.",
-                filePath: token.filePath,
-                line: token.line,
-                column: token.column
-            )
+            throw Yaproq.runtimeError(for: token, with: "The operands must be comparable.")
         case .minus:
             if let left = left as? Double, let right = right as? Double { return left - right }
             if let left = left as? Int, let right = right as? Int { return left - right }
             if let left = left as? Double, let right = right as? Int { return left - Double(right) }
             if let left = left as? Int, let right = right as? Double { return Double(left) - right }
-            throw RuntimeError(
-                "The operands must be numbers.",
-                filePath: token.filePath,
-                line: token.line,
-                column: token.column
-            )
+            throw Yaproq.runtimeError(for: token, with: "The operands must be numbers.")
         case .percent:
             if let left = left as? Double, let right = right as? Double {
                 return left.truncatingRemainder(dividingBy: right)
@@ -369,12 +327,7 @@ extension Interpreter: ExpressionVisitor {
                 return Double(left).truncatingRemainder(dividingBy: right)
             }
 
-            throw RuntimeError(
-                "The operands must be numbers.",
-                filePath: token.filePath,
-                line: token.line,
-                column: token.column
-            )
+            throw Yaproq.runtimeError(for: token, with: "The operands must be numbers.")
         case .plus:
             if let left = left as? Double, let right = right as? Double {
                 return left + right
@@ -388,12 +341,7 @@ extension Interpreter: ExpressionVisitor {
                 return left + right
             }
 
-            throw RuntimeError(
-                "The operands must be numbers or strings.",
-                filePath: token.filePath,
-                line: token.line,
-                column: token.column
-            )
+            throw Yaproq.runtimeError(for: token, with: "The operands must be numbers or strings.")
         case .power:
             if let left = left as? Double, let right = right as? Double {
                 return pow(left, right)
@@ -405,12 +353,7 @@ extension Interpreter: ExpressionVisitor {
                 return pow(Double(left), right)
             }
 
-            throw RuntimeError(
-                "The operands must be numbers.",
-                filePath: token.filePath,
-                line: token.line,
-                column: token.column
-            )
+            throw Yaproq.runtimeError(for: token, with: "The operands must be numbers.")
         case .questionQuestion:
             return left ?? right
         case .slash:
@@ -418,30 +361,15 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Int, let right = right as? Int { return Double(left) / Double(right) }
             if let left = left as? Double, let right = right as? Int { return left / Double(right) }
             if let left = left as? Int, let right = right as? Double { return Double(left) / right }
-            throw RuntimeError(
-                "The operands must be numbers.",
-                filePath: token.filePath,
-                line: token.line,
-                column: token.column
-            )
+            throw Yaproq.runtimeError(for: token, with: "The operands must be numbers.")
         case .star:
             if let left = left as? Double, let right = right as? Double { return left * right }
             if let left = left as? Int, let right = right as? Int { return left * right }
             if let left = left as? Double, let right = right as? Int { return left * Double(right) }
             if let left = left as? Int, let right = right as? Double { return Double(left) * right }
-            throw RuntimeError(
-                "The operands must be numbers.",
-                filePath: token.filePath,
-                line: token.line,
-                column: token.column
-            )
+            throw Yaproq.runtimeError(for: token, with: "The operands must be numbers.")
         default:
-            throw RuntimeError(
-                "An invalid operator `\(token.lexeme)`.",
-                filePath: token.filePath,
-                line: token.line,
-                column: token.column
-            )
+            throw Yaproq.runtimeError(for: token, with: "An invalid operator `\(token.lexeme)`.")
         }
     }
 
@@ -479,19 +407,9 @@ extension Interpreter: ExpressionVisitor {
         case .minus:
             if let right = right as? Double { return -right }
             if let right = right as? Int { return -right }
-            throw RuntimeError(
-                "The operand must be a number.",
-                filePath: token.filePath,
-                line: token.line,
-                column: token.column
-            )
+            throw Yaproq.runtimeError(for: token, with: "The operand must be a number.")
         default:
-            throw RuntimeError(
-                "An invalid operator `\(token.lexeme)`.",
-                filePath: token.filePath,
-                line: token.line,
-                column: token.column
-            )
+            throw Yaproq.runtimeError(for: token, with: "An invalid operator `\(token.lexeme)`.")
         }
     }
 
@@ -504,28 +422,13 @@ extension Interpreter: ExpressionVisitor {
 
             if let array = value as? [Any] {
                 if let index = key as? Double { return array[Int(index)] }
-                throw RuntimeError(
-                    "The index must be an integer.",
-                    filePath: token.filePath,
-                    line: token.line,
-                    column: token.column
-                )
+                throw Yaproq.runtimeError(for: token, with: "The index must be an integer.")
             } else if let dictionary = value as? [AnyHashable: Any] {
                 if let key = key as? AnyHashable { return dictionary[key] }
-                throw RuntimeError(
-                    "The key must conform to `AnyHashable`.",
-                    filePath: token.filePath,
-                    line: token.line,
-                    column: token.column
-                )
+                throw Yaproq.runtimeError(for: token, with: "The key must conform to `AnyHashable`.")
             }
 
-            throw RuntimeError(
-                "The `\(token.lexeme)` must be an array or dictionary.",
-                filePath: token.filePath,
-                line: token.line,
-                column: token.column
-            )
+            throw Yaproq.runtimeError(for: token, with: "The `\(token.lexeme)` must be an array or dictionary.")
         }
 
         return value
@@ -565,28 +468,18 @@ extension Interpreter: StatementVisitor {
     }
 
     func visitExtend(statement: ExtendStatement) throws {
-        if let expression = statement.expression.expression as? LiteralExpression {
-            if let filePath = expression.token.literal as? String {
-                try extendFile(at: filePath)
-            } else {
-                let token = expression.token
-                throw RuntimeError(
-                    "The `\(expression.token.literal ?? "")` is not a valid filePath.",
-                    filePath: token.filePath,
-                    line: token.line,
-                    column: token.column
+        if let filePath = try evaluate(expression: statement.expression) as? String {
+            try extendFile(at: filePath)
+        } else {
+            if let expression = statement.expression.expression as? LiteralExpression {
+                throw Yaproq.runtimeError(
+                    for: expression.token,
+                    with: "The `\(expression.token.literal ?? "")` is not a valid filePath."
                 )
-            }
-        } else if let expression = statement.expression.expression as? VariableExpression {
-            if let filePath = try expression.accept(visitor: self) as? String {
-                try extendFile(at: filePath)
-            } else {
-                let token = expression.token
-                throw RuntimeError(
-                    "The `\(token.literal ?? "")` is not a valid filePath.",
-                    filePath: token.filePath,
-                    line: token.line,
-                    column: token.column
+            } else if let expression = statement.expression.expression as? VariableExpression {
+                throw Yaproq.runtimeError(
+                    for: expression.token,
+                    with: "The `\(expression.token.literal ?? "")` is not a valid filePath."
                 )
             }
         }
@@ -603,7 +496,7 @@ extension Interpreter: StatementVisitor {
                     statementKey.token.literal = key
                     blockStatement.variables.append(statementKey)
                 } else {
-                    throw RuntimeError("Expecting a variable.", filePath: nil, line: token.line, column: token.column)
+                    throw Yaproq.runtimeError(for: token, with: "Expecting a variable.")
                 }
             }
 
@@ -611,7 +504,7 @@ extension Interpreter: StatementVisitor {
                 statementValue.token.literal = value
                 blockStatement.variables.append(statementValue)
             } else {
-                throw RuntimeError("Expecting a variable.", filePath: nil, line: token.line, column: token.column)
+                throw Yaproq.runtimeError(for: token, with: "Expecting a variable.")
             }
 
             try blockStatement.accept(visitor: self)
@@ -630,12 +523,7 @@ extension Interpreter: StatementVisitor {
                     try assign(value: value, for: key, on: token)
                 }
             } else {
-                throw RuntimeError(
-                    "The `\(token.lexeme)` is not a valid operator.",
-                    filePath: token.filePath,
-                    line: token.line,
-                    column: token.column
-                )
+                throw Yaproq.runtimeError(for: token, with: "The `\(token.lexeme)` is not a valid operator.")
             }
         } else if let expression = statement.expression.expression as? VariableExpression {
             let value = try expression.accept(visitor: self)
@@ -650,47 +538,28 @@ extension Interpreter: StatementVisitor {
                     try assign(value: value, for: key, on: token)
                 }
             } else {
-                throw RuntimeError(
-                    "The `\(token.lexeme)` must be an array or dictionary.",
-                    filePath: token.filePath,
-                    line: token.line,
-                    column: token.column
-                )
+                throw Yaproq.runtimeError(for: token, with: "The `\(token.lexeme)` must be an array or dictionary.")
             }
         }
     }
 
     func visitInclude(statement: IncludeStatement) throws {
-        if let expression = statement.expression.expression as? LiteralExpression {
-            if let filePath = expression.token.literal as? String {
-                do {
-                    output += try templating._renderTemplate(named: filePath)
-                } catch is TemplateError {
-                    output += try templating._renderTemplate(at: filePath)
-                }
-            } else {
-                let token = expression.token
-                throw RuntimeError(
-                    "The `\(expression.token.literal ?? "")` is not a valid filePath.",
-                    filePath: token.filePath,
-                    line: token.line,
-                    column: token.column
-                )
+        if let filePath = try evaluate(expression: statement.expression) as? String {
+            do {
+                output += try templating._renderTemplate(named: filePath)
+            } catch is TemplateError {
+                output += try templating._renderTemplate(at: filePath)
             }
-        } else if let expression = statement.expression.expression as? VariableExpression {
-            if let filePath = try expression.accept(visitor: self) as? String {
-                do {
-                    output += try templating._renderTemplate(named: filePath)
-                } catch is TemplateError {
-                    output += try templating._renderTemplate(at: filePath)
-                }
-            } else {
-                let token = expression.token
-                throw RuntimeError(
-                    "The `\(token.literal ?? "")` is not a valid filePath.",
-                    filePath: token.filePath, 
-                    line: token.line,
-                    column: token.column
+        } else {
+            if let expression = statement.expression.expression as? LiteralExpression {
+                throw Yaproq.runtimeError(
+                    for: expression.token,
+                    with: "The `\(expression.token.literal ?? "")` is not a valid filePath."
+                )
+            } else if let expression = statement.expression.expression as? VariableExpression {
+                throw Yaproq.runtimeError(
+                    for: expression.token,
+                    with: "The `\(expression.token.literal ?? "")` is not a valid filePath."
                 )
             }
         }
