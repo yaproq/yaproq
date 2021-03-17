@@ -40,7 +40,7 @@ extension Parser {
     @discardableResult
     private func consume(_ kind: Token.Kind, elseErrorMessage message: String) throws -> Token {
         if check(kind) { return advance() }
-        throw SyntaxError(message, filePath: peek.filePath, line: peek.line, column: peek.column)
+        throw Yaproq.syntaxError(message, token: peek)
     }
 
     private func match(_ kinds: Token.Kind...) -> Bool {
@@ -73,12 +73,7 @@ extension Parser {
         }
 
         if name == nil {
-            throw SyntaxError(
-                "An invalid name `\(name ?? "")` for `block`.",
-                filePath: previous.filePath,
-                line: previous.line,
-                column: previous.column
-            )
+            throw Yaproq.syntaxError("An invalid name `\(name ?? "")` for `block`.", token: previous)
         }
 
         try consume(leftBrace, elseErrorMessage: "Expecting '\(leftBrace.rawValue)' after a `block` name.")
@@ -229,12 +224,7 @@ extension Parser {
                 )
             }
 
-            throw SyntaxError(
-                "An invalid assignment target.",
-                filePath: previous.filePath,
-                line: previous.line,
-                column: previous.column
-            )
+            throw Yaproq.syntaxError("An invalid assignment target.", token: previous)
         }
 
         return expression
@@ -335,7 +325,7 @@ extension Parser {
         if match(.false, .nil, .number, .string, .true) { return literalExpression() }
         if match(.identifier) { return try variableExpression() }
         if match(.leftParenthesis) { return try groupingExpression() }
-        throw SyntaxError("Expecting an expression.", filePath: peek.filePath, line: peek.line, column: peek.column)
+        throw Yaproq.syntaxError("Expecting an expression.", token: peek)
     }
 
     private func ternaryExpression() throws -> AnyExpression {
@@ -363,12 +353,7 @@ extension Parser {
             }
 
             if !isTernary {
-                throw SyntaxError(
-                    "An unexpected character `\(firstToken.kind.rawValue)`.",
-                    filePath: firstToken.filePath,
-                    line: firstToken.line,
-                    column: firstToken.column
-                )
+                throw Yaproq.syntaxError("An unexpected character `\(firstToken.kind.rawValue)`.", token: firstToken)
             }
         }
 

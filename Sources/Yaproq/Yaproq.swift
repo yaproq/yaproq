@@ -21,10 +21,10 @@ public final class Yaproq {
     public func loadTemplate(at filePath: String) throws -> Template {
         let fileManager = FileManager.default
         guard let data = fileManager.contents(atPath: filePath) else {
-            throw TemplateError("Can't load a template file at `\(filePath)`.", filePath: filePath)
+            throw Yaproq.templateError("Can't load a template file at `\(filePath)`.", filePath: filePath)
         }
         guard let source = String(data: data, encoding: .utf8) else {
-            throw TemplateError("A template file at `\(filePath)` must be UTF8 encodable.", filePath: filePath)
+            throw Yaproq.templateError("A template file at `\(filePath)` must be UTF8 encodable.", filePath: filePath)
         }
 
         return Template(source, filePath: filePath)
@@ -140,7 +140,7 @@ extension Yaproq {
             )
 
             if updatedRawDelimiters.count != initialRawDelimiters.count {
-                throw YaproqError("Delimiters must be unique.")
+                throw Yaproq.error("Delimiters must be unique.")
             }
         }
 
@@ -151,7 +151,28 @@ extension Yaproq {
 }
 
 extension Yaproq {
-    static func runtimeError(for token: Token, with message: String) -> RuntimeError {
+    static func error(_ message: String) -> YaproqError {
+        YaproqError(message)
+    }
+
+    static func templateError(_ message: String? = nil, filePath: String? = nil) -> TemplateError {
+        TemplateError(message, filePath: filePath)
+    }
+
+    static func syntaxError(
+        _ message: String? = nil,
+        filePath: String? = nil,
+        line: Int,
+        column: Int
+    ) -> SyntaxError {
+        SyntaxError(message, filePath: filePath, line: line, column: column)
+    }
+
+    static func syntaxError(_ message: String? = nil, token: Token) -> SyntaxError {
+        SyntaxError(message, filePath: token.filePath, line: token.line, column: token.column)
+    }
+
+    static func runtimeError(_ message: String? = nil, token: Token) -> RuntimeError {
         RuntimeError(message, filePath: token.filePath, line: token.line, column: token.column)
     }
 }

@@ -18,7 +18,7 @@ final class Environment {
         let name = token.lexeme
 
         if variableNames.contains(name) {
-            throw Yaproq.runtimeError(for: token, with: "A variable '\(name)' already exists.")
+            throw Yaproq.runtimeError("A variable '\(name)' already exists.", token: token)
         }
 
         variableNames.insert(name)
@@ -33,7 +33,7 @@ final class Environment {
         } else if let parent = parent {
             try parent.assign(value: value, toVariableWith: token)
         } else {
-            throw Yaproq.runtimeError(for: token, with: "An undefined variable '\(name)'.")
+            throw Yaproq.runtimeError("An undefined variable '\(name)'.", token: token)
         }
     }
 
@@ -62,7 +62,7 @@ final class Environment {
         }
 
         if let parent = parent { return try parent.valueForVariable(with: token) }
-        throw Yaproq.runtimeError(for: token, with: "An undefined variable '\(name)'.")
+        throw Yaproq.runtimeError("An undefined variable '\(name)'.", token: token)
     }
 
     func reset() {
