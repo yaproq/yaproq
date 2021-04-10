@@ -472,4 +472,25 @@ final class YaproqTests: BaseTests {
         // Assert
         XCTAssertEqual(result, "false")
     }
+
+    func testVariableStatement() {
+        // Arrange
+        let template = Template("""
+        {% var integer = 1 %}
+        {% var float = 2.5 %}
+        {% var string = "text" %}
+        {{ integer }}, {{ float }}, {{ string }}
+        {% integer = 2 %}
+        {% float = 3.2 %}
+        {% string = "text2" %}
+        {{ integer }}, {{ float }}, {{ string }}
+        """
+        )
+
+        // Act
+        let result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1, 2.5, text2, 3.2, text2")
+    }
 }
