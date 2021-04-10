@@ -66,6 +66,161 @@ final class YaproqTests: BaseTests {
         ]
     }
 
+    func testRenderTemplate() {
+        // Act
+        let templateFile = "header.html"
+        let result = try! templating.renderTemplate(named: templateFile, in: ["pages": pages])
+
+        // Assert
+        XCTAssertEqual(result.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: ""), """
+        <nav class="navbar navbar-expand-sm navbar-dark sticky-top">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar" aria-controls="collapsibleNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-center" id="collapsibleNavbar">
+                <ul class="text-center navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link font-weight-bold" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link font-weight-bold" href="/blog">Blog</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link font-weight-bold" href="/projects">Projects</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        """.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: "")
+        )
+
+        // Act/Assert
+        XCTAssertThrowsError(try templating.renderTemplate(at: templateFile, in: ["pages": pages])) { error in
+            let error = error as! TemplateError
+            XCTAssertEqual(error.filePath, templateFile)
+            XCTAssertEqual(error.errorDescription, """
+            [Template: \(error.filePath!)] TemplateError: Can't load a template file at `\(error.filePath!)`.
+            """
+            )
+        }
+    }
+}
+
+extension YaproqTests {
+    func testExpressionStatement() {
+        // Arrange
+        var template = Template("""
+        {% var result = 5 * 4 / (3 + 2) - 7 % 2 ^ 2 %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        var result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1")
+
+        // Arrange
+        template = Template("""
+        {% var five = 5.0 %}
+        {% var four = 4 %}
+        {% var three = 3 %}
+        {% var two = 2.0 %}
+        {% var seven = 7.0 %}
+        {% var six = 6 %}
+        {% var one = 1.0 %}
+        {% var result = five * four / (three + two) - seven % six ^ one %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "3")
+    }
+
+    func testExtendStatement() {
+        // Arrange
+        let template = Template("""
+        {% extend "content.html" %}
+        {% block title %}Home{% endblock %}
+        {% block body %}
+            {% super %}
+            {% block content %}Content{% endblock %}
+        {% endblock %}
+        """
+        )
+
+        // Act
+        let result = try! templating.renderTemplate(template, in: ["pages": pages])
+
+        // Assert
+        XCTAssertEqual(result.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: ""), """
+        <!doctype html>
+        <html lang="en">
+            <head>
+                <title>Home</title>
+            </head>
+            <body>
+                <nav class="navbar navbar-expand-sm navbar-dark sticky-top">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar" aria-controls="collapsibleNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-center" id="collapsibleNavbar">
+                        <ul class="text-center navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link font-weight-bold" href="/">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link font-weight-bold" href="/blog">Blog</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link font-weight-bold" href="/projects">Projects</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="container">
+                    Content
+                </div>
+                <footer class="footer text-center">
+                    <div class="inner"><p class="text-muted">Copyright &copy; 2020-2021.</p></div>
+                </footer>
+            </body>
+        </html>
+        """.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: "")
+        )
+
+        // Arrange
+        let data: [(String, Int)] = [
+            ("1", 11),
+            ("true", 14),
+            ("false", 15)
+        ]
+
+        for item in data {
+            // Arrange
+            let template = Template("""
+            {% extend \(item.0) %}
+            """
+            )
+
+            // Act/Assert
+            XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
+                print("test")
+                let error = error as! TemplateError
+                XCTAssertEqual(error.filePath, item.0)
+                XCTAssertEqual(error.errorDescription, """
+                [Template: \(error.filePath!)] TemplateError: Can't load a template file at `\(error.filePath!)`.
+                """
+                )
+            }
+        }
+    }
+
     func testForStatement() {
         // Arrange
         let min = 0
@@ -205,25 +360,6 @@ final class YaproqTests: BaseTests {
         XCTAssertTrue(result.contains("three-3"))
     }
 
-    func testWhileStatement() {
-        // Arrange
-        let template = Template("""
-        {% var number = 0 %}
-        {% var maxNumber = 3 %}
-        {% while number < maxNumber %}
-        {{ number }}
-        {% number += 1 %}
-        {% endwhile %}
-        """
-        )
-
-        // Act
-        let result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "012")
-    }
-
     func testIfStatement() {
         for number in 0...3 {
             // Arrange
@@ -246,85 +382,6 @@ final class YaproqTests: BaseTests {
 
             // Assert
             XCTAssertEqual(result, "\(number)")
-        }
-    }
-
-    func testExtendStatement() {
-        // Arrange
-        let template = Template("""
-        {% extend "content.html" %}
-        {% block title %}Home{% endblock %}
-        {% block body %}
-            {% super %}
-            {% block content %}Content{% endblock %}
-        {% endblock %}
-        """
-        )
-
-        // Act
-        let result = try! templating.renderTemplate(template, in: ["pages": pages])
-
-        // Assert
-        XCTAssertEqual(result.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: ""), """
-        <!doctype html>
-        <html lang="en">
-            <head>
-                <title>Home</title>
-            </head>
-            <body>
-                <nav class="navbar navbar-expand-sm navbar-dark sticky-top">
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar" aria-controls="collapsibleNavbar" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse justify-content-center" id="collapsibleNavbar">
-                        <ul class="text-center navbar-nav">
-                            <li class="nav-item">
-                                <a class="nav-link font-weight-bold" href="/">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link font-weight-bold" href="/blog">Blog</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link font-weight-bold" href="/projects">Projects</a>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
-                <div class="container">
-                    Content
-                </div>
-                <footer class="footer text-center">
-                    <div class="inner"><p class="text-muted">Copyright &copy; 2020-2021.</p></div>
-                </footer>
-            </body>
-        </html>
-        """.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: "")
-        )
-
-        // Arrange
-        let data: [(String, Int)] = [
-            ("1", 11),
-            ("true", 14),
-            ("false", 15)
-        ]
-
-        for item in data {
-            // Arrange
-            let template = Template("""
-            {% extend \(item.0) %}
-            """
-            )
-
-            // Act/Assert
-            XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
-                print("test")
-                let error = error as! TemplateError
-                XCTAssertEqual(error.filePath, item.0)
-                XCTAssertEqual(error.errorDescription, """
-                [Template: \(error.filePath!)] TemplateError: Can't load a template file at `\(error.filePath!)`.
-                """
-                )
-            }
         }
     }
 
@@ -373,106 +430,6 @@ final class YaproqTests: BaseTests {
         }
     }
 
-    func testLogicalAndOperator() {
-        // Arrange
-        var template = Template("""
-        {{ true and true }}
-        """
-        )
-
-        // Act
-        var result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "true")
-
-        // Arrange
-        template = Template("""
-        {{ true and false }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "false")
-
-        // Arrange
-        template = Template("""
-        {{ false and true }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "false")
-
-        // Arrange
-        template = Template("""
-        {{ false and false }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "false")
-    }
-
-    func testLogicalOrOperator() {
-        // Arrange
-        var template = Template("""
-        {{ true or true }}
-        """
-        )
-
-        // Act
-        var result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "true")
-
-        // Arrange
-        template = Template("""
-        {{ true or false }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "true")
-
-        // Arrange
-        template = Template("""
-        {{ false or true }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "true")
-
-        // Arrange
-        template = Template("""
-        {{ false or false }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "false")
-    }
-
     func testVariableStatement() {
         // Arrange
         let template = Template("""
@@ -494,348 +451,23 @@ final class YaproqTests: BaseTests {
         XCTAssertEqual(result, "1, 2.5, text2, 3.2, text2")
     }
 
-    func testRenderTemplate() {
-        // Act
-        let templateFile = "header.html"
-        let result = try! templating.renderTemplate(named: templateFile, in: ["pages": pages])
-
-        // Assert
-        XCTAssertEqual(result.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: ""), """
-        <nav class="navbar navbar-expand-sm navbar-dark sticky-top">
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar" aria-controls="collapsibleNavbar" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-center" id="collapsibleNavbar">
-                <ul class="text-center navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link font-weight-bold" href="/">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link font-weight-bold" href="/blog">Blog</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link font-weight-bold" href="/projects">Projects</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-        """.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: "")
-        )
-
-        // Act/Assert
-        XCTAssertThrowsError(try templating.renderTemplate(at: templateFile, in: ["pages": pages])) { error in
-            let error = error as! TemplateError
-            XCTAssertEqual(error.filePath, templateFile)
-            XCTAssertEqual(error.errorDescription, """
-            [Template: \(error.filePath!)] TemplateError: Can't load a template file at `\(error.filePath!)`.
-            """
-            )
-        }
-    }
-
-    func testClosedRangeOperator() {
+    func testWhileStatement() {
         // Arrange
-        var template = Template("""
-        {% var result = 1...3 %}
-        {{ result }}
+        let template = Template("""
+        {% var number = 0 %}
+        {% var maxNumber = 3 %}
+        {% while number < maxNumber %}
+        {{ number }}
+        {% number += 1 %}
+        {% endwhile %}
         """
         )
 
         // Act
-        var result = try! templating.renderTemplate(template)
+        let result = try! templating.renderTemplate(template)
 
         // Assert
-        XCTAssertEqual(result, "1...3")
-
-        // Arrange
-        template = Template("""
-        {% var min = 1 %}
-        {% var result = min...3 %}
-        {{ result }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "1...3")
-
-        // Arrange
-        template = Template("""
-        {% var max = 3 %}
-        {% var result = 1...max %}
-        {{ result }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "1...3")
-
-        // Arrange
-        template = Template("""
-        {% var min = 1 %}
-        {% var max = 3 %}
-        {% var result = min...max %}
-        {{ result }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "1...3")
-
-        // Arrange
-        template = Template("""
-        {% var result = 1.5...3.0 %}
-        {{ result }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "1.5...3.0")
-
-        // Arrange
-        template = Template("""
-        {% var min = 1.0 %}
-        {% var result = min...3.5 %}
-        {{ result }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "1.0...3.5")
-
-        // Arrange
-        template = Template("""
-        {% var max = 3.0 %}
-        {% var result = 1.5...max %}
-        {{ result }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "1.5...3.0")
-
-        // Arrange
-        template = Template("""
-        {% var min = 1.0 %}
-        {% var max = 3.5 %}
-        {% var result = min...max %}
-        {{ result }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "1.0...3.5")
-
-        // Arrange
-        template = Template("""
-        {% var min = 1 %}
-        {% var max = 3.5 %}
-        {% var result = min...max %}
-        {{ result }}
-        """
-        )
-
-        XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
-            let error = error as! RuntimeError
-            XCTAssertNil(error.filePath)
-            XCTAssertEqual(error.line, 3)
-            XCTAssertEqual(error.column, 22)
-            XCTAssertEqual(error.errorDescription, """
-            [Line: \(error.line), Column: \(error.column)] \
-            RuntimeError: The operands must be either integers or doubles.
-            """
-            )
-        }
-    }
-
-    func testRangeOperator() {
-        // Arrange
-        var template = Template("""
-        {% var result = 1..<3 %}
-        {{ result }}
-        """
-        )
-
-        // Act
-        var result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "1..<3")
-
-        // Arrange
-        template = Template("""
-        {% var min = 1 %}
-        {% var result = min..<3 %}
-        {{ result }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "1..<3")
-
-        // Arrange
-        template = Template("""
-        {% var max = 3 %}
-        {% var result = 1..<max %}
-        {{ result }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "1..<3")
-
-        // Arrange
-        template = Template("""
-        {% var min = 1 %}
-        {% var max = 3 %}
-        {% var result = min..<max %}
-        {{ result }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "1..<3")
-
-        // Arrange
-        template = Template("""
-        {% var result = 1.5..<3.0 %}
-        {{ result }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "1.5..<3.0")
-
-        // Arrange
-        template = Template("""
-        {% var min = 1.0 %}
-        {% var result = min..<3.5 %}
-        {{ result }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "1.0..<3.5")
-
-        // Arrange
-        template = Template("""
-        {% var max = 3.0 %}
-        {% var result = 1.5..<max %}
-        {{ result }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "1.5..<3.0")
-
-        // Arrange
-        template = Template("""
-        {% var min = 1.0 %}
-        {% var max = 3.5 %}
-        {% var result = min..<max %}
-        {{ result }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "1.0..<3.5")
-
-        // Arrange
-        template = Template("""
-        {% var min = 1.5 %}
-        {% var max = 3 %}
-        {% var result = min...max %}
-        {{ result }}
-        """
-        )
-
-        XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
-            let error = error as! RuntimeError
-            XCTAssertNil(error.filePath)
-            XCTAssertEqual(error.line, 3)
-            XCTAssertEqual(error.column, 22)
-            XCTAssertEqual(error.errorDescription, """
-            [Line: \(error.line), Column: \(error.column)] \
-            RuntimeError: The operands must be either integers or doubles.
-            """
-            )
-        }
-    }
-
-    func testExpressionStatement() {
-        // Arrange
-        var template = Template("""
-        {% var result = 5 * 4 / (3 + 2) - 7 % 2 ^ 2 %}
-        {{ result }}
-        """
-        )
-
-        // Act
-        var result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "1")
-
-        // Arrange
-        template = Template("""
-        {% var five = 5.0 %}
-        {% var four = 4 %}
-        {% var three = 3 %}
-        {% var two = 2.0 %}
-        {% var seven = 7.0 %}
-        {% var six = 6 %}
-        {% var one = 1.0 %}
-        {% var result = five * four / (three + two) - seven % six ^ one %}
-        {{ result }}
-        """
-        )
-
-        // Act
-        result = try! templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "3")
+        XCTAssertEqual(result, "012")
     }
 }
 
@@ -1130,6 +762,376 @@ extension YaproqTests {
                     )
                 }
             }
+        }
+    }
+
+    func testClosedRangeOperator() {
+        // Arrange
+        var template = Template("""
+        {% var result = 1...3 %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        var result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1...3")
+
+        // Arrange
+        template = Template("""
+        {% var min = 1 %}
+        {% var result = min...3 %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1...3")
+
+        // Arrange
+        template = Template("""
+        {% var max = 3 %}
+        {% var result = 1...max %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1...3")
+
+        // Arrange
+        template = Template("""
+        {% var min = 1 %}
+        {% var max = 3 %}
+        {% var result = min...max %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1...3")
+
+        // Arrange
+        template = Template("""
+        {% var result = 1.5...3.0 %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1.5...3.0")
+
+        // Arrange
+        template = Template("""
+        {% var min = 1.0 %}
+        {% var result = min...3.5 %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1.0...3.5")
+
+        // Arrange
+        template = Template("""
+        {% var max = 3.0 %}
+        {% var result = 1.5...max %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1.5...3.0")
+
+        // Arrange
+        template = Template("""
+        {% var min = 1.0 %}
+        {% var max = 3.5 %}
+        {% var result = min...max %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1.0...3.5")
+
+        // Arrange
+        template = Template("""
+        {% var min = 1 %}
+        {% var max = 3.5 %}
+        {% var result = min...max %}
+        {{ result }}
+        """
+        )
+
+        XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
+            let error = error as! RuntimeError
+            XCTAssertNil(error.filePath)
+            XCTAssertEqual(error.line, 3)
+            XCTAssertEqual(error.column, 22)
+            XCTAssertEqual(error.errorDescription, """
+            [Line: \(error.line), Column: \(error.column)] \
+            RuntimeError: The operands must be either integers or doubles.
+            """
+            )
+        }
+    }
+
+    func testLogicalAndOperator() {
+        // Arrange
+        var template = Template("""
+        {{ true and true }}
+        """
+        )
+
+        // Act
+        var result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "true")
+
+        // Arrange
+        template = Template("""
+        {{ true and false }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "false")
+
+        // Arrange
+        template = Template("""
+        {{ false and true }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "false")
+
+        // Arrange
+        template = Template("""
+        {{ false and false }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "false")
+    }
+
+    func testLogicalOrOperator() {
+        // Arrange
+        var template = Template("""
+        {{ true or true }}
+        """
+        )
+
+        // Act
+        var result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "true")
+
+        // Arrange
+        template = Template("""
+        {{ true or false }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "true")
+
+        // Arrange
+        template = Template("""
+        {{ false or true }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "true")
+
+        // Arrange
+        template = Template("""
+        {{ false or false }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "false")
+    }
+
+    func testRangeOperator() {
+        // Arrange
+        var template = Template("""
+        {% var result = 1..<3 %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        var result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1..<3")
+
+        // Arrange
+        template = Template("""
+        {% var min = 1 %}
+        {% var result = min..<3 %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1..<3")
+
+        // Arrange
+        template = Template("""
+        {% var max = 3 %}
+        {% var result = 1..<max %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1..<3")
+
+        // Arrange
+        template = Template("""
+        {% var min = 1 %}
+        {% var max = 3 %}
+        {% var result = min..<max %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1..<3")
+
+        // Arrange
+        template = Template("""
+        {% var result = 1.5..<3.0 %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1.5..<3.0")
+
+        // Arrange
+        template = Template("""
+        {% var min = 1.0 %}
+        {% var result = min..<3.5 %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1.0..<3.5")
+
+        // Arrange
+        template = Template("""
+        {% var max = 3.0 %}
+        {% var result = 1.5..<max %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1.5..<3.0")
+
+        // Arrange
+        template = Template("""
+        {% var min = 1.0 %}
+        {% var max = 3.5 %}
+        {% var result = min..<max %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1.0..<3.5")
+
+        // Arrange
+        template = Template("""
+        {% var min = 1.5 %}
+        {% var max = 3 %}
+        {% var result = min...max %}
+        {{ result }}
+        """
+        )
+
+        XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
+            let error = error as! RuntimeError
+            XCTAssertNil(error.filePath)
+            XCTAssertEqual(error.line, 3)
+            XCTAssertEqual(error.column, 22)
+            XCTAssertEqual(error.errorDescription, """
+            [Line: \(error.line), Column: \(error.column)] \
+            RuntimeError: The operands must be either integers or doubles.
+            """
+            )
         }
     }
 
