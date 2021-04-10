@@ -939,4 +939,197 @@ extension YaproqTests {
             }
         }
     }
+
+    func testBinaryOperators() {
+        // Arrange
+        let startDate = Date()
+        let endDate = startDate.addingTimeInterval(1)
+        let data: [String: [(String, String, String)]] = [ // left, right, result
+            Token.Kind.bangEqual.rawValue: [
+                ("1", "0", "true"),
+                ("0.5", "1.0", "true"),
+                ("1", "0.5", "true"),
+                ("0.5", "1", "true"),
+                ("1", "1", "false"),
+                ("0.5", "0.5", "false"),
+                ("\"a\"", "\"b\"", "true"),
+                ("startDate", "endDate", "true")
+            ],
+            Token.Kind.equalEqual.rawValue: [
+                ("1", "0", "false"),
+                ("0.5", "1.0", "false"),
+                ("1", "0.5", "false"),
+                ("0.5", "1", "false"),
+                ("1", "1", "true"),
+                ("0.5", "0.5", "true"),
+                ("\"a\"", "\"b\"", "false"),
+                ("startDate", "endDate", "false")
+            ],
+            Token.Kind.greater.rawValue: [
+                ("1", "0", "true"),
+                ("0.5", "1.0", "false"),
+                ("1", "0.5", "true"),
+                ("0.5", "1", "false"),
+                ("1", "1", "false"),
+                ("0.5", "0.5", "false"),
+                ("\"a\"", "\"b\"", "false"),
+                ("startDate", "endDate", "false")
+            ],
+            Token.Kind.greaterOrEqual.rawValue: [
+                ("1", "0", "true"),
+                ("0.5", "1.0", "false"),
+                ("1", "0.5", "true"),
+                ("0.5", "1", "false"),
+                ("1", "1", "true"),
+                ("0.5", "0.5", "true"),
+                ("\"a\"", "\"b\"", "false"),
+                ("startDate", "endDate", "false")
+            ],
+            Token.Kind.less.rawValue: [
+                ("1", "0", "false"),
+                ("0.5", "1.0", "true"),
+                ("1", "0.5", "false"),
+                ("0.5", "1", "true"),
+                ("1", "1", "false"),
+                ("0.5", "0.5", "false"),
+                ("\"a\"", "\"b\"", "true"),
+                ("startDate", "endDate", "true")
+            ],
+            Token.Kind.lessOrEqual.rawValue: [
+                ("1", "0", "false"),
+                ("0.5", "1.0", "true"),
+                ("1", "0.5", "false"),
+                ("0.5", "1", "true"),
+                ("1", "1", "true"),
+                ("0.5", "0.5", "true"),
+                ("\"a\"", "\"b\"", "true"),
+                ("startDate", "endDate", "true")
+            ],
+            Token.Kind.minus.rawValue: [
+                ("1", "0", "1"),
+                ("0.5", "1.0", "-0.5"),
+                ("1", "0.5", "0.5"),
+                ("0.5", "1", "-0.5"),
+                ("1", "1", "0"),
+                ("0.5", "0.5", "0")
+            ],
+            Token.Kind.percent.rawValue: [
+                ("3", "2", "1"),
+                ("0.5", "1.0", "0.5"),
+                ("1", "0.5", "0"),
+                ("0.5", "1", "0.5"),
+                ("1", "1", "0"),
+                ("0.5", "0.5", "0")
+            ],
+            Token.Kind.plus.rawValue: [
+                ("1", "0", "1"),
+                ("0.5", "1.0", "1.5"),
+                ("1", "0.5", "1.5"),
+                ("0.5", "1", "1.5"),
+                ("1", "1", "2"),
+                ("0.5", "0.5", "1"),
+                ("\"a\"", "\"b\"", "ab")
+            ],
+            Token.Kind.power.rawValue: [
+                ("1", "0", "1"),
+                ("0.5", "1.0", "0.5"),
+                ("1", "0.5", "1"),
+                ("0.5", "1", "0.5"),
+                ("1", "1", "1"),
+                ("0.5", "0.5", "0.7071067811865476")
+            ],
+            Token.Kind.questionQuestion.rawValue: [
+                ("1", "0", "1"),
+                ("0", "1", "0"),
+                ("nil", "0", "0")
+            ],
+            Token.Kind.slash.rawValue: [
+                ("3", "2", "1.5"),
+                ("4", "2", "2"),
+                ("0.5", "1.0", "0.5"),
+                ("1", "0.5", "2"),
+                ("0.5", "1", "0.5"),
+                ("1", "1", "1"),
+                ("0.5", "0.5", "1")
+            ],
+            Token.Kind.star.rawValue: [
+                ("1", "0", "0"),
+                ("0.5", "1.0", "0.5"),
+                ("1", "0.5", "0.5"),
+                ("0.5", "1", "0.5"),
+                ("1", "1", "1"),
+                ("0.5", "0.5", "0.25")
+            ]
+        ]
+
+        for (key, value) in data {
+            for item in value {
+                // Arrange
+                let template = Template("{{ \(item.0) \(key) \(item.1) }}")
+
+                // Act
+                let result = try! templating.renderTemplate(
+                    template,
+                    in: ["startDate": startDate, "endDate": endDate]
+                )
+
+                // Assert
+                XCTAssertEqual(result, "\(item.2)")
+            }
+        }
+
+        // Arrange
+        let invalidData: [String: [(String, String, String, Int, Int)]] = [ // left, right, error, line, column
+            Token.Kind.greater.rawValue: [
+                ("1", "\"a\"", "The operands must be comparable.", 1, 6)
+            ],
+            Token.Kind.greaterOrEqual.rawValue: [
+                ("1", "\"a\"", "The operands must be comparable.", 1, 7)
+            ],
+            Token.Kind.less.rawValue: [
+                ("1", "\"a\"", "The operands must be comparable.", 1, 6)
+            ],
+            Token.Kind.lessOrEqual.rawValue: [
+                ("1", "\"a\"", "The operands must be comparable.", 1, 7)
+            ],
+            Token.Kind.minus.rawValue: [
+                ("1", "\"a\"", "The operands must be numbers.", 1, 6)
+            ],
+            Token.Kind.percent.rawValue: [
+                ("1", "\"a\"", "The operands must be numbers.", 1, 6)
+            ],
+            Token.Kind.plus.rawValue: [
+                ("1", "\"a\"", "The operands must be numbers or strings.", 1, 6)
+            ],
+            Token.Kind.power.rawValue: [
+                ("1", "\"a\"", "The operands must be numbers.", 1, 6)
+            ],
+            Token.Kind.slash.rawValue: [
+                ("1", "\"a\"", "The operands must be numbers.", 1, 6)
+            ],
+            Token.Kind.star.rawValue: [
+                ("1", "\"a\"", "The operands must be numbers.", 1, 6)
+            ]
+        ]
+
+        for (key, value) in invalidData {
+            for item in value {
+                // Arrange
+                let template = Template("{{ \(item.0) \(key) \(item.1) }}")
+
+                // Act/Assert
+                XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
+                    let error = error as! RuntimeError
+                    XCTAssertNil(error.filePath)
+                    XCTAssertEqual(error.line, item.3)
+                    XCTAssertEqual(error.column, item.4)
+                    XCTAssertEqual(error.errorDescription, """
+                    [Line: \(error.line), Column: \(error.column)] \
+                    RuntimeError: \(item.2)
+                    """
+                    )
+                }
+            }
+        }
+    }
 }
