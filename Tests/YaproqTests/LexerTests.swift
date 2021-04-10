@@ -584,8 +584,6 @@ extension LexerTests {
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 1, column: 39)
         ])
 
-//        XCTAssertEqual failed: ("[[1:6] var, var, [1:13] identifier, number, [1:15] equal, =, [1:17] number, 1, 1, [1:29] identifier, number, [1:31] equal, =, [1:36] number, 20.0, 20.0, [1:39] eof,
-
         // Arrange
         template = "{% var bool = true %}{% bool = false %}"
         lexer = Lexer(template: template)
