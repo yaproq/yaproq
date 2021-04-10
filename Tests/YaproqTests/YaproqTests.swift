@@ -422,4 +422,54 @@ final class YaproqTests: BaseTests {
         // Assert
         XCTAssertEqual(result, "false")
     }
+
+    func testLogicalOrOperator() {
+        // Arrange
+        var template = Template("""
+        {{ true or true }}
+        """
+        )
+
+        // Act
+        var result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "true")
+
+        // Arrange
+        template = Template("""
+        {{ true or false }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "true")
+
+        // Arrange
+        template = Template("""
+        {{ false or true }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "true")
+
+        // Arrange
+        template = Template("""
+        {{ false or false }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "false")
+    }
 }
