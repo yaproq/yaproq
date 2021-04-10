@@ -1158,4 +1158,67 @@ extension YaproqTests {
         // Assert
         XCTAssertEqual(result, "0")
     }
+
+    func testUnaryOperators() {
+        // Arrange
+        let data: [String: [(String, String)]] = [ // right, result
+            Token.Kind.bang.rawValue: [
+                ("true", "false"),
+                ("false", "true")
+            ],
+            Token.Kind.minus.rawValue: [
+                ("1", "-1"),
+                ("0.5", "-0.5"),
+                ("-1", "1"),
+                ("-0.5", "0.5")
+            ]
+        ]
+
+        for (key, value) in data {
+            for item in value {
+                // Arrange
+                let template = Template("{{ \(key)\(item.0) }}")
+
+                // Act
+                let result = try! templating.renderTemplate(template)
+
+                // Assert
+                XCTAssertEqual(result, "\(item.1)")
+            }
+        }
+
+        // Arrange
+        let invalidData: [String: [(String, String, Int, Int)]] = [ // right, error, line, column
+            Token.Kind.bang.rawValue: [
+                ("1", "The operand must be a boolean.", 1, 4),
+                ("0.5", "The operand must be a boolean.", 1, 4),
+                ("\"a\"", "The operand must be a boolean.", 1, 4)
+            ],
+            Token.Kind.minus.rawValue: [
+                ("true", "The operand must be a number.", 1, 4),
+                ("false", "The operand must be a number.", 1, 4),
+                ("\"a\"", "The operand must be a number.", 1, 4)
+            ]
+        ]
+
+        for (key, value) in invalidData {
+            for item in value {
+                // Arrange
+                let template = Template("{{ \(key)\(item.0) }}")
+
+                // Act/Assert
+                XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
+                    let error = error as! RuntimeError
+                    XCTAssertNil(error.filePath)
+                    XCTAssertEqual(error.line, item.2)
+                    XCTAssertEqual(error.column, item.3)
+                    XCTAssertEqual(error.errorDescription, """
+                    [Line: \(error.line), Column: \(error.column)] \
+                    RuntimeError: \(item.1)
+                    """
+                    )
+                }
+            }
+        }
+    }
 }
