@@ -345,5 +345,31 @@ final class YaproqTests: BaseTests {
         </footer>
         """
         )
+
+        // Arrange
+        let data: [(String, Int)] = [
+            ("1", 11),
+            ("true", 14),
+            ("false", 15)
+        ]
+
+        for item in data {
+            // Arrange
+            let template = Template("""
+            {% include \(item.0) %}
+            """
+            )
+
+            // Act/Assert
+            XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
+                print("test")
+                let error = error as! TemplateError
+                XCTAssertEqual(error.filePath, item.0)
+                XCTAssertEqual(error.errorDescription, """
+                [Template: \(error.filePath!)] TemplateError: Can't load a template file at `\(error.filePath!)`.
+                """
+                )
+            }
+        }
     }
 }
