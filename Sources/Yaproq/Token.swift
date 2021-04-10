@@ -104,7 +104,7 @@ extension Token {
         case include
         case or
         case print
-        case `super` = "@super"
+        case `super`
         case `var`
         case `while`
 

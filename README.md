@@ -25,12 +25,12 @@
 {% extend "base.html" %}
 
 {% block css %}
-    {% @super %}
+    {% super %}
     <link href="/public/css/posts.min.css" rel="stylesheet" />
 {% endblock %}
 
 {% block js %}
-    {% @super %}
+    {% super %}
     <script src="/public/js/posts.min.js"></script>
 {% endblock %}
 
@@ -67,7 +67,7 @@
     - `for` loop
     - `if`, `elseif`, and `else` conditions
     - `include`
-    - `@super`
+    - `super`
     - `while` loop
 - An array and dictionary declaration inside a template file (under development)
 - Built-in filters (under development)

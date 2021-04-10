@@ -255,7 +255,7 @@ final class YaproqTests: BaseTests {
         {% extend "content.html" %}
         {% block title %}Home{% endblock %}
         {% block body %}
-            {% @super %}
+            {% super %}
             {% block content %}Content{% endblock %}
         {% endblock %}
         """

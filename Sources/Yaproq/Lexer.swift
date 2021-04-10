@@ -220,7 +220,7 @@ extension Lexer {
         default:
             if isNumeric(character) {
                 addNumberToken()
-            } else if isAlpha(character) || Token.Kind.super.rawValue.starts(with: character) {
+            } else if isAlpha(character) {
                 try addIdentifierToken()
             } else {
                 throw Yaproq.syntaxError(

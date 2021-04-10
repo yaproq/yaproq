@@ -290,7 +290,7 @@ extension LexerTests {
         {% extend "base.html" %}
 
         {% block title %}
-        {% @super %}
+        {% super %}
         {% endblock %}
         """
         let lexer = Lexer(template: template)
@@ -306,7 +306,7 @@ extension LexerTests {
             .init(kind: .block, lexeme: Token.Kind.block.rawValue, line: 3, column: 8),
             .init(kind: .identifier, lexeme: "title", line: 3, column: 14),
             .init(kind: .leftBrace, lexeme: Token.Kind.leftBrace.rawValue, line: -1, column: -1),
-            .init(kind: .super, lexeme: Token.Kind.super.rawValue, line: 4, column: 9),
+            .init(kind: .super, lexeme: Token.Kind.super.rawValue, line: 4, column: 8),
             .init(kind: .rightBrace, lexeme: Token.Kind.rightBrace.rawValue, line: -1, column: -1),
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 5, column: 14)
         ])

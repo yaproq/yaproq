@@ -83,7 +83,7 @@ final class TokenTests: BaseTests {
         XCTAssertEqual(Token.Kind.include.rawValue, "include")
         XCTAssertEqual(Token.Kind.or.rawValue, "or")
         XCTAssertEqual(Token.Kind.print.rawValue, "print")
-        XCTAssertEqual(Token.Kind.super.rawValue, "@super")
+        XCTAssertEqual(Token.Kind.super.rawValue, "super")
         XCTAssertEqual(Token.Kind.var.rawValue, "var")
         XCTAssertEqual(Token.Kind.while.rawValue, "while")
 
