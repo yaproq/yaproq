@@ -493,4 +493,43 @@ final class YaproqTests: BaseTests {
         // Assert
         XCTAssertEqual(result, "1, 2.5, text2, 3.2, text2")
     }
+
+    func testRenderTemplate() {
+        // Act
+        let templateFile = "header.html"
+        let result = try! templating.renderTemplate(named: templateFile, in: ["pages": pages])
+
+        // Assert
+        XCTAssertEqual(result.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: ""), """
+        <nav class="navbar navbar-expand-sm navbar-dark sticky-top">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar" aria-controls="collapsibleNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-center" id="collapsibleNavbar">
+                <ul class="text-center navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link font-weight-bold" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link font-weight-bold" href="/blog">Blog</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link font-weight-bold" href="/projects">Projects</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        """.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: "")
+        )
+
+        // Act/Assert
+        XCTAssertThrowsError(try templating.renderTemplate(at: templateFile, in: ["pages": pages])) { error in
+            let error = error as! TemplateError
+            XCTAssertEqual(error.filePath, templateFile)
+            XCTAssertEqual(error.errorDescription, """
+            [Template: \(error.filePath!)] TemplateError: Can't load a template file at `\(error.filePath!)`.
+            """
+            )
+        }
+    }
 }
