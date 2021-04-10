@@ -1132,4 +1132,30 @@ extension YaproqTests {
             }
         }
     }
+
+    func testTernaryOperator() {
+        // Arrange
+        var template = Template("""
+        {{ true ? 1 : 0 }}
+        """
+        )
+
+        // Act
+        var result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1")
+
+        // Arrange
+        template = Template("""
+        {{ false ? 1 : 0 }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "0")
+    }
 }
