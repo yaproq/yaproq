@@ -802,4 +802,39 @@ final class YaproqTests: BaseTests {
             )
         }
     }
+
+    func testExpressionStatement() {
+        // Arrange
+        var template = Template("""
+        {% var result = 5 * 4 / (3 + 2) - 7 % 2 ^ 2 %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        var result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1")
+
+        // Arrange
+        template = Template("""
+        {% var five = 5.0 %}
+        {% var four = 4 %}
+        {% var three = 3 %}
+        {% var two = 2.0 %}
+        {% var seven = 7.0 %}
+        {% var six = 6 %}
+        {% var one = 1.0 %}
+        {% var result = five * four / (three + two) - seven % six ^ one %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "3")
+    }
 }
