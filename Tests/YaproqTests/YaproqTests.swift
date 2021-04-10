@@ -667,4 +667,139 @@ final class YaproqTests: BaseTests {
             )
         }
     }
+
+    func testRangeOperator() {
+        // Arrange
+        var template = Template("""
+        {% var result = 1..<3 %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        var result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1..<3")
+
+        // Arrange
+        template = Template("""
+        {% var min = 1 %}
+        {% var result = min..<3 %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1..<3")
+
+        // Arrange
+        template = Template("""
+        {% var max = 3 %}
+        {% var result = 1..<max %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1..<3")
+
+        // Arrange
+        template = Template("""
+        {% var min = 1 %}
+        {% var max = 3 %}
+        {% var result = min..<max %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1..<3")
+
+        // Arrange
+        template = Template("""
+        {% var result = 1.5..<3.0 %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1.5..<3.0")
+
+        // Arrange
+        template = Template("""
+        {% var min = 1.0 %}
+        {% var result = min..<3.5 %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1.0..<3.5")
+
+        // Arrange
+        template = Template("""
+        {% var max = 3.0 %}
+        {% var result = 1.5..<max %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1.5..<3.0")
+
+        // Arrange
+        template = Template("""
+        {% var min = 1.0 %}
+        {% var max = 3.5 %}
+        {% var result = min..<max %}
+        {{ result }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "1.0..<3.5")
+
+        // Arrange
+        template = Template("""
+        {% var min = 1.5 %}
+        {% var max = 3 %}
+        {% var result = min...max %}
+        {{ result }}
+        """
+        )
+
+        XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
+            let error = error as! RuntimeError
+            XCTAssertNil(error.filePath)
+            XCTAssertEqual(error.line, 3)
+            XCTAssertEqual(error.column, 22)
+            XCTAssertEqual(error.errorDescription, """
+            [Line: \(error.line), Column: \(error.column)] \
+            RuntimeError: The operands must be either integers or doubles.
+            """
+            )
+        }
+    }
 }
