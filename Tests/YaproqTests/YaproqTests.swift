@@ -838,3 +838,105 @@ final class YaproqTests: BaseTests {
         XCTAssertEqual(result, "3")
     }
 }
+
+extension YaproqTests {
+    func testAssignmentOperator() {
+        // Arrange
+        let data: [String: [(String, String, String, String)]] = [ // variable, initial value, assigned value, result
+            Token.Kind.minusEqual.rawValue: [
+                ("result", "1", "1", "0"),
+                ("result", "1.5", "1", "0.5"),
+                ("result", "1", "1.5", "-0.5"),
+                ("result", "1.5", "1.5", "0")
+            ],
+            Token.Kind.percentEqual.rawValue: [
+                ("result", "1", "1", "0"),
+                ("result", "1.5", "1", "0.5"),
+                ("result", "1", "1.5", "1"),
+                ("result", "1.5", "1.5", "0")
+            ],
+            Token.Kind.plusEqual.rawValue: [
+                ("result", "1", "1", "2"),
+                ("result", "1.5", "1", "2.5"),
+                ("result", "1", "1.5", "2.5"),
+                ("result", "1.5", "1.5", "3")
+            ],
+            Token.Kind.powerEqual.rawValue: [
+                ("result", "2", "3", "8"),
+                ("result", "1.5", "2", "2.25"),
+                ("result", "2", "1.5", "2.8284271247461903"),
+                ("result", "1.5", "1.5", "1.8371173070873836")
+            ],
+            Token.Kind.slashEqual.rawValue: [
+                ("result", "1", "1", "1"),
+                ("result", "1.5", "1", "1.5"),
+                ("result", "3", "1.5", "2"),
+                ("result", "1.2", "2.4", "0.5")
+            ],
+            Token.Kind.starEqual.rawValue: [
+                ("result", "1", "1", "1"),
+                ("result", "1.5", "1", "1.5"),
+                ("result", "1", "1.5", "1.5"),
+                ("result", "1.5", "1.5", "2.25")
+            ]
+        ]
+
+        for (key, value) in data {
+            for item in value {
+                // Arrange
+                let template = Template("""
+                {% var \(item.0) = \(item.1) %}
+                {% \(item.0) \(key) \(item.2) %}
+                {{ \(item.0) }}
+                """
+                )
+
+                // Act
+                let result = try! templating.renderTemplate(template)
+
+                // Assert
+                XCTAssertEqual(result, "\(item.3)")
+            }
+        }
+
+        // Arrange
+        let errorData = [
+            ("result", "1", "\"a\"", "The operands must be numbers.", 2, 12),
+            ("result", "1.5", "\"a\"", "The operands must be numbers.", 2, 12),
+            ("result", "2", "true", "The operands must be numbers.", 2, 12),
+            ("result", "2.5", "false", "The operands must be numbers.", 2, 12)
+        ]
+        let invalidData: [String: [(String, String, String, String, Int, Int)]] = [
+            Token.Kind.minusEqual.rawValue: errorData,
+            Token.Kind.percentEqual.rawValue: errorData,
+            Token.Kind.plusEqual.rawValue: errorData,
+            Token.Kind.powerEqual.rawValue: errorData,
+            Token.Kind.slashEqual.rawValue: errorData,
+            Token.Kind.starEqual.rawValue: errorData
+        ]
+
+        for (key, value) in invalidData {
+            for item in value {
+                // Arrange
+                let template = Template("""
+                {% var \(item.0) = \(item.1) %}
+                {% \(item.0) \(key) \(item.2) %}
+                """
+                )
+
+                // Act/Assert
+                XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
+                    let error = error as! RuntimeError
+                    XCTAssertNil(error.filePath)
+                    XCTAssertEqual(error.line, item.4)
+                    XCTAssertEqual(error.column, item.5)
+                    XCTAssertEqual(error.errorDescription, """
+                    [Line: \(error.line), Column: \(error.column)] \
+                    RuntimeError: \(item.3)
+                    """
+                    )
+                }
+            }
+        }
+    }
+}
