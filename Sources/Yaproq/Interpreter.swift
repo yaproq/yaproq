@@ -468,20 +468,12 @@ extension Interpreter: StatementVisitor {
     }
 
     func visitExtend(statement: ExtendStatement) throws {
-        if let filePath = try evaluate(expression: statement.expression) as? String {
+        guard let value = try evaluate(expression: statement.expression) else { return }
+
+        if let filePath = value as? String {
             try extendFile(at: filePath)
         } else {
-            if let expression = statement.expression.expression as? LiteralExpression {
-                throw Yaproq.runtimeError(
-                    "The `\(expression.token.literal ?? "")` is not a valid filePath.",
-                    token: expression.token
-                )
-            } else if let expression = statement.expression.expression as? VariableExpression {
-                throw Yaproq.runtimeError(
-                    "The `\(expression.token.literal ?? "")` is not a valid filePath.",
-                    token: expression.token
-                )
-            }
+            throw Yaproq.templateError("Can't load a template file at `\(value)`.", filePath: "\(value)")
         }
     }
 
@@ -544,24 +536,16 @@ extension Interpreter: StatementVisitor {
     }
 
     func visitInclude(statement: IncludeStatement) throws {
-        if let filePath = try evaluate(expression: statement.expression) as? String {
+        guard let value = try evaluate(expression: statement.expression) else { return }
+
+        if let filePath = value as? String {
             do {
                 output += try templating._renderTemplate(named: filePath)
             } catch is TemplateError {
                 output += try templating._renderTemplate(at: filePath)
             }
         } else {
-            if let expression = statement.expression.expression as? LiteralExpression {
-                throw Yaproq.runtimeError(
-                    "The `\(expression.token.literal ?? "")` is not a valid filePath.",
-                    token: expression.token
-                )
-            } else if let expression = statement.expression.expression as? VariableExpression {
-                throw Yaproq.runtimeError(
-                    "The `\(expression.token.literal ?? "")` is not a valid filePath.",
-                    token: expression.token
-                )
-            }
+            throw Yaproq.templateError("Can't load a template file at `\(value)`.", filePath: "\(value)")
         }
     }
 
