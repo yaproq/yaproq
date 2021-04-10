@@ -1,5 +1,7 @@
 # Yaproq - A templating language for Swift
 
+[![Swift](https://img.shields.io/badge/swift-5.3-brightgreen.svg)](https://swift.org/download/#releases) [![MIT License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/yaproq/yaproq/blob/master/LICENSE/) [![Actions Status](https://github.com/yaproq/yaproq/workflows/development/badge.svg)](https://github.com/yaproq/yaproq/actions) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/6cc4920a71e848a588a827f14bbafe8e)](https://www.codacy.com/gh/yaproq/yaproq/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yaproq/yaproq&amp;utm_campaign=Badge_Grade) [![codecov](https://codecov.io/gh/yaproq/yaproq/branch/master/graph/badge.svg?token=LvV6AiCSna)](https://codecov.io/gh/yaproq/yaproq) [![Contributing](https://img.shields.io/badge/contributing-guide-brightgreen.svg)](https://github.com/yaproq/yaproq/blob/master/CONTRIBUTING.md)
+
 ## Template examples
 ### `/templates/base.html`
 ```html
