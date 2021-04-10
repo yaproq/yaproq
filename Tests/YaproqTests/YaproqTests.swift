@@ -372,4 +372,54 @@ final class YaproqTests: BaseTests {
             }
         }
     }
+
+    func testLogicalAndOperator() {
+        // Arrange
+        var template = Template("""
+        {{ true and true }}
+        """
+        )
+
+        // Act
+        var result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "true")
+
+        // Arrange
+        template = Template("""
+        {{ true and false }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "false")
+
+        // Arrange
+        template = Template("""
+        {{ false and true }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "false")
+
+        // Arrange
+        template = Template("""
+        {{ false and false }}
+        """
+        )
+
+        // Act
+        result = try! templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "false")
+    }
 }
