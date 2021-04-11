@@ -97,7 +97,7 @@ final class YaproqTests: BaseTests {
         // Act/Assert
         XCTAssertThrowsError(try templating.renderTemplate(at: templateFile, in: ["pages": pages])) { error in
             guard let error = error as? TemplateError else {
-                XCTFail()
+                XCTFail("The error is not of \(String(describing: TemplateError.self)) type.")
                 return
             }
 
@@ -215,7 +215,7 @@ extension YaproqTests {
             // Act/Assert
             XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
                 guard let error = error as? TemplateError else {
-                    XCTFail()
+                    XCTFail("The error is not of \(String(describing: TemplateError.self)) type.")
                     return
                 }
 
@@ -427,7 +427,7 @@ extension YaproqTests {
             // Act/Assert
             XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
                 guard let error = error as? TemplateError else {
-                    XCTFail()
+                    XCTFail("The error is not of \(String(describing: TemplateError.self)) type.")
                     return
                 }
 
@@ -569,7 +569,7 @@ extension YaproqTests {
                 // Act/Assert
                 XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
                     guard let error = error as? RuntimeError else {
-                        XCTFail()
+                        XCTFail("The error is not of \(String(describing: RuntimeError.self)) type.")
                         return
                     }
 
@@ -766,7 +766,7 @@ extension YaproqTests {
                 // Act/Assert
                 XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
                     guard let error = error as? RuntimeError else {
-                        XCTFail()
+                        XCTFail("The error is not of \(String(describing: RuntimeError.self)) type.")
                         return
                     }
 
@@ -907,7 +907,7 @@ extension YaproqTests {
 
         XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
             guard let error = error as? RuntimeError else {
-                XCTFail()
+                XCTFail("The error is not of \(String(describing: RuntimeError.self)) type.")
                 return
             }
 
@@ -1146,7 +1146,7 @@ extension YaproqTests {
 
         XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
             guard let error = error as? RuntimeError else {
-                XCTFail()
+                XCTFail("The error is not of \(String(describing: RuntimeError.self)) type.")
                 return
             }
 
@@ -1237,7 +1237,7 @@ extension YaproqTests {
                 // Act/Assert
                 XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
                     guard let error = error as? RuntimeError else {
-                        XCTFail()
+                        XCTFail("The error is not of \(String(describing: RuntimeError.self)) type.")
                         return
                     }
 

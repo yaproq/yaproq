@@ -535,7 +535,7 @@ extension LexerTests {
         // Act/Assert
         XCTAssertThrowsError(try lexer.scan()) { error in
             guard let error = error as? SyntaxError else {
-                XCTFail()
+                XCTFail("The error is not of \(String(describing: SyntaxError.self)) type.")
                 return
             }
 
@@ -556,7 +556,7 @@ extension LexerTests {
         // Act/Assert
         XCTAssertThrowsError(try lexer.scan()) { error in
             guard let error = error as? SyntaxError else {
-                XCTFail()
+                XCTFail("The error is not of \(String(describing: SyntaxError.self)) type.")
                 return
             }
 
@@ -636,7 +636,7 @@ extension LexerTests {
         // Act/Assert
         XCTAssertThrowsError(try lexer.scan()) { error in
             guard let error = error as? SyntaxError else {
-                XCTFail()
+                XCTFail("The error is not of \(String(describing: SyntaxError.self)) type.")
                 return
             }
 
@@ -657,7 +657,7 @@ extension LexerTests {
         // Act/Assert
         XCTAssertThrowsError(try lexer.scan()) { error in
             guard let error = error as? SyntaxError else {
-                XCTFail()
+                XCTFail("The error is not of \(String(describing: SyntaxError.self)) type.")
                 return
             }
 
@@ -678,7 +678,7 @@ extension LexerTests {
         // Act/Assert
         XCTAssertThrowsError(try lexer.scan()) { error in
             guard let error = error as? SyntaxError else {
-                XCTFail()
+                XCTFail("The error is not of \(String(describing: SyntaxError.self)) type.")
                 return
             }
 
