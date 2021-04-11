@@ -60,6 +60,6 @@ extension Delimiter {
 }
 
 extension Delimiter: Hashable {
-    public static func ==(lhs: Delimiter, rhs: Delimiter) -> Bool { lhs.name == rhs.name }
+    public static func == (lhs: Delimiter, rhs: Delimiter) -> Bool { lhs.name == rhs.name }
     public func hash(into hasher: inout Hasher) { hasher.combine(name) }
 }

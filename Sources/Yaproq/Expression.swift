@@ -25,7 +25,7 @@ struct AnyExpression: Expression {
         try visitor.visitAny(expression: self)
     }
 
-    static func ==(lhs: AnyExpression, rhs: AnyExpression) -> Bool {
+    static func == (lhs: AnyExpression, rhs: AnyExpression) -> Bool {
         String(describing: lhs.expression) == String(describing: rhs.expression)
     }
 }
