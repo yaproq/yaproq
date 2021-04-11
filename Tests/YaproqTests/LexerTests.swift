@@ -25,7 +25,7 @@ extension LexerTests {
         let lexer = Lexer(template: template)
 
         // Act
-        let tokens = try! lexer.scan()
+        let tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -65,7 +65,7 @@ extension LexerTests {
         let lexer = Lexer(template: template)
 
         // Act
-        let tokens = try! lexer.scan()
+        let tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -119,7 +119,7 @@ extension LexerTests {
         let lexer = Lexer(template: template)
 
         // Act
-        let tokens = try! lexer.scan()
+        let tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -161,7 +161,7 @@ extension LexerTests {
         let lexer = Lexer(template: template)
 
         // Act
-        let tokens = try! lexer.scan()
+        let tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -185,7 +185,7 @@ extension LexerTests {
         let lexer = Lexer(template: template)
 
         // Act
-        let tokens = try! lexer.scan()
+        let tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -215,7 +215,7 @@ extension LexerTests {
         let lexer = Lexer(template: template)
 
         // Act
-        let tokens = try! lexer.scan()
+        let tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -242,7 +242,7 @@ extension LexerTests {
         var lexer = Lexer(template: template)
 
         // Act
-        var tokens = try! lexer.scan()
+        var tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -263,7 +263,7 @@ extension LexerTests {
         lexer = Lexer(template: template)
 
         // Act
-        tokens = try! lexer.scan()
+        tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -296,7 +296,7 @@ extension LexerTests {
         let lexer = Lexer(template: template)
 
         // Act
-        let tokens = try! lexer.scan()
+        let tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -318,7 +318,7 @@ extension LexerTests {
         var lexer = Lexer(template: template)
 
         // Act
-        var tokens = try! lexer.scan()
+        var tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -336,7 +336,7 @@ extension LexerTests {
         lexer = Lexer(template: template)
 
         // Act
-        tokens = try! lexer.scan()
+        tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -355,7 +355,7 @@ extension LexerTests {
         var lexer = Lexer(template: template)
 
         // Act
-        var tokens = try! lexer.scan()
+        var tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -380,7 +380,7 @@ extension LexerTests {
         lexer = Lexer(template: template)
 
         // Act
-        tokens = try! lexer.scan()
+        tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -417,7 +417,7 @@ extension LexerTests {
         let lexer = Lexer(template: template)
 
         // Act
-        let tokens = try! lexer.scan()
+        let tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -461,7 +461,7 @@ extension LexerTests {
         var lexer = Lexer(template: template)
 
         // Act
-        var tokens = try! lexer.scan()
+        var tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -481,7 +481,7 @@ extension LexerTests {
         lexer = Lexer(template: template)
 
         // Act
-        tokens = try! lexer.scan()
+        tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -500,7 +500,7 @@ extension LexerTests {
         lexer = Lexer(template: template)
 
         // Act
-        tokens = try! lexer.scan()
+        tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -518,7 +518,7 @@ extension LexerTests {
         lexer = Lexer(template: template)
 
         // Act
-        tokens = try! lexer.scan()
+        tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -577,7 +577,7 @@ extension LexerTests {
         var lexer = Lexer(template: template)
 
         // Act
-        var tokens = try! lexer.scan()
+        var tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -597,7 +597,7 @@ extension LexerTests {
         lexer = Lexer(template: template)
 
         // Act
-        tokens = try! lexer.scan()
+        tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -617,7 +617,7 @@ extension LexerTests {
         lexer = Lexer(template: template)
 
         // Act
-        tokens = try! lexer.scan()
+        tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
@@ -701,7 +701,7 @@ extension LexerTests {
         lexer = Lexer(template: template)
 
         // Act
-        tokens = try! lexer.scan()
+        tokens = try? lexer.scan()
 
         // Assert
         XCTAssertEqual(lexer.template, template)
