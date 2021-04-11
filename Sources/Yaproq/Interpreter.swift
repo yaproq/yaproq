@@ -540,9 +540,9 @@ extension Interpreter: StatementVisitor {
 
         if let filePath = value as? String {
             do {
-                output += try templating._renderTemplate(named: filePath)
+                output += try templating.doRenderTemplate(named: filePath)
             } catch is TemplateError {
-                output += try templating._renderTemplate(at: filePath)
+                output += try templating.doRenderTemplate(at: filePath)
             }
         } else {
             throw Yaproq.templateError("Can't load a template file at `\(value)`.", filePath: "\(value)")

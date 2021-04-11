@@ -34,15 +34,15 @@ public final class Yaproq {
         try renderTemplate(at: configuration.directoryPath + name, in: context)
     }
 
-    func _renderTemplate(named name: String, in context: [String: Encodable] = .init()) throws -> String {
-        try _renderTemplate(at: configuration.directoryPath + name, in: context)
+    func doRenderTemplate(named name: String, in context: [String: Encodable] = .init()) throws -> String {
+        try doRenderTemplate(at: configuration.directoryPath + name, in: context)
     }
 
     public func renderTemplate(at filePath: String, in context: [String: Encodable] = .init()) throws -> String {
         setCurrentEnvironment(for: filePath)
 
         do {
-            let output = try _renderTemplate(at: filePath, in: context)
+            let output = try doRenderTemplate(at: filePath, in: context)
             clearEnvironments()
 
             return output
@@ -52,15 +52,15 @@ public final class Yaproq {
         }
     }
 
-    func _renderTemplate(at filePath: String, in context: [String: Encodable] = .init()) throws -> String {
-        try _renderTemplate(try loadTemplate(at: filePath), in: context)
+    func doRenderTemplate(at filePath: String, in context: [String: Encodable] = .init()) throws -> String {
+        try doRenderTemplate(try loadTemplate(at: filePath), in: context)
     }
 
     public func renderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
         setCurrentEnvironment(for: template.filePath)
 
         do {
-            let output = try _renderTemplate(template, in: context)
+            let output = try doRenderTemplate(template, in: context)
             clearEnvironments()
 
             return output
@@ -70,7 +70,7 @@ public final class Yaproq {
         }
     }
 
-    func _renderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
+    func doRenderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
         for (name, value) in context { currentEnvironment.setVariable(named: name, with: value) }
         let interpreter = Interpreter(templating: self, statements: try parseTemplate(template))
 
