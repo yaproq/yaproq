@@ -44,8 +44,8 @@ final class YaproqConfigurationTests: BaseTests {
 
         // Act/Assert
         XCTAssertThrowsError(try Yaproq.Configuration(directoryPath: directoryPath, delimiters: delimiters)) { error in
-            let error = error as! YaproqError
-            XCTAssertEqual(error.errorDescription, "YaproqError: Delimiters must be unique.")
+            let error = error as? YaproqError
+            XCTAssertEqual(error?.errorDescription, "YaproqError: Delimiters must be unique.")
         }
     }
 }
@@ -96,7 +96,11 @@ final class YaproqTests: BaseTests {
 
         // Act/Assert
         XCTAssertThrowsError(try templating.renderTemplate(at: templateFile, in: ["pages": pages])) { error in
-            let error = error as! TemplateError
+            guard let error = error as? TemplateError else {
+                XCTFail()
+                return
+            }
+
             XCTAssertEqual(error.filePath, templateFile)
             XCTAssertEqual(error.errorDescription, """
             [Template: \(error.filePath!)] TemplateError: Can't load a template file at `\(error.filePath!)`.
@@ -210,8 +214,11 @@ extension YaproqTests {
 
             // Act/Assert
             XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
-                print("test")
-                let error = error as! TemplateError
+                guard let error = error as? TemplateError else {
+                    XCTFail()
+                    return
+                }
+
                 XCTAssertEqual(error.filePath, item.0)
                 XCTAssertEqual(error.errorDescription, """
                 [Template: \(error.filePath!)] TemplateError: Can't load a template file at `\(error.filePath!)`.
@@ -419,8 +426,11 @@ extension YaproqTests {
 
             // Act/Assert
             XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
-                print("test")
-                let error = error as! TemplateError
+                guard let error = error as? TemplateError else {
+                    XCTFail()
+                    return
+                }
+
                 XCTAssertEqual(error.filePath, item.0)
                 XCTAssertEqual(error.errorDescription, """
                 [Template: \(error.filePath!)] TemplateError: Can't load a template file at `\(error.filePath!)`.
@@ -558,7 +568,11 @@ extension YaproqTests {
 
                 // Act/Assert
                 XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
-                    let error = error as! RuntimeError
+                    guard let error = error as? RuntimeError else {
+                        XCTFail()
+                        return
+                    }
+
                     XCTAssertNil(error.filePath)
                     XCTAssertEqual(error.line, item.4)
                     XCTAssertEqual(error.column, item.5)
@@ -751,7 +765,11 @@ extension YaproqTests {
 
                 // Act/Assert
                 XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
-                    let error = error as! RuntimeError
+                    guard let error = error as? RuntimeError else {
+                        XCTFail()
+                        return
+                    }
+
                     XCTAssertNil(error.filePath)
                     XCTAssertEqual(error.line, item.3)
                     XCTAssertEqual(error.column, item.4)
@@ -888,7 +906,11 @@ extension YaproqTests {
         )
 
         XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
-            let error = error as! RuntimeError
+            guard let error = error as? RuntimeError else {
+                XCTFail()
+                return
+            }
+
             XCTAssertNil(error.filePath)
             XCTAssertEqual(error.line, 3)
             XCTAssertEqual(error.column, 22)
@@ -1123,7 +1145,11 @@ extension YaproqTests {
         )
 
         XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
-            let error = error as! RuntimeError
+            guard let error = error as? RuntimeError else {
+                XCTFail()
+                return
+            }
+
             XCTAssertNil(error.filePath)
             XCTAssertEqual(error.line, 3)
             XCTAssertEqual(error.column, 22)
@@ -1210,7 +1236,11 @@ extension YaproqTests {
 
                 // Act/Assert
                 XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
-                    let error = error as! RuntimeError
+                    guard let error = error as? RuntimeError else {
+                        XCTFail()
+                        return
+                    }
+
                     XCTAssertNil(error.filePath)
                     XCTAssertEqual(error.line, item.2)
                     XCTAssertEqual(error.column, item.3)

@@ -23,7 +23,7 @@ final class BlockStatementTests: BaseTests {
         XCTAssertEqual(statement.name, name)
         XCTAssertEqual(statement.statements.count, 1)
         XCTAssertEqual(
-            (statement.statements.first as! PrintStatement).expression,
+            (statement.statements.first as? PrintStatement)?.expression,
             expression
         )
     }
@@ -95,22 +95,22 @@ final class IfStatementTests: BaseTests {
 
         // Assert
         XCTAssertEqual(statement.condition, trueCondition)
-        XCTAssertEqual((statement.thenBranch as! BlockStatement).statements.count, 1)
+        XCTAssertEqual((statement.thenBranch as? BlockStatement)?.statements.count, 1)
         XCTAssertEqual(
-            ((statement.thenBranch as! BlockStatement).statements.first as! PrintStatement).expression,
+            ((statement.thenBranch as? BlockStatement)?.statements.first as? PrintStatement)?.expression,
             oneExpression
         )
         XCTAssertEqual(statement.elseIfBranches.count, 1)
         XCTAssertEqual(statement.elseIfBranches.first?.condition, falseCondition)
-        XCTAssertEqual((statement.elseIfBranches.first?.thenBranch as! BlockStatement).statements.count, 1)
+        XCTAssertEqual((statement.elseIfBranches.first?.thenBranch as? BlockStatement)?.statements.count, 1)
         XCTAssertEqual(
-            ((statement.elseIfBranches.first?.thenBranch as! BlockStatement).statements.first as! PrintStatement)
+            ((statement.elseIfBranches.first?.thenBranch as? BlockStatement)?.statements.first as? PrintStatement)?
                 .expression,
             twoExpression
         )
-        XCTAssertEqual((statement.elseBranch as! BlockStatement).statements.count, 1)
+        XCTAssertEqual((statement.elseBranch as? BlockStatement)?.statements.count, 1)
         XCTAssertEqual(
-            ((statement.elseBranch as! BlockStatement).statements.first as! PrintStatement).expression,
+            ((statement.elseBranch as? BlockStatement)?.statements.first as? PrintStatement)?.expression,
             threeExpression
         )
     }
@@ -183,9 +183,9 @@ final class WhileStatementTests: BaseTests {
 
         // Assert
         XCTAssertEqual(statement.condition, condition)
-        XCTAssertEqual((statement.body as! BlockStatement).statements.count, 1)
+        XCTAssertEqual((statement.body as? BlockStatement)?.statements.count, 1)
         XCTAssertEqual(
-            ((statement.body as! BlockStatement).statements.first as! PrintStatement).expression,
+            ((statement.body as? BlockStatement)?.statements.first as? PrintStatement)?.expression,
             expression
         )
     }

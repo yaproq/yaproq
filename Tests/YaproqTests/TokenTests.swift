@@ -17,7 +17,7 @@ final class TokenTests: BaseTests {
         // Assert
         XCTAssertEqual(token.kind, kind)
         XCTAssertEqual(token.lexeme, lexeme)
-        XCTAssertEqual(token.literal! as! Int, literal)
+        XCTAssertEqual(token.literal as? Int, literal)
         XCTAssertEqual(token.filePath, filePath)
         XCTAssertEqual(token.line, line)
         XCTAssertEqual(token.column, column)

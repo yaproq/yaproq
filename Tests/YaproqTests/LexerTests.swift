@@ -534,7 +534,11 @@ extension LexerTests {
 
         // Act/Assert
         XCTAssertThrowsError(try lexer.scan()) { error in
-            let error = error as! SyntaxError
+            guard let error = error as? SyntaxError else {
+                XCTFail()
+                return
+            }
+
             XCTAssertNil(error.filePath)
             XCTAssertEqual(error.line, 1)
             XCTAssertEqual(error.column, 10)
@@ -551,7 +555,11 @@ extension LexerTests {
 
         // Act/Assert
         XCTAssertThrowsError(try lexer.scan()) { error in
-            let error = error as! SyntaxError
+            guard let error = error as? SyntaxError else {
+                XCTFail()
+                return
+            }
+
             XCTAssertNil(error.filePath)
             XCTAssertEqual(error.line, 1)
             XCTAssertEqual(error.column, 11)
@@ -627,7 +635,11 @@ extension LexerTests {
 
         // Act/Assert
         XCTAssertThrowsError(try lexer.scan()) { error in
-            let error = error as! SyntaxError
+            guard let error = error as? SyntaxError else {
+                XCTFail()
+                return
+            }
+
             XCTAssertNil(error.filePath)
             XCTAssertEqual(error.line, 1)
             XCTAssertEqual(error.column, 43)
@@ -644,7 +656,11 @@ extension LexerTests {
 
         // Act/Assert
         XCTAssertThrowsError(try lexer.scan()) { error in
-            let error = error as! SyntaxError
+            guard let error = error as? SyntaxError else {
+                XCTFail()
+                return
+            }
+
             XCTAssertNil(error.filePath)
             XCTAssertEqual(error.line, 1)
             XCTAssertEqual(error.column, 40)
@@ -661,7 +677,11 @@ extension LexerTests {
 
         // Act/Assert
         XCTAssertThrowsError(try lexer.scan()) { error in
-            let error = error as! SyntaxError
+            guard let error = error as? SyntaxError else {
+                XCTFail()
+                return
+            }
+
             XCTAssertNil(error.filePath)
             XCTAssertEqual(error.line, 1)
             XCTAssertEqual(error.column, 54)
