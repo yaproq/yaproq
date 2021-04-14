@@ -68,8 +68,8 @@ final class YaproqTests: BaseTests {
 
     func testRenderTemplate() {
         // Act
-        let templateFile = "header.html"
-        let result = (try? templating.renderTemplate(named: templateFile, in: ["pages": pages])) ?? ""
+        let fileName = "header.html"
+        let result = (try? templating.renderTemplate(named: fileName, in: ["pages": pages])) ?? ""
 
         // Assert
         XCTAssertEqual(result.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: ""), """
@@ -95,15 +95,15 @@ final class YaproqTests: BaseTests {
         )
 
         // Act/Assert
-        XCTAssertThrowsError(try templating.renderTemplate(at: templateFile, in: ["pages": pages])) { error in
+        XCTAssertThrowsError(try templating.renderTemplate(at: fileName, in: ["pages": pages])) { error in
             guard let error = error as? TemplateError else {
                 XCTFail("The error is not of \(String(describing: TemplateError.self)) type.")
                 return
             }
 
-            XCTAssertEqual(error.filePath, templateFile)
+            XCTAssertEqual(error.filePath, fileName)
             XCTAssertEqual(error.errorDescription, """
-            [Template: \(error.filePath!)] TemplateError: Can't load a template file at `\(error.filePath!)`.
+            [Template: \(fileName)] TemplateError: Can't load a template file at `\(fileName)`.
             """
             )
         }
@@ -207,8 +207,9 @@ extension YaproqTests {
 
         for item in data {
             // Arrange
+            let filePath = item.0
             let template = Template("""
-            {% extend \(item.0) %}
+            {% extend \(filePath) %}
             """
             )
 
@@ -219,9 +220,9 @@ extension YaproqTests {
                     return
                 }
 
-                XCTAssertEqual(error.filePath, item.0)
+                XCTAssertEqual(error.filePath, filePath)
                 XCTAssertEqual(error.errorDescription, """
-                [Template: \(error.filePath!)] TemplateError: Can't load a template file at `\(error.filePath!)`.
+                [Template: \(filePath)] TemplateError: Can't load a template file at `\(filePath)`.
                 """
                 )
             }
@@ -419,8 +420,9 @@ extension YaproqTests {
 
         for item in data {
             // Arrange
+            let filePath = item.0
             let template = Template("""
-            {% include \(item.0) %}
+            {% include \(filePath) %}
             """
             )
 
@@ -431,9 +433,9 @@ extension YaproqTests {
                     return
                 }
 
-                XCTAssertEqual(error.filePath, item.0)
+                XCTAssertEqual(error.filePath, filePath)
                 XCTAssertEqual(error.errorDescription, """
-                [Template: \(error.filePath!)] TemplateError: Can't load a template file at `\(error.filePath!)`.
+                [Template: \(filePath)] TemplateError: Can't load a template file at `\(filePath)`.
                 """
                 )
             }
