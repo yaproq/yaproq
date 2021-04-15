@@ -11,7 +11,7 @@ Yaproq is a templating language powered by fast, secure, and powerful Swift lang
 * [Installation](#installation)
     * [Swift](#swift)
     * [Swift Package](#swift-package)
-    * [Package.swift](#package.swift)
+    * [Package.swift](#package-swift)
     * [Build](#build)
     * [Run](#run)
 * [Usage](#usage)
