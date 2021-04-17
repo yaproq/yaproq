@@ -15,12 +15,17 @@ Yaproq is a templating language powered by fast, secure, and powerful Swift lang
     * [Build](#build)
     * [Run](#run)
 * [Usage](#usage)
-    * [Template examples](#template-examples)
+    * [Comments](#comments)
+    * [Variables](#variables)
+    * [Math expressions](#math-expressions)
+    * [Control structures](#control-structures)
+    * [Blocks](#blocks)
+    * [Template including](#template-including)
+    * [Template inheritance](#template-inheritance)
     * [Custom delimiters](#custom-delimiters)
     * [Loading templates](#loading-templates)
     * [Rendering templates](#rendering-templates)
     * [Error handling](#error-handling)
-    * [Template inheritance](#template-inheritance)
 * [Tests](#tests)
 
 ## Features
@@ -39,6 +44,7 @@ Yaproq is a templating language powered by fast, secure, and powerful Swift lang
     * Grouping (e.g. `(a + b) * c`)
     * Literal (e.g. `1`, `2.0`, `"some text"`, `true`, `false`, etc)
     * Logical (e.g. `&&` and `||`)
+    * Range (e.g. `0..<3` and `1...4`)
     * Ternary (e.g. `a > b ? "a is greater" : "a is not greater"`)
     * Unary (e.g. `!a` and `-b`)
     * Variable (e.g. `var a = 1`, `var b = 2.0`, `var c = "some text"`, etc)
@@ -64,7 +70,6 @@ Yaproq is a templating language powered by fast, secure, and powerful Swift lang
 * Logging and debugging
 
 ## Installation
-
 ### Swift
 Download and install [Swift](https://swift.org/download)
 
@@ -108,10 +113,133 @@ swift run
 ```
 
 ## Usage
+### Comments
+```html
+{# A single-line comment #}
+{#
+    A
+    multi-line
+    comment
+#}
+```
 
-### Template examples
+### Variables
+```html
+{% var int = 1 %}
+{% var float = 2.0 %}
+{% var string = "some text" %}
+{% var booleanTrue = true %}
+{% var booleanFalse = false %}
+{% var range = 0..<3 %}
+{% var closedRange = 1...4 %}
+```
 
-#### `/templates/base.html`
+### Math expressions
+```
+{% var five = 5.0 %}
+{% var four = 4 %}
+{% var three = 3 %}
+{% var two = 2.0 %}
+{% var seven = 7.0 %}
+{% var six = 6 %}
+{% var one = 1.0 %}
+{% var result = five * four / (three + two) - seven % six ^ one %}
+{{ result }}
+```
+
+### Control structures
+#### If, elseif, and else
+```
+{% var number = 1 %}
+
+{% if number == 0 %}
+Equal to 0
+{% elseif number >= 1 %}
+Greater than or equal to 1
+{% elseif number > 2 %}
+Greater than 2
+{% else number <= 3 %}
+Less than or equal to 3
+{% else number < 4 %}
+Less than 4
+{% else number != 5 %}
+Not equal to 5
+{% endif %}
+```
+
+#### For loop
+```
+{% for item in array %}
+    {{ item }}
+{% endfor %}
+```
+
+```
+{% for index, item in array %}
+    {{ index }}, {{ item }}
+{% endfor %}
+```
+
+```
+{% for key, value in dictionary %}
+    {{ key }}, {{ value }}
+{% endfor %}
+```
+
+```
+{% for number in 0..<3 %}
+    {{ number }}
+{% endfor %}
+```
+
+```
+{% for number in 1...4 %}
+    {{ number }}
+{% endfor %}
+```
+
+#### While loop
+```
+{% var number = 0 %}
+{% var maxNumber = 3 %}
+{% while number < maxNumber %}
+{{ number }}
+{% number += 1 %}
+{% endwhile %}
+```
+
+### Blocks
+```html
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+    </head>
+    <body>
+        {% block body %}
+            {% block header %}{% endblock %}
+            <div class="container">
+                {% block content %}{% endblock %}
+            </div>
+            {% block footer %}{% endblock %}
+        {% endblock %}
+    </body>
+</html>
+```
+
+### Template including
+```html
+{% block body %}
+    {% include "header.html" %}
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    {% include "footer.html" %}
+{% endblock %}
+```
+
+### Template inheritance
+#### /templates/base.html
 ```html
 <!doctype html>
 <html lang="en">
@@ -130,7 +258,7 @@ swift run
 </html>
 ```
 
-#### `/templates/posts.html`
+#### /templates/posts.html
 ```html
 {% extend "base.html" %}
 
@@ -150,6 +278,32 @@ swift run
         <p>{{ post.title }}</p>
     {% endfor %}
 {% endblock %}
+```
+
+```swift
+import Yaproq
+
+struct Post: Encodable {
+    var title: String
+}
+
+let templating = Yaproq(configuration: .init(directoryPath: "/templates"))
+
+do {
+    let templateName = "posts.html"
+    let context: [String: Encodable] = [
+        "title": "Posts",
+        "posts": [
+            Post(title: "Post 1"),
+            Post(title: "Post 2"),
+            Post(title: "Post 2")
+        ]
+    ]
+    let output = try templating.renderTemplate(named: templateName, in: context)
+    print(output)
+} catch {
+    print(error)
+}
 ```
 
 ### Custom delimiters
@@ -172,7 +326,6 @@ do {
 ```
 
 ### Loading templates
-
 #### Name
 ```swift
 import Yaproq
@@ -204,7 +357,6 @@ do {
 ```
 
 ### Rendering templates
-
 #### Name
 ```swift
 import Yaproq
@@ -277,35 +429,6 @@ do {
     } else {
         print("Unknown error: \(error)")
     }
-}
-```
-
-### Template inheritance
-```swift
-struct Post: Encodable {
-    var title: String
-}
-```
-
-```swift
-import Yaproq
-
-let templating = Yaproq(configuration: .init(directoryPath: "/templates"))
-
-do {
-    let templateName = "posts.html"
-    let context: [String: Encodable] = [
-        "title": "Posts",
-        "posts": [
-            Post(title: "Post 1"),
-            Post(title: "Post 2"),
-            Post(title: "Post 2")
-        ]
-    ]
-    let output = try templating.renderTemplate(named: templateName, in: context)
-    print(output)
-} catch {
-    print(error)
 }
 ```
 
