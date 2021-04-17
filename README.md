@@ -19,7 +19,6 @@ Yaproq is a templating language powered by fast, secure, and powerful Swift lang
     * [Variables](#variables)
     * [Math expressions](#math-expressions)
     * [Control structures](#control-structures)
-    * [Blocks](#blocks)
     * [Template including](#template-including)
     * [Template inheritance](#template-inheritance)
     * [Custom delimiters](#custom-delimiters)
@@ -208,7 +207,7 @@ Not equal to 5
 {% endwhile %}
 ```
 
-### Blocks
+#### Blocks
 ```html
 <!doctype html>
 <html lang="en">
