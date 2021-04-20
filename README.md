@@ -155,17 +155,17 @@ swift run
 {% var number = 1 %}
 
 {% if number == 0 %}
-Equal to 0
+    Equal to 0
 {% elseif number >= 1 %}
-Greater than or equal to 1
+    Greater than or equal to 1
 {% elseif number > 2 %}
-Greater than 2
+    Greater than 2
 {% else number <= 3 %}
-Less than or equal to 3
+    Less than or equal to 3
 {% else number < 4 %}
-Less than 4
+    Less than 4
 {% else number != 5 %}
-Not equal to 5
+    Not equal to 5
 {% endif %}
 ```
 
@@ -204,9 +204,10 @@ Not equal to 5
 ```
 {% var number = 0 %}
 {% var maxNumber = 3 %}
+
 {% while number < maxNumber %}
-{{ number }}
-{% number += 1 %}
+    {{ number }}
+    {% number += 1 %}
 {% endwhile %}
 ```
 
