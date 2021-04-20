@@ -169,7 +169,7 @@ extension Yaproq {
     }
 
     static func syntaxError(_ message: String? = nil, token: Token) -> SyntaxError {
-        SyntaxError(message, filePath: token.filePath, line: token.line, column: token.column)
+        syntaxError(message, filePath: token.filePath, line: token.line, column: token.column)
     }
 
     static func runtimeError(_ message: String? = nil, token: Token) -> RuntimeError {
