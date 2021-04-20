@@ -13,7 +13,9 @@ public final class Yaproq {
         environments = .init()
         setCurrentEnvironment()
     }
+}
 
+extension Yaproq {
     public func loadTemplate(named name: String) throws -> Template {
         try loadTemplate(at: configuration.directoryPath + name)
     }
@@ -29,7 +31,19 @@ public final class Yaproq {
 
         return Template(source, filePath: filePath)
     }
+}
 
+extension Yaproq {
+    func parseTemplate(_ template: Template) throws -> [Statement] {
+        let lexer = Lexer(template: template)
+        let tokens = try lexer.scan()
+        let parser = Parser(tokens: tokens)
+
+        return try parser.parse()
+    }
+}
+
+extension Yaproq {
     public func renderTemplate(named name: String, in context: [String: Encodable] = .init()) throws -> String {
         try renderTemplate(at: configuration.directoryPath + name, in: context)
     }
@@ -76,15 +90,9 @@ public final class Yaproq {
 
         return try interpreter.interpret()
     }
+}
 
-    func parseTemplate(_ template: Template) throws -> [Statement] {
-        let lexer = Lexer(template: template)
-        let tokens = try lexer.scan()
-        let parser = Parser(tokens: tokens)
-
-        return try parser.parse()
-    }
-
+extension Yaproq {
     private func setCurrentEnvironment(for filePath: String? = nil) {
         if let filePath = filePath {
             if let environment = environments[filePath] {
@@ -102,6 +110,33 @@ public final class Yaproq {
         environments.removeAll()
         setCurrentEnvironment()
         currentEnvironment.reset()
+    }
+}
+
+extension Yaproq {
+    static func error(_ message: String) -> YaproqError {
+        YaproqError(message)
+    }
+
+    static func templateError(_ message: String? = nil, filePath: String? = nil) -> TemplateError {
+        TemplateError(message, filePath: filePath)
+    }
+
+    static func syntaxError(
+        _ message: String? = nil,
+        filePath: String? = nil,
+        line: Int,
+        column: Int
+    ) -> SyntaxError {
+        SyntaxError(message, filePath: filePath, line: line, column: column)
+    }
+
+    static func syntaxError(_ message: String? = nil, token: Token) -> SyntaxError {
+        syntaxError(message, filePath: token.filePath, line: token.line, column: token.column)
+    }
+
+    static func runtimeError(_ message: String? = nil, token: Token) -> RuntimeError {
+        RuntimeError(message, filePath: token.filePath, line: token.line, column: token.column)
     }
 }
 
@@ -147,32 +182,5 @@ extension Yaproq {
         private func normalize(path: String) -> String {
             path.last == Character("/") ? path : path + "/"
         }
-    }
-}
-
-extension Yaproq {
-    static func error(_ message: String) -> YaproqError {
-        YaproqError(message)
-    }
-
-    static func templateError(_ message: String? = nil, filePath: String? = nil) -> TemplateError {
-        TemplateError(message, filePath: filePath)
-    }
-
-    static func syntaxError(
-        _ message: String? = nil,
-        filePath: String? = nil,
-        line: Int,
-        column: Int
-    ) -> SyntaxError {
-        SyntaxError(message, filePath: filePath, line: line, column: column)
-    }
-
-    static func syntaxError(_ message: String? = nil, token: Token) -> SyntaxError {
-        syntaxError(message, filePath: token.filePath, line: token.line, column: token.column)
-    }
-
-    static func runtimeError(_ message: String? = nil, token: Token) -> RuntimeError {
-        RuntimeError(message, filePath: token.filePath, line: token.line, column: token.column)
     }
 }
