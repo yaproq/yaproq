@@ -160,9 +160,9 @@ swift run
     Greater than or equal to 1
 {% elseif number > 2 %}
     Greater than 2
-{% else number <= 3 %}
+{% elseif number <= 3 %}
     Less than or equal to 3
-{% else number < 4 %}
+{% elseif number < 4 %}
     Less than 4
 {% else number != 5 %}
     Not equal to 5
