@@ -165,7 +165,7 @@ swift run
 {% elseif number < 4 %}
     Less than 4
 {% else %}
-    Greater than 4
+    Greater than or equal 4
 {% endif %}
 ```
 
