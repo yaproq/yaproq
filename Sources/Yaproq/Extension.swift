@@ -8,3 +8,7 @@ extension Encodable {
         ) as? [String: Any]
     }
 }
+
+extension String {
+    var normalizedPath: String { last == Character("/") ? self : self + "/" }
+}

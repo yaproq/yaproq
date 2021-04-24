@@ -143,16 +143,14 @@ extension Yaproq {
 extension Yaproq {
     public struct Configuration {
         public static let defaultDirectoryPath = "/"
-        public private(set) var directoryPath: String
+        public let directoryPath: String
 
         public init(directoryPath: String = defaultDirectoryPath) {
-            self.directoryPath = directoryPath
-            self.directoryPath = normalize(path: self.directoryPath)
+            self.directoryPath = directoryPath.normalizedPath
         }
 
         public init(directoryPath: String = defaultDirectoryPath, delimiters: Set<Delimiter>) throws {
-            self.directoryPath = directoryPath
-            self.directoryPath = normalize(path: self.directoryPath)
+            self.directoryPath = directoryPath.normalizedPath
             let initialDelimiters = Delimiter.allCases
             let initialRawDelimiters = Set<String>(
                 initialDelimiters.map { $0.start } + initialDelimiters.map { $0.end }
@@ -177,10 +175,6 @@ extension Yaproq {
             if updatedRawDelimiters.count != initialRawDelimiters.count {
                 throw Yaproq.error("Delimiters must be unique.")
             }
-        }
-
-        private func normalize(path: String) -> String {
-            path.last == Character("/") ? path : path + "/"
         }
     }
 }
