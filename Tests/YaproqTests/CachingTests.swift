@@ -25,15 +25,11 @@ final class CachingTests: BaseTests {
 
     func testSetGet() {
         // Arrange
-        let cache = Cache<String, String>(costLimit: 2, countLimit: 3)
+        let cache = Cache<String, String>()
         let key1 = "key1"
         let value1 = "value1"
         let key2 = "key2"
         let value2 = "value2"
-        let key3 = "key3"
-        let value3 = "value3"
-        let key4 = "key4"
-        let value4 = "value4"
 
         // Act
         cache.setValue(value1, forKey: key1)
@@ -42,37 +38,18 @@ final class CachingTests: BaseTests {
         XCTAssertEqual(cache.getValue(forKey: key1), value1)
 
         // Act
-        cache.setValue(value2, forKey: key2, cost: 1)
+        cache.setValue(value2, forKey: key2)
 
         // Assert
         XCTAssertEqual(cache.getValue(forKey: key1), value1)
         XCTAssertEqual(cache.getValue(forKey: key2), value2)
 
         // Act
-        cache.setValue(value3, forKey: key3, cost: 2)
-
-        // Assert
-        XCTAssertEqual(cache.getValue(forKey: key1), value1)
-        XCTAssertNil(cache.getValue(forKey: key2))
-        XCTAssertEqual(cache.getValue(forKey: key3), value3)
-
-        // Act
-        cache.setValue(value4, forKey: key4)
-
-        // Assert
-        XCTAssertEqual(cache.getValue(forKey: key1), value1)
-        XCTAssertNil(cache.getValue(forKey: key2))
-        XCTAssertEqual(cache.getValue(forKey: key3), value3)
-        XCTAssertEqual(cache.getValue(forKey: key4), value4)
-
-        // Act
         cache.removeValue(forKey: key1)
 
         // Assert
         XCTAssertNil(cache.getValue(forKey: key1))
-        XCTAssertNil(cache.getValue(forKey: key2))
-        XCTAssertEqual(cache.getValue(forKey: key3), value3)
-        XCTAssertEqual(cache.getValue(forKey: key4), value4)
+        XCTAssertEqual(cache.getValue(forKey: key2), value2)
 
         // Act
         cache.removeAllValues()
@@ -80,7 +57,49 @@ final class CachingTests: BaseTests {
         // Assert
         XCTAssertNil(cache.getValue(forKey: key1))
         XCTAssertNil(cache.getValue(forKey: key2))
-        XCTAssertNil(cache.getValue(forKey: key3))
-        XCTAssertNil(cache.getValue(forKey: key4))
+    }
+
+    func testCostLimit() {
+        // Arrange
+        let cache = Cache<String, String>(costLimit: 2)
+        let key1 = "key1"
+        let value1 = "value1"
+        let key2 = "key2"
+        let value2 = "value2"
+
+        // Act
+        cache.setValue(value1, forKey: key1, cost: 1)
+
+        // Assert
+        XCTAssertEqual(cache.getValue(forKey: key1), value1)
+
+        // Act
+        cache.setValue(value2, forKey: key2, cost: 2)
+
+        // Assert
+        XCTAssertNil(cache.getValue(forKey: key1))
+        XCTAssertEqual(cache.getValue(forKey: key2), value2)
+    }
+
+    func testCountLimit() {
+        // Arrange
+        let cache = Cache<String, String>(countLimit: 1)
+        let key1 = "key1"
+        let value1 = "value1"
+        let key2 = "key2"
+        let value2 = "value2"
+
+        // Act
+        cache.setValue(value1, forKey: key1)
+
+        // Assert
+        XCTAssertEqual(cache.getValue(forKey: key1), value1)
+
+        // Act
+        cache.setValue(value2, forKey: key2)
+
+        // Assert
+        XCTAssertNil(cache.getValue(forKey: key1))
+        XCTAssertEqual(cache.getValue(forKey: key2), value2)
     }
 }
