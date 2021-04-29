@@ -55,6 +55,7 @@ Yaproq is a templating language powered by fast, secure, and powerful Swift lang
     * `include`
     * `super`
     * `while` loop
+* Memory caching with `NSCache`
 
 ## Todo
 * A simple array and dictionary declaration inside a template file
@@ -66,7 +67,6 @@ Yaproq is a templating language powered by fast, secure, and powerful Swift lang
     * String
     * etc
 * Custom filters
-* Caching
 * Logging and debugging
 
 ## Installation

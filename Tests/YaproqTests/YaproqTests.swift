@@ -8,24 +8,45 @@ final class YaproqConfigurationTests: BaseTests {
 
         // Assert
         XCTAssertEqual(configuration.directoryPath, Yaproq.Configuration.defaultDirectoryPath)
+        XCTAssertFalse(configuration.isDebug)
+        XCTAssertEqual(configuration.caching.costLimit, 0)
+        XCTAssertEqual(configuration.caching.countLimit, 0)
 
         // Arrange
         var directoryPath = "/templates"
+        var costLimit = 1
+        var countLimit = 2
 
         // Act
-        configuration = Yaproq.Configuration(directoryPath: directoryPath)
+        configuration = Yaproq.Configuration(
+            directoryPath: directoryPath,
+            isDebug: true,
+            caching: .init(costLimit: costLimit, countLimit: countLimit)
+        )
 
         // Assert
         XCTAssertEqual(configuration.directoryPath, "\(directoryPath)/")
+        XCTAssertTrue(configuration.isDebug)
+        XCTAssertEqual(configuration.caching.costLimit, costLimit)
+        XCTAssertEqual(configuration.caching.countLimit, countLimit)
 
         // Arrange
         directoryPath = "/templates/"
+        costLimit = 3
+        countLimit = 4
 
         // Act
-        configuration = Yaproq.Configuration(directoryPath: directoryPath)
+        configuration = Yaproq.Configuration(
+            directoryPath: directoryPath,
+            isDebug: true,
+            caching: .init(costLimit: costLimit, countLimit: countLimit)
+        )
 
         // Assert
         XCTAssertEqual(configuration.directoryPath, directoryPath)
+        XCTAssertTrue(configuration.isDebug)
+        XCTAssertEqual(configuration.caching.costLimit, costLimit)
+        XCTAssertEqual(configuration.caching.countLimit, countLimit)
 
         // Arrange
         var delimiters: Set<Delimiter> = .init()
@@ -50,6 +71,28 @@ final class YaproqConfigurationTests: BaseTests {
     }
 }
 
+final class YaproqCachingConfigurationTests: BaseTests {
+    func testInit() {
+        // Act
+        var configuration = Yaproq.CachingConfiguration()
+
+        // Assert
+        XCTAssertEqual(configuration.costLimit, 0)
+        XCTAssertEqual(configuration.countLimit, 0)
+
+        // Arrange
+        let costLimit = 1
+        let countLimit = 2
+
+        // Act
+        configuration = Yaproq.CachingConfiguration(costLimit: costLimit, countLimit: countLimit)
+
+        // Assert
+        XCTAssertEqual(configuration.costLimit, costLimit)
+        XCTAssertEqual(configuration.countLimit, countLimit)
+    }
+}
+
 final class YaproqTests: BaseTests {
     var templating: Yaproq!
     var pages: [Page]!
@@ -57,7 +100,7 @@ final class YaproqTests: BaseTests {
     override func setUp() {
         super.setUp()
 
-        let configuration = Yaproq.Configuration(directoryPath: Bundle.module.resourcePath!)
+        let configuration = Yaproq.Configuration(directoryPath: Bundle.module.resourcePath!, isDebug: true)
         templating = Yaproq(configuration: configuration)
         pages = [
             Page(title: "Home", url: URL(string: "/")!),
@@ -65,14 +108,13 @@ final class YaproqTests: BaseTests {
             Page(title: "Projects", url: URL(string: "/projects")!)
         ]
     }
+}
 
+extension YaproqTests {
     func testRenderTemplate() {
-        // Act
+        // Arrange
         let fileName = "header.html"
-        let result = (try? templating.renderTemplate(named: fileName, in: ["pages": pages])) ?? ""
-
-        // Assert
-        XCTAssertEqual(result.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: ""), """
+        let template = Template("""
         <nav class="navbar navbar-expand-sm navbar-dark sticky-top">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar" aria-controls="collapsibleNavbar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -91,7 +133,16 @@ final class YaproqTests: BaseTests {
                 </ul>
             </div>
         </nav>
-        """.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: "")
+        """
+        )
+
+        // Act
+        let result = (try? templating.renderTemplate(named: fileName, in: ["pages": pages])) ?? ""
+
+        // Assert
+        XCTAssertEqual(
+            result.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: ""),
+            "\(template)".replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: "")
         )
 
         // Act/Assert
@@ -107,6 +158,53 @@ final class YaproqTests: BaseTests {
             """
             )
         }
+    }
+
+    func testRenderCachedTemplate() {
+        // Arrange
+        let fileName = "footer.html"
+        let template = Template("""
+        <footer class="footer text-center">
+            <div class="inner"><p class="text-muted">Copyright &copy; 2020-2021.</p></div>
+        </footer>
+        """
+        )
+        templating.configuration = .init(
+            directoryPath: Bundle.module.resourcePath!,
+            caching: .init(costLimit: 2, countLimit: 3)
+        )
+
+        // Act
+        var result = try? templating.renderTemplate(named: fileName)
+
+        // Assert
+        XCTAssertEqual(result, "\(template)")
+
+        // Act
+        result = try? templating.renderTemplate(named: fileName)
+
+        // Assert
+        XCTAssertEqual(result, "\(template)")
+    }
+
+    func testRenderRawTemplate() {
+        // Arrange
+        let template = Template("""
+        <footer class="footer text-center">
+            <div class="inner"><p class="text-muted">Copyright &copy; 2020-2021.</p></div>
+        </footer>
+        """
+        )
+        templating.configuration = .init(
+            directoryPath: Bundle.module.resourcePath!,
+            caching: .init(costLimit: 2, countLimit: 3)
+        )
+
+        // Act
+        let result = try? templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "\(template)")
     }
 }
 

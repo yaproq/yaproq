@@ -1,10 +1,11 @@
 import Foundation
 
 public final class Yaproq {
-    public let configuration: Configuration
+    public var configuration: Configuration
     var currentEnvironment: Environment
     private var defaultEnvironment: Environment
     private var environments: [String: Environment]
+    private var cache = Cache<String, [Statement]>()
 
     public init(configuration: Configuration = .init()) {
         self.configuration = configuration
@@ -12,6 +13,8 @@ public final class Yaproq {
         currentEnvironment = defaultEnvironment
         environments = .init()
         setCurrentEnvironment()
+        cache.costLimit = configuration.caching.costLimit
+        cache.countLimit = configuration.caching.countLimit
     }
 }
 
@@ -86,7 +89,28 @@ extension Yaproq {
 
     func doRenderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
         for (name, value) in context { currentEnvironment.setVariable(named: name, with: value) }
-        let interpreter = Interpreter(templating: self, statements: try parseTemplate(template))
+        let statements: [Statement]
+
+        if configuration.isDebug {
+            statements = try parseTemplate(template)
+
+            if let filePath = template.filePath {
+                cache.setValue(statements, forKey: filePath)
+            }
+        } else {
+            if let filePath = template.filePath {
+                if let cachedStatements = cache.getValue(forKey: filePath) {
+                    statements = cachedStatements
+                } else {
+                    statements = try parseTemplate(template)
+                    cache.setValue(statements, forKey: filePath)
+                }
+            } else {
+                statements = try parseTemplate(template)
+            }
+        }
+
+        let interpreter = Interpreter(templating: self, statements: statements)
 
         return try interpreter.interpret()
     }
@@ -144,13 +168,28 @@ extension Yaproq {
     public struct Configuration {
         public static let defaultDirectoryPath = "/"
         public let directoryPath: String
+        public let isDebug: Bool
+        public let caching: CachingConfiguration
 
-        public init(directoryPath: String = defaultDirectoryPath) {
+        public init(
+            directoryPath: String = defaultDirectoryPath,
+            isDebug: Bool = false,
+            caching: CachingConfiguration = .init()
+        ) {
             self.directoryPath = directoryPath.normalizedPath
+            self.isDebug = isDebug
+            self.caching = caching
         }
 
-        public init(directoryPath: String = defaultDirectoryPath, delimiters: Set<Delimiter>) throws {
+        public init(
+            directoryPath: String = defaultDirectoryPath,
+            isDebug: Bool = false,
+            caching: CachingConfiguration = .init(),
+            delimiters: Set<Delimiter>
+        ) throws {
             self.directoryPath = directoryPath.normalizedPath
+            self.isDebug = isDebug
+            self.caching = caching
             let initialDelimiters = Delimiter.allCases
             let initialRawDelimiters = Set<String>(
                 initialDelimiters.map { $0.start } + initialDelimiters.map { $0.end }
@@ -175,6 +214,18 @@ extension Yaproq {
             if updatedRawDelimiters.count != initialRawDelimiters.count {
                 throw Yaproq.error("Delimiters must be unique.")
             }
+        }
+    }
+}
+
+extension Yaproq {
+    public struct CachingConfiguration {
+        public let costLimit: Int
+        public let countLimit: Int
+
+        public init(costLimit: Int = 0, countLimit: Int = 0) {
+            self.costLimit = costLimit
+            self.countLimit = countLimit
         }
     }
 }
