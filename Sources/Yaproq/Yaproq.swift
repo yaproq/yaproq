@@ -59,10 +59,10 @@ extension Yaproq {
         setCurrentEnvironment(for: filePath)
 
         do {
-            let output = try doRenderTemplate(at: filePath, in: context)
+            let result = try doRenderTemplate(at: filePath, in: context)
             clearEnvironments()
 
-            return output
+            return result
         } catch {
             clearEnvironments()
             throw error
@@ -77,10 +77,10 @@ extension Yaproq {
         setCurrentEnvironment(for: template.filePath)
 
         do {
-            let output = try doRenderTemplate(template, in: context)
+            let result = try doRenderTemplate(template, in: context)
             clearEnvironments()
 
-            return output
+            return result
         } catch {
             clearEnvironments()
             throw error
@@ -93,17 +93,12 @@ extension Yaproq {
 
         if configuration.isDebug {
             statements = try parseTemplate(template)
-
-            if let filePath = template.filePath {
-                cache.setValue(statements, forKey: filePath)
-            }
         } else {
             if let filePath = template.filePath {
                 if let cachedStatements = cache.getValue(forKey: filePath) {
                     statements = cachedStatements
                 } else {
                     statements = try parseTemplate(template)
-                    cache.setValue(statements, forKey: filePath)
                 }
             } else {
                 statements = try parseTemplate(template)
@@ -111,8 +106,13 @@ extension Yaproq {
         }
 
         let interpreter = Interpreter(templating: self, statements: statements)
+        let result = try interpreter.interpret()
 
-        return try interpreter.interpret()
+        if let filePath = template.filePath, cache.getValue(forKey: filePath) == nil {
+            cache.setValue(statements, forKey: filePath)
+        }
+
+        return result
     }
 }
 

@@ -302,8 +302,8 @@ do {
             Post(title: "Post 2")
         ]
     ]
-    let output = try templating.renderTemplate(named: templateName, in: context)
-    print(output)
+    let result = try templating.renderTemplate(named: templateName, in: context)
+    print(result)
 } catch {
     print(error)
 }
@@ -369,8 +369,8 @@ let templating = Yaproq(configuration: .init(directoryPath: "/templates"))
 do {
     let templateName = "base.html"
     let context: [String: Encodable] = ["title": "My Blog"]
-    let output = try templating.renderTemplate(named: templateName, in: context)
-    print(output)
+    let result = try templating.renderTemplate(named: templateName, in: context)
+    print(result)
 } catch {
     print(error)
 }
@@ -385,8 +385,8 @@ let templating = Yaproq()
 do {
     let templatePath = "/templates/base.html"
     let context: [String: Encodable] = ["title": "My Blog"]
-    let output = try templating.renderTemplate(at: templatePath, in: context)
-    print(output)
+    let result = try templating.renderTemplate(at: templatePath, in: context)
+    print(result)
 } catch {
     print(error)
 }
@@ -402,8 +402,8 @@ do {
     let templatePath = "/templates/base.html"
     let template = try templating.loadTemplate(at: templatePath)
     let context: [String: Encodable] = ["title": "My Blog"]
-    let output = try templating.renderTemplate(template, in: context)
-    print(output)
+    let result = try templating.renderTemplate(template, in: context)
+    print(result)
 } catch {
     print(error)
 }
@@ -418,8 +418,8 @@ let templating = Yaproq()
 do {
     let templatePath = "/templates/base.html"
     let context: [String: Encodable] = ["title": "My Blog"]
-    let output = try templating.renderTemplate(at: templatePath, in: context)
-    print(output)
+    let result = try templating.renderTemplate(at: templatePath, in: context)
+    print(result)
 } catch {
     if let error = error as? YaproqError { // YaproqError occurs when there is a problem with a custom configuration provided, for example, due to invalid or non-unique delimiters provided for each delimiter type.
         print(error)

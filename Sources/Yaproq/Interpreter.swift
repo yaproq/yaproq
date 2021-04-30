@@ -2,7 +2,7 @@ import Foundation
 
 final class Interpreter {
     let templating: Yaproq
-    private var output = ""
+    private var result = ""
     private var statements: [Statement]
 
     init(templating: Yaproq, statements: [Statement] = .init()) {
@@ -36,7 +36,7 @@ final class Interpreter {
             }
         }
 
-        return output
+        return result
     }
 
     private func processBlock(statements: inout [Statement]) {
@@ -450,7 +450,7 @@ extension Interpreter {
         let statements = try templating.parseTemplate(template)
         self.statements.removeFirst()
         self.statements = statements + self.statements
-        output = try interpret()
+        result = try interpret()
     }
 }
 
@@ -542,9 +542,9 @@ extension Interpreter: StatementVisitor {
 
         if let filePath = value as? String {
             do {
-                output += try templating.doRenderTemplate(named: filePath)
+                result += try templating.doRenderTemplate(named: filePath)
             } catch is TemplateError {
-                output += try templating.doRenderTemplate(at: filePath)
+                result += try templating.doRenderTemplate(at: filePath)
             }
         } else {
             throw Yaproq.templateError("Can't load a template file at `\(value)`.", filePath: "\(value)")
@@ -573,7 +573,7 @@ extension Interpreter: StatementVisitor {
 
     func visitPrint(statement: PrintStatement) throws {
         let value = try evaluate(expression: statement.expression)
-        output += stringify(value)
+        result += stringify(value)
     }
 
     func visitSuper(statement: SuperStatement) throws {}
