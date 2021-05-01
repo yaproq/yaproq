@@ -24,10 +24,10 @@ final class EnvironmentTests: BaseTests {
         let token = Token(kind: .identifier, lexeme: name, literal: value, line: 1, column: 8)
 
         // Act
-        environment.setVariable(named: name, with: value)
+        environment.setVariable(value: value, for: name)
 
         // Assert
-        XCTAssertEqual(try? environment.valueForVariable(with: token) as? String, value)
+        XCTAssertEqual(try? environment.getVariableValue(for: token) as? String, value)
     }
 
     func testDefineVariable() {
@@ -37,14 +37,14 @@ final class EnvironmentTests: BaseTests {
         // Act/Assert
         XCTAssertNoThrow(
             try environment.defineVariable(
-                for: .init(kind: .string, lexeme: "title", line: 1, column: 12),
-                with: "Home"
+                value: "Home",
+                for: .init(kind: .string, lexeme: "title", line: 1, column: 12)
             )
         )
         XCTAssertThrowsError(
             try environment.defineVariable(
-                for: .init(kind: .string, lexeme: "title", line: 2, column: 12),
-                with: "Home"
+                value: "Home",
+                for: .init(kind: .string, lexeme: "title", line: 2, column: 12)
             )
         )
     }
@@ -56,8 +56,8 @@ final class EnvironmentTests: BaseTests {
         let token = Token(kind: .string, lexeme: "title", line: 1, column: 12)
 
         // Act/Assert
-        XCTAssertNoThrow(try environment.defineVariable(for: token, with: "Home"))
+        XCTAssertNoThrow(try environment.defineVariable(value: "Home", for: token))
         XCTAssertNil(environment.parent)
-        XCTAssertThrowsError(try environment.defineVariable(for: token, with: "Home"))
+        XCTAssertThrowsError(try environment.defineVariable(value: "Home", for: token))
     }
 }

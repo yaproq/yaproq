@@ -1,17 +1,24 @@
 final class Environment {
     let parent: Environment?
-    private var variables: [String: Any]
+    private var variables: [String: Any] = .init()
 
     init(parent: Environment? = nil) {
         self.parent = parent
-        variables = .init()
     }
 
-    func setVariable(named name: String, with value: Any? = nil) {
-        variables[name] = value
+    func assignVariable(value: Any?, for token: Token) throws {
+        let name = token.lexeme
+
+        if variables.contains(where: { $0.key == name }) {
+            variables[name] = value
+        } else if let parent = parent {
+            try parent.assignVariable(value: value, for: token)
+        } else {
+            throw Yaproq.runtimeError("An undefined variable '\(name)'.", token: token)
+        }
     }
 
-    func defineVariable(for token: Token, with value: Any? = nil) throws {
+    func defineVariable(value: Any? = nil, for token: Token) throws {
         let name = token.lexeme
 
         if variables.contains(where: { $0.key == name }) {
@@ -21,19 +28,11 @@ final class Environment {
         variables[name] = value
     }
 
-    func assign(value: Any?, toVariableWith token: Token) throws {
-        let name = token.lexeme
-
-        if variables.contains(where: { $0.key == name }) {
-            variables[name] = value
-        } else if let parent = parent {
-            try parent.assign(value: value, toVariableWith: token)
-        } else {
-            throw Yaproq.runtimeError("An undefined variable '\(name)'.", token: token)
-        }
+    func setVariable(value: Any?, for name: String) {
+        variables[name] = value
     }
 
-    func valueForVariable(with token: Token) throws -> Any? {
+    func getVariableValue(for token: Token) throws -> Any? {
         var components = token.lexeme.components(separatedBy: Token.Kind.dot.rawValue)
         let name = components.first ?? ""
 
@@ -57,11 +56,11 @@ final class Environment {
             return value
         }
 
-        if let parent = parent { return try parent.valueForVariable(with: token) }
+        if let parent = parent { return try parent.getVariableValue(for: token) }
         throw Yaproq.runtimeError("An undefined variable '\(name)'.", token: token)
     }
 
-    func reset() {
+    func clear() {
         variables.removeAll()
     }
 }

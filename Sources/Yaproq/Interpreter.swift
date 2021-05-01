@@ -158,7 +158,7 @@ extension Interpreter: ExpressionVisitor {
         switch expression.operatorToken.kind {
         case .equal:
             let value = try evaluate(expression: expression.value)
-            try currentEnvironment.assign(value: value, toVariableWith: expression.identifierToken)
+            try currentEnvironment.assignVariable(value: value, for: expression.identifierToken)
             return value
         case .minusEqual,
              .percentEqual,
@@ -166,7 +166,7 @@ extension Interpreter: ExpressionVisitor {
              .powerEqual,
              .slashEqual,
              .starEqual:
-            if let left = try currentEnvironment.valueForVariable(with: expression.identifierToken) as? Double,
+            if let left = try currentEnvironment.getVariableValue(for: expression.identifierToken) as? Double,
                let right = try evaluate(expression: expression.value) as? Double {
                 let value: Any
 
@@ -184,10 +184,10 @@ extension Interpreter: ExpressionVisitor {
                     value = left * right
                 }
 
-                try currentEnvironment.assign(value: value, toVariableWith: expression.identifierToken)
+                try currentEnvironment.assignVariable(value: value, for: expression.identifierToken)
 
                 return value
-            } else if let left = try currentEnvironment.valueForVariable(with: expression.identifierToken) as? Int,
+            } else if let left = try currentEnvironment.getVariableValue(for: expression.identifierToken) as? Int,
                       let right = try evaluate(expression: expression.value) as? Int {
                 let value: Any
 
@@ -205,10 +205,10 @@ extension Interpreter: ExpressionVisitor {
                     value = left * right
                 }
 
-                try currentEnvironment.assign(value: value, toVariableWith: expression.identifierToken)
+                try currentEnvironment.assignVariable(value: value, for: expression.identifierToken)
 
                 return value
-            } else if let left = try currentEnvironment.valueForVariable(with: expression.identifierToken) as? Double,
+            } else if let left = try currentEnvironment.getVariableValue(for: expression.identifierToken) as? Double,
                       let right = try evaluate(expression: expression.value) as? Int {
                 let value: Any
 
@@ -226,10 +226,10 @@ extension Interpreter: ExpressionVisitor {
                     value = left * Double(right)
                 }
 
-                try currentEnvironment.assign(value: value, toVariableWith: expression.identifierToken)
+                try currentEnvironment.assignVariable(value: value, for: expression.identifierToken)
 
                 return value
-            } else if let left = try currentEnvironment.valueForVariable(with: expression.identifierToken) as? Int,
+            } else if let left = try currentEnvironment.getVariableValue(for: expression.identifierToken) as? Int,
                       let right = try evaluate(expression: expression.value) as? Double {
                 let value: Any
 
@@ -247,7 +247,7 @@ extension Interpreter: ExpressionVisitor {
                     value = Double(left) * right
                 }
 
-                try currentEnvironment.assign(value: value, toVariableWith: expression.identifierToken)
+                try currentEnvironment.assignVariable(value: value, for: expression.identifierToken)
 
                 return value
             }
@@ -417,7 +417,7 @@ extension Interpreter: ExpressionVisitor {
 
     func visitVariable(expression: VariableExpression) throws -> Any? {
         let token = expression.token
-        let value = try templating.currentEnvironment.valueForVariable(with: token)
+        let value = try templating.currentEnvironment.getVariableValue(for: token)
 
         if let key = expression.key {
             let key = try evaluate(expression: key)
@@ -459,7 +459,7 @@ extension Interpreter: StatementVisitor {
         let environment = Environment(parent: templating.currentEnvironment)
 
         for variable in statement.variables {
-            try environment.defineVariable(for: variable.token, with: variable.token.literal)
+            try environment.defineVariable(value: variable.token.literal, for: variable.token)
         }
 
         try execute(statements: statement.statements, in: environment)
@@ -581,7 +581,7 @@ extension Interpreter: StatementVisitor {
     func visitVariable(statement: VariableStatement) throws {
         var value: Any?
         if let expression = statement.expression { value = try evaluate(expression: expression) }
-        try templating.currentEnvironment.defineVariable(for: statement.token, with: value)
+        try templating.currentEnvironment.defineVariable(value: value, for: statement.token)
     }
 
     func visitWhile(statement: WhileStatement) throws {

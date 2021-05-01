@@ -88,7 +88,7 @@ extension Yaproq {
     }
 
     func doRenderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
-        for (name, value) in context { currentEnvironment.setVariable(named: name, with: value) }
+        for (name, value) in context { currentEnvironment.setVariable(value: value, for: name) }
         let statements: [Statement]
 
         if configuration.isDebug {
@@ -133,7 +133,7 @@ extension Yaproq {
     private func clearEnvironments() {
         environments.removeAll()
         setCurrentEnvironment()
-        currentEnvironment.reset()
+        currentEnvironment.clear()
     }
 }
 
