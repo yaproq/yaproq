@@ -50,10 +50,10 @@ final class Environment {
                 for component in components {
                     if let array = value as? [Encodable] {
                         value = array
-                    } else if let object = value as? Encodable {
-                        value = try object.asDictionary()?[component]
                     } else if let dictionary = value as? [String: Any] {
                         value = dictionary[component]
+                    } else if let object = value as? Encodable {
+                        value = try object.asDictionary()?[component]
                     }
                 }
             }
