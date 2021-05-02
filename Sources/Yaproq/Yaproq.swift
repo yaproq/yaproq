@@ -26,10 +26,10 @@ extension Yaproq {
     public func loadTemplate(at filePath: String) throws -> Template {
         let fileManager = FileManager.default
         guard let data = fileManager.contents(atPath: filePath) else {
-            throw Yaproq.templateError("Can't load a template file at `\(filePath)`.", filePath: filePath)
+            throw Yaproq.templateError(.invalidTemplateFilePath(filePath: filePath), filePath: filePath)
         }
         guard let source = String(data: data, encoding: .utf8) else {
-            throw Yaproq.templateError("A template file at `\(filePath)` must be UTF8 encodable.", filePath: filePath)
+            throw Yaproq.templateError(.contentMustBeUTF8Encodable(filePath: filePath), filePath: filePath)
         }
 
         return Template(source, filePath: filePath)
@@ -138,12 +138,37 @@ extension Yaproq {
 }
 
 extension Yaproq {
+    static func error(_ errorType: ErrorType? = nil) -> YaproqError {
+        YaproqError(errorType?.message)
+    }
+
     static func error(_ message: String) -> YaproqError {
         YaproqError(message)
     }
 
+    static func templateError(_ errorType: ErrorType? = nil, filePath: String? = nil) -> TemplateError {
+        templateError(errorType?.message, filePath: filePath)
+    }
+
     static func templateError(_ message: String? = nil, filePath: String? = nil) -> TemplateError {
         TemplateError(message, filePath: filePath)
+    }
+
+    static func syntaxError(_ errorType: ErrorType? = nil, token: Token) -> SyntaxError {
+        syntaxError(errorType?.message, filePath: token.filePath, line: token.line, column: token.column)
+    }
+
+    static func syntaxError(_ message: String? = nil, token: Token) -> SyntaxError {
+        syntaxError(message, filePath: token.filePath, line: token.line, column: token.column)
+    }
+
+    static func syntaxError(
+        _ errorType: ErrorType? = nil,
+        filePath: String? = nil,
+        line: Int,
+        column: Int
+    ) -> SyntaxError {
+        syntaxError(errorType?.message, filePath: filePath, line: line, column: column)
     }
 
     static func syntaxError(
@@ -155,8 +180,8 @@ extension Yaproq {
         SyntaxError(message, filePath: filePath, line: line, column: column)
     }
 
-    static func syntaxError(_ message: String? = nil, token: Token) -> SyntaxError {
-        syntaxError(message, filePath: token.filePath, line: token.line, column: token.column)
+    static func runtimeError(_ errorType: ErrorType? = nil, token: Token) -> RuntimeError {
+        runtimeError(errorType?.message, token: token)
     }
 
     static func runtimeError(_ message: String? = nil, token: Token) -> RuntimeError {
@@ -212,7 +237,7 @@ extension Yaproq {
             )
 
             if updatedRawDelimiters.count != initialRawDelimiters.count {
-                throw Yaproq.error("Delimiters must be unique.")
+                throw Yaproq.error(.delimitersMustBeUnique)
             }
         }
     }

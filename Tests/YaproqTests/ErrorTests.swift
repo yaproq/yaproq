@@ -7,11 +7,11 @@ final class YaproqErrorTests: BaseTests {
         var error = YaproqError()
 
         // Assert
-        XCTAssertEqual(error.message, "\(String(describing: YaproqError.self)): An unknown error.")
+        XCTAssertEqual(error.message, "\(String(describing: YaproqError.self)): \(ErrorType.unknownedError)")
         XCTAssertEqual(error.errorDescription, error.message)
 
         // Arrange
-        let message = "Delimiters must be unique."
+        let message = ErrorType.delimitersMustBeUnique.message
 
         // Act
         error = YaproqError(message)
@@ -28,13 +28,16 @@ final class TemplateErrorTests: BaseTests {
         var error = TemplateError()
 
         // Assert
-        XCTAssertEqual(error.message, "\(String(describing: TemplateError.self)): An unknown error.")
+        XCTAssertEqual(
+            error.message,
+            "\(String(describing: TemplateError.self)): \(ErrorType.unknownedError)"
+        )
         XCTAssertNil(error.filePath)
         XCTAssertEqual(error.errorDescription, error.message)
 
         // Arrange
-        let message = "An invalid template."
         let filePath = "/"
+        let message = ErrorType.invalidTemplateFilePath(filePath: filePath).message
 
         // Act
         error = TemplateError(message, filePath: filePath)
@@ -57,7 +60,8 @@ final class SyntaxErrorTests: BaseTests {
 
         // Assert
         XCTAssertEqual(error.message, """
-        [Line: \(line), Column: \(column)] \(String(describing: SyntaxError.self)): An unknown error.
+        [Line: \(line), Column: \(column)] \(String(describing: SyntaxError.self)): \
+        \(ErrorType.unknownedError)
         """
         )
         XCTAssertNil(error.filePath)
@@ -66,7 +70,7 @@ final class SyntaxErrorTests: BaseTests {
         XCTAssertEqual(error.errorDescription, error.message)
 
         // Arrange
-        let message = "An invalid assignment target."
+        let message = ErrorType.invalidAssignmentTarget.message
         let filePath = "/"
 
         // Act
@@ -95,7 +99,8 @@ final class RuntimeErrorTests: BaseTests {
 
         // Assert
         XCTAssertEqual(error.message, """
-        [Line: \(line), Column: \(column)] \(String(describing: RuntimeError.self)): An unknown error.
+        [Line: \(line), Column: \(column)] \(String(describing: RuntimeError.self)): \
+        \(ErrorType.unknownedError)
         """
         )
         XCTAssertNil(error.filePath)
@@ -104,7 +109,7 @@ final class RuntimeErrorTests: BaseTests {
         XCTAssertEqual(error.errorDescription, error.message)
 
         // Arrange
-        let message = "Operands must be comparable."
+        let message = ErrorType.operandsMustBeComparable.message
         let filePath = "/"
 
         // Act

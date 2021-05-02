@@ -38,9 +38,9 @@ extension Parser {
     }
 
     @discardableResult
-    private func consume(_ kind: Token.Kind, elseErrorMessage message: String) throws -> Token {
+    private func consume(_ kind: Token.Kind, elseError error: ErrorType) throws -> Token {
         if check(kind) { return advance() }
-        throw Yaproq.syntaxError(message, token: peek)
+        throw Yaproq.syntaxError(error, token: peek)
     }
 
     private func match(_ kinds: Token.Kind...) -> Bool {
@@ -73,10 +73,10 @@ extension Parser {
         }
 
         if name == nil {
-            throw Yaproq.syntaxError("An invalid name `\(name ?? "")` for `block`.", token: previous)
+            throw Yaproq.syntaxError(.invalidBlock(name: name ?? ""), token: previous)
         }
 
-        try consume(leftBrace, elseErrorMessage: "Expecting '\(leftBrace.rawValue)' after a `block` name.")
+        try consume(leftBrace, elseError: .expectingCharacter(character: leftBrace.rawValue))
 
         return BlockStatement(name: name, statements: try blockStatements())
     }
@@ -89,7 +89,7 @@ extension Parser {
             if let statement = try variableDeclarationStatement() { statements.append(statement) }
         }
 
-        try consume(rightBrace, elseErrorMessage: "Expecting '\(rightBrace.rawValue)' after `block`.")
+        try consume(rightBrace, elseError: .expectingCharacter(character: rightBrace.rawValue))
 
         return statements
     }
@@ -122,7 +122,7 @@ extension Parser {
             value = element
         }
 
-        try consume(.in, elseErrorMessage: "Expecting `\(Token.Kind.in.rawValue)` after a variable name.")
+        try consume(.in, elseError: .expectingCharacter(character: Token.Kind.in.rawValue))
 
         return ForStatement(
             key: key,
@@ -174,7 +174,7 @@ extension Parser {
     }
 
     private func variableStatement() throws -> Statement {
-        let token = try consume(.identifier, elseErrorMessage: "Expecting a variable name.")
+        let token = try consume(.identifier, elseError: .expectingVariable)
         var expression: AnyExpression?
         if match(.equal) { expression = try self.expression() }
 
@@ -224,7 +224,7 @@ extension Parser {
                 )
             }
 
-            throw Yaproq.syntaxError("An invalid assignment target.", token: previous)
+            throw Yaproq.syntaxError(.invalidAssignmentTarget, token: previous)
         }
 
         return expression
@@ -263,7 +263,7 @@ extension Parser {
         let rightParenthesis = Token.Kind.rightParenthesis
         try consume(
             rightParenthesis,
-            elseErrorMessage: "Expecting '\(rightParenthesis.rawValue)' after an expression."
+            elseError: .expectingCharacter(character: rightParenthesis.rawValue)
         )
 
         return AnyExpression(GroupingExpression(expression: expression))
@@ -325,7 +325,7 @@ extension Parser {
         if match(.false, .nil, .number, .string, .true) { return literalExpression() }
         if match(.identifier) { return try variableExpression() }
         if match(.leftParenthesis) { return try groupingExpression() }
-        throw Yaproq.syntaxError("Expecting an expression.", token: peek)
+        throw Yaproq.syntaxError(.expectingExpression, token: peek)
     }
 
     private func ternaryExpression() throws -> AnyExpression {
@@ -353,7 +353,7 @@ extension Parser {
             }
 
             if !isTernary {
-                throw Yaproq.syntaxError("An unexpected character `\(firstToken.kind.rawValue)`.", token: firstToken)
+                throw Yaproq.syntaxError(.invalidCharacter(character: firstToken.kind.rawValue), token: firstToken)
             }
         }
 
@@ -374,7 +374,7 @@ extension Parser {
             let rightBracket = Token.Kind.rightBracket
             try consume(
                 rightBracket,
-                elseErrorMessage: "Expecting '\(rightBracket.rawValue)' after an expression."
+                elseError: .expectingCharacter(character: rightBracket.rawValue)
             )
 
             return AnyExpression(VariableExpression(token: token, key: key))

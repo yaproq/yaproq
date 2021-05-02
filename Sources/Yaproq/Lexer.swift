@@ -32,7 +32,7 @@ extension Lexer {
 
         if let delimiter = currentDelimiter {
             throw Yaproq.syntaxError(
-                "No matching closing delimiter `\(delimiter.end)` is found.",
+                .invalidDelimiterEnd(delimiterEnd: delimiter.end),
                 filePath: template.filePath,
                 line: line,
                 column: column
@@ -163,7 +163,7 @@ extension Lexer {
                     addToken(kind: .range)
                 } else {
                     throw Yaproq.syntaxError(
-                        "An unexpected character `\(character)`.",
+                        .invalidCharacter(character: character),
                         filePath: template.filePath,
                         line: line,
                         column: column
@@ -171,7 +171,7 @@ extension Lexer {
                 }
             } else {
                 throw Yaproq.syntaxError(
-                    "An unexpected character `\(character)`.",
+                    .invalidCharacter(character: character),
                     filePath: template.filePath,
                     line: line,
                     column: column
@@ -224,7 +224,7 @@ extension Lexer {
                 try addIdentifierToken()
             } else {
                 throw Yaproq.syntaxError(
-                    "An unexpected character `\(character)`.",
+                    .invalidCharacter(character: character),
                     filePath: template.filePath,
                     line: line,
                     column: column
@@ -244,7 +244,7 @@ extension Lexer {
 
         if let lastCharacter = lexeme.last, String(lastCharacter) == dot {
             throw Yaproq.syntaxError(
-                "An unexpected character `\(dot)`.",
+                .invalidCharacter(character: dot),
                 filePath: template.filePath,
                 line: line,
                 column: column
@@ -305,12 +305,7 @@ extension Lexer {
         while peek() != Token.Kind.quote.rawValue && !isAtEnd { advance() }
 
         if isAtEnd {
-            throw Yaproq.syntaxError(
-                "An unterminated string.",
-                filePath: template.filePath,
-                line: line,
-                column: column
-            )
+            throw Yaproq.syntaxError(.unterminatedString, filePath: template.filePath, line: line, column: column)
         }
 
         advance()

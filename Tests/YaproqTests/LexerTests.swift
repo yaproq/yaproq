@@ -544,7 +544,8 @@ extension LexerTests {
             XCTAssertEqual(error.column, 10)
             XCTAssertEqual(error.errorDescription, """
             [Line: \(error.line), Column: \(error.column)] \
-            SyntaxError: An unexpected character `\(Token.Kind.dot.rawValue)`.
+            \(String(describing: SyntaxError.self)): \
+            \(ErrorType.invalidCharacter(character: Token.Kind.dot.rawValue))
             """
             )
         }
@@ -565,7 +566,8 @@ extension LexerTests {
             XCTAssertEqual(error.column, 11)
             XCTAssertEqual(error.errorDescription, """
             [Line: \(error.line), Column: \(error.column)] \
-            SyntaxError: An unexpected character `\(Token.Kind.dot.rawValue)`.
+            \(String(describing: SyntaxError.self)): \
+            \(ErrorType.invalidCharacter(character: Token.Kind.dot.rawValue))
             """
             )
         }
@@ -645,7 +647,7 @@ extension LexerTests {
             XCTAssertEqual(error.column, 43)
             XCTAssertEqual(error.errorDescription, """
             [Line: \(error.line), Column: \(error.column)] \
-            SyntaxError: An unterminated string.
+            \(String(describing: SyntaxError.self)): \(ErrorType.unterminatedString)
             """
             )
         }
@@ -666,7 +668,8 @@ extension LexerTests {
             XCTAssertEqual(error.column, 40)
             XCTAssertEqual(error.errorDescription, """
             [Line: \(error.line), Column: \(error.column)] \
-            SyntaxError: No matching closing delimiter `%}` is found.
+            \(String(describing: SyntaxError.self)): \
+            \(ErrorType.invalidDelimiterEnd(delimiterEnd: Delimiter.statement.end))
             """
             )
         }
@@ -687,7 +690,8 @@ extension LexerTests {
             XCTAssertEqual(error.column, 54)
             XCTAssertEqual(error.errorDescription, """
             [Line: \(error.line), Column: \(error.column)] \
-            SyntaxError: An unexpected character `.`.
+            \(String(describing: SyntaxError.self)): \
+            \(ErrorType.invalidCharacter(character: Token.Kind.dot.rawValue))
             """
             )
         }

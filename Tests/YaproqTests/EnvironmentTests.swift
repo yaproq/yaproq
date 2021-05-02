@@ -37,7 +37,7 @@ final class EnvironmentTests: BaseTests {
             XCTAssertEqual(error.column, -1)
             XCTAssertEqual(error.errorDescription, """
             [Line: \(error.line), Column: \(error.column)] \
-            RuntimeError: An undefined variable '\(token.lexeme)'.
+            \(String(describing: RuntimeError.self)): \(ErrorType.undefinedVariable(name: token.lexeme))
             """
             )
         }
@@ -53,7 +53,7 @@ final class EnvironmentTests: BaseTests {
             XCTAssertEqual(error.column, -1)
             XCTAssertEqual(error.errorDescription, """
             [Line: \(error.line), Column: \(error.column)] \
-            RuntimeError: A variable '\(token.lexeme)' already exists.
+            \(String(describing: RuntimeError.self)): \(ErrorType.variableExists(name: token.lexeme))
             """
             )
         }

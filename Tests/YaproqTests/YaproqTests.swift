@@ -66,7 +66,10 @@ final class YaproqConfigurationTests: BaseTests {
         // Act/Assert
         XCTAssertThrowsError(try Yaproq.Configuration(directoryPath: directoryPath, delimiters: delimiters)) { error in
             let error = error as? YaproqError
-            XCTAssertEqual(error?.errorDescription, "YaproqError: Delimiters must be unique.")
+            XCTAssertEqual(
+                error?.errorDescription,
+                "\(String(describing: YaproqError.self)): \(ErrorType.delimitersMustBeUnique)"
+            )
         }
     }
 }
@@ -154,7 +157,8 @@ extension YaproqTests {
 
             XCTAssertEqual(error.filePath, fileName)
             XCTAssertEqual(error.errorDescription, """
-            [Template: \(fileName)] TemplateError: Can't load a template file at `\(fileName)`.
+            [Template: \(fileName)] \(String(describing: TemplateError.self)): \
+            \(ErrorType.invalidTemplateFilePath(filePath: fileName))
             """
             )
         }
@@ -320,7 +324,8 @@ extension YaproqTests {
 
                 XCTAssertEqual(error.filePath, filePath)
                 XCTAssertEqual(error.errorDescription, """
-                [Template: \(filePath)] TemplateError: Can't load a template file at `\(filePath)`.
+                [Template: \(filePath)] \(String(describing: TemplateError.self)): \
+                \(ErrorType.invalidTemplateFilePath(filePath: filePath))
                 """
                 )
             }
@@ -533,7 +538,8 @@ extension YaproqTests {
 
                 XCTAssertEqual(error.filePath, filePath)
                 XCTAssertEqual(error.errorDescription, """
-                [Template: \(filePath)] TemplateError: Can't load a template file at `\(filePath)`.
+                [Template: \(filePath)] \(String(describing: TemplateError.self)): \
+                \(ErrorType.invalidTemplateFilePath(filePath: filePath))
                 """
                 )
             }
@@ -643,10 +649,10 @@ extension YaproqTests {
 
         // Arrange
         let errorData = [
-            ("result", "1", "\"a\"", "The operands must be numbers.", 2, 12),
-            ("result", "1.5", "\"a\"", "The operands must be numbers.", 2, 12),
-            ("result", "2", "true", "The operands must be numbers.", 2, 12),
-            ("result", "2.5", "false", "The operands must be numbers.", 2, 12)
+            ("result", "1", "\"a\"", ErrorType.operandsMustBeNumbers.message, 2, 12),
+            ("result", "1.5", "\"a\"", ErrorType.operandsMustBeNumbers.message, 2, 12),
+            ("result", "2", "true", ErrorType.operandsMustBeNumbers.message, 2, 12),
+            ("result", "2.5", "false", ErrorType.operandsMustBeNumbers.message, 2, 12)
         ]
         let invalidData: [String: [(String, String, String, String, Int, Int)]] = [
             Token.Kind.minusEqual.rawValue: errorData,
@@ -678,7 +684,7 @@ extension YaproqTests {
                     XCTAssertEqual(error.column, item.5)
                     XCTAssertEqual(error.errorDescription, """
                     [Line: \(error.line), Column: \(error.column)] \
-                    RuntimeError: \(item.3)
+                    \(String(describing: RuntimeError.self)): \(item.3)
                     """
                     )
                 }
@@ -827,34 +833,34 @@ extension YaproqTests {
         // Arrange
         let invalidData: [String: [(String, String, String, Int, Int)]] = [ // left, right, error, line, column
             Token.Kind.greater.rawValue: [
-                ("1", "\"a\"", "The operands must be comparable.", 1, 6)
+                ("1", "\"a\"", ErrorType.operandsMustBeComparable.message, 1, 6)
             ],
             Token.Kind.greaterOrEqual.rawValue: [
-                ("1", "\"a\"", "The operands must be comparable.", 1, 7)
+                ("1", "\"a\"", ErrorType.operandsMustBeComparable.message, 1, 7)
             ],
             Token.Kind.less.rawValue: [
-                ("1", "\"a\"", "The operands must be comparable.", 1, 6)
+                ("1", "\"a\"", ErrorType.operandsMustBeComparable.message, 1, 6)
             ],
             Token.Kind.lessOrEqual.rawValue: [
-                ("1", "\"a\"", "The operands must be comparable.", 1, 7)
+                ("1", "\"a\"", ErrorType.operandsMustBeComparable.message, 1, 7)
             ],
             Token.Kind.minus.rawValue: [
-                ("1", "\"a\"", "The operands must be numbers.", 1, 6)
+                ("1", "\"a\"", ErrorType.operandsMustBeNumbers.message, 1, 6)
             ],
             Token.Kind.percent.rawValue: [
-                ("1", "\"a\"", "The operands must be numbers.", 1, 6)
+                ("1", "\"a\"", ErrorType.operandsMustBeNumbers.message, 1, 6)
             ],
             Token.Kind.plus.rawValue: [
-                ("1", "\"a\"", "The operands must be numbers or strings.", 1, 6)
+                ("1", "\"a\"", ErrorType.operandsMustBeEitherNumbersOrStrings.message, 1, 6)
             ],
             Token.Kind.power.rawValue: [
-                ("1", "\"a\"", "The operands must be numbers.", 1, 6)
+                ("1", "\"a\"", ErrorType.operandsMustBeNumbers.message, 1, 6)
             ],
             Token.Kind.slash.rawValue: [
-                ("1", "\"a\"", "The operands must be numbers.", 1, 6)
+                ("1", "\"a\"", ErrorType.operandsMustBeNumbers.message, 1, 6)
             ],
             Token.Kind.star.rawValue: [
-                ("1", "\"a\"", "The operands must be numbers.", 1, 6)
+                ("1", "\"a\"", ErrorType.operandsMustBeNumbers.message, 1, 6)
             ]
         ]
 
@@ -875,7 +881,7 @@ extension YaproqTests {
                     XCTAssertEqual(error.column, item.4)
                     XCTAssertEqual(error.errorDescription, """
                     [Line: \(error.line), Column: \(error.column)] \
-                    RuntimeError: \(item.2)
+                    \(String(describing: RuntimeError.self)): \(item.2)
                     """
                     )
                 }
@@ -1016,7 +1022,7 @@ extension YaproqTests {
             XCTAssertEqual(error.column, 22)
             XCTAssertEqual(error.errorDescription, """
             [Line: \(error.line), Column: \(error.column)] \
-            RuntimeError: The operands must be either integers or doubles.
+            \(String(describing: RuntimeError.self)): \(ErrorType.operandsMustBeEitherIntegersOrDoubles)
             """
             )
         }
@@ -1255,7 +1261,7 @@ extension YaproqTests {
             XCTAssertEqual(error.column, 22)
             XCTAssertEqual(error.errorDescription, """
             [Line: \(error.line), Column: \(error.column)] \
-            RuntimeError: The operands must be either integers or doubles.
+            \(String(describing: RuntimeError.self)): \(ErrorType.operandsMustBeEitherIntegersOrDoubles)
             """
             )
         }
@@ -1318,14 +1324,14 @@ extension YaproqTests {
         // Arrange
         let invalidData: [String: [(String, String, Int, Int)]] = [ // right, error, line, column
             Token.Kind.bang.rawValue: [
-                ("1", "The operand must be a boolean.", 1, 4),
-                ("0.5", "The operand must be a boolean.", 1, 4),
-                ("\"a\"", "The operand must be a boolean.", 1, 4)
+                ("1", ErrorType.operandMustBeBoolean.message, 1, 4),
+                ("0.5", ErrorType.operandMustBeBoolean.message, 1, 4),
+                ("\"a\"", ErrorType.operandMustBeBoolean.message, 1, 4)
             ],
             Token.Kind.minus.rawValue: [
-                ("true", "The operand must be a number.", 1, 4),
-                ("false", "The operand must be a number.", 1, 4),
-                ("\"a\"", "The operand must be a number.", 1, 4)
+                ("true", ErrorType.operandMustBeNumber.message, 1, 4),
+                ("false", ErrorType.operandMustBeNumber.message, 1, 4),
+                ("\"a\"", ErrorType.operandMustBeNumber.message, 1, 4)
             ]
         ]
 
@@ -1346,7 +1352,7 @@ extension YaproqTests {
                     XCTAssertEqual(error.column, item.3)
                     XCTAssertEqual(error.errorDescription, """
                     [Line: \(error.line), Column: \(error.column)] \
-                    RuntimeError: \(item.1)
+                    \(String(describing: RuntimeError.self)): \(item.1)
                     """
                     )
                 }
