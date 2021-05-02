@@ -11,10 +11,13 @@ final class Environment {
 
         if variables.contains(where: { $0.key == name }) {
             variables[name] = value
-        } else if let parent = parent {
-            try parent.assignVariable(value: value, for: token)
         } else {
-            throw Yaproq.runtimeError("An undefined variable '\(name)'.", token: token)
+            do {
+                try getVariableValue(for: token)
+                variables[name] = value
+            } catch {
+                throw error
+            }
         }
     }
 
@@ -32,6 +35,7 @@ final class Environment {
         variables[name] = value
     }
 
+    @discardableResult
     func getVariableValue(for token: Token) throws -> Any? {
         var components = token.lexeme.components(separatedBy: Token.Kind.dot.rawValue)
         let name = components.first ?? ""
