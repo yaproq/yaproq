@@ -413,7 +413,7 @@ extension Interpreter: ExpressionVisitor {
             let key = try evaluate(expression: key)
 
             if let array = value as? [Any] {
-                if let index = key as? Double { return array[Int(index)] }
+                if let index = key as? Int { return array[index] }
                 throw Yaproq.runtimeError(.indexMustBeInteger(index: "\(key ?? "")"), token: token)
             } else if let dictionary = value as? [AnyHashable: Any] {
                 if let key = key as? AnyHashable { return dictionary[key] }
