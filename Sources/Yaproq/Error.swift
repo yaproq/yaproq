@@ -143,13 +143,13 @@ enum ErrorType: CustomStringConvertible {
         case .extendingMultipleTemplatesNotSupported:
             return "Extending multiple templates is not supported."
         case .extendMustBeFirstStatement:
-            return "An '\(Token.Kind.extend.rawValue)' must the first statement in a template file."
+            return "An `\(Token.Kind.extend.rawValue)` must the first statement in a template file."
         case .invalidTemplateFilePath(let filePath):
             return "An invalid template at `\(filePath)`."
 
         // SyntaxError
         case .expectingCharacter(let character):
-            return "Expecting '\(character)'."
+            return "Expecting `\(character)`."
         case .expectingExpression:
             return "Expecting an expression."
         case .expectingVariable:
@@ -185,11 +185,11 @@ enum ErrorType: CustomStringConvertible {
         case .operandsMustBeNumbers:
             return "The operands must be numbers."
         case .variableExists(let name):
-            return "The variable '\(name)' already exists."
+            return "The variable `\(name)` already exists."
         case .variableMustBeEitherArrayOrDictionary(let name):
             return "The `\(name)` must be an array or dictionary."
         case .undefinedVariable(let name):
-            return "An undefined variable '\(name)'."
+            return "An undefined variable `\(name)`."
         }
     }
 }
