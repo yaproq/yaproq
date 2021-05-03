@@ -441,7 +441,7 @@ extension YaproqTests {
         // Arrange
         template = Template("""
         {% for index, value in array %}
-        {{ index }}-{{ value }}
+        {{ index }}-{{ value }}_{{ array[index] }}
         {% endfor %}
         """
         )
@@ -450,13 +450,12 @@ extension YaproqTests {
         result = try? templating.renderTemplate(template, in: ["array": array])
 
         // Assert
-        XCTAssertEqual(result, "0-11-22-3")
-
+        XCTAssertEqual(result, "0-1_11-2_22-3_3")
         // Arrange
         let dictionary = ["one": 1, "two": 2, "three": 3]
         template = Template("""
         {% for key, value in dictionary %}
-        {{ key }}-{{ value }}
+        {{ key }}-{{ value }}_{{ dictionary[key] }}
         {% endfor %}
         """
         )
@@ -465,10 +464,10 @@ extension YaproqTests {
         result = try? templating.renderTemplate(template, in: ["dictionary": dictionary])
 
         // Assert
-        XCTAssertEqual(result?.count, 17)
-        XCTAssertTrue(result?.contains("one-1") ?? false)
-        XCTAssertTrue(result?.contains("two-2") ?? false)
-        XCTAssertTrue(result?.contains("three-3") ?? false)
+        XCTAssertEqual(result?.count, 23)
+        XCTAssertTrue(result?.contains("one-1_1") ?? false)
+        XCTAssertTrue(result?.contains("two-2_2") ?? false)
+        XCTAssertTrue(result?.contains("three-3_3") ?? false)
     }
 
     func testIfStatement() {
