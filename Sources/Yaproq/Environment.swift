@@ -47,11 +47,7 @@ final class Environment {
                 components.removeFirst()
 
                 for component in components {
-                    if let array = value as? [Encodable] {
-                        value = array
-                    } else if let dictionary = value as? [String: Any] {
-                        value = dictionary[component]
-                    } else if let object = value as? Encodable {
+                    if let object = value as? Encodable {
                         value = try object.asDictionary()?[component]
                     }
                 }
