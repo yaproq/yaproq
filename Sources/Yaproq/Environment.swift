@@ -1,6 +1,7 @@
 final class Environment {
     let parent: Environment?
     private var variables: [String: Any] = .init()
+    private var variableNames: Set<String> = .init()
 
     init(parent: Environment? = nil) {
         self.parent = parent
@@ -9,12 +10,12 @@ final class Environment {
     func assignVariable(value: Any?, for token: Token) throws {
         let name = token.lexeme
 
-        if variables.contains(where: { $0.key == name }) {
-            variables[name] = value
+        if hasVariable(named: name) {
+            setVariable(value: value, for: name)
         } else {
             do {
                 try getVariableValue(for: token)
-                variables[name] = value
+                setVariable(value: value, for: name)
             } catch {
                 throw error
             }
@@ -24,15 +25,20 @@ final class Environment {
     func defineVariable(value: Any? = nil, for token: Token) throws {
         let name = token.lexeme
 
-        if variables.contains(where: { $0.key == name }) {
+        if hasVariable(named: name) {
             throw Yaproq.runtimeError(.variableExists(name: name), token: token)
         }
 
-        variables[name] = value
+        setVariable(value: value, for: name)
+    }
+
+    func hasVariable(named name: String) -> Bool {
+        variableNames.contains(name)
     }
 
     func setVariable(value: Any?, for name: String) {
         variables[name] = value
+        variableNames.insert(name)
     }
 
     @discardableResult
@@ -40,16 +46,13 @@ final class Environment {
         var components = token.lexeme.components(separatedBy: Token.Kind.dot.rawValue)
         let name = components.first ?? ""
 
-        if variables.contains(where: { $0.key == name }) {
+        if hasVariable(named: name) {
             var value = variables[name]
+            components.removeFirst()
 
-            if components.count > 1 {
-                components.removeFirst()
-
-                for component in components {
-                    if let object = value as? Encodable {
-                        value = try object.asDictionary()?[component]
-                    }
+            for property in components {
+                if let object = value as? Encodable {
+                    value = try object.asDictionary()?[property]
                 }
             }
 
@@ -62,5 +65,6 @@ final class Environment {
 
     func clear() {
         variables.removeAll()
+        variableNames.removeAll()
     }
 }
