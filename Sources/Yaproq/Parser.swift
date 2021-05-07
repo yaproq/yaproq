@@ -61,7 +61,7 @@ extension Parser {
         let leftBrace = Token.Kind.leftBrace
 
         while !check(leftBrace) && !isAtEnd {
-            if let expression = try self.expression().expression as? VariableExpression {
+            if let expression = try expression().expression as? VariableExpression {
                 if name == nil {
                     name = expression.token.lexeme
                 } else {
@@ -122,7 +122,8 @@ extension Parser {
             value = element
         }
 
-        try consume(.in, elseError: .expectingCharacter(character: Token.Kind.in.rawValue))
+        let token = Token.Kind.in
+        try consume(token, elseError: .expectingCharacter(character: token.rawValue))
 
         return ForStatement(
             key: key,
@@ -340,7 +341,6 @@ extension Parser {
                 isTernary = true
                 let secondToken = previous
                 let second = try orExpression()
-
                 expression = AnyExpression(
                     TernaryExpression(
                         condition: expression,
