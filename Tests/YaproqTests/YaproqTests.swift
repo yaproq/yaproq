@@ -481,7 +481,7 @@ extension YaproqTests {
             {{ number }}
             {% elseif number == 2 %}
             {{ number }}
-            {% else number == 3 %}
+            {% else %}
             {{ number }}
             {% endif %}
             """
@@ -493,6 +493,75 @@ extension YaproqTests {
             // Assert
             XCTAssertEqual(result, "\(number)")
         }
+
+        // Arrange
+        let number = 3
+        var template = Template("""
+        {% var number = \(number) %}
+        {% if number == 3 %}
+        {{ number }}
+        {% endif %}
+        """
+        )
+
+        // Act
+        var result = try? templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "\(number)")
+
+        // Arrange
+        template = Template("""
+        {% var number = \(number) %}
+        {% if number == 2 %}
+        Equal to 2
+        {% elseif number == 3 %}
+        {{ number }}
+        {% endif %}
+        """
+        )
+
+        // Act
+        result = try? templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "\(number)")
+
+        // Arrange
+        template = Template("""
+        {% var number = \(number) %}
+        {% if number == 2 %}
+        Equal to 2
+        {% else %}
+        {{ number }}
+        {% endif %}
+        """
+        )
+
+        // Act
+        result = try? templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "\(number)")
+
+        // Arrange
+        template = Template("""
+        {% var number = \(number) %}
+        {% if number == 1 %}
+        Equal to 1
+        {% elseif number == 2 %}
+        Equal to 2
+        {% else %}
+        {{ number }}
+        {% endif %}
+        """
+        )
+
+        // Act
+        result = try? templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "\(number)")
     }
 
     func testIncludeStatement() {
