@@ -246,7 +246,7 @@ extension Interpreter: ExpressionVisitor {
             throw Yaproq.runtimeError(.operandsMustBeNumbers, token: expression.operatorToken)
         default:
             throw Yaproq.syntaxError(
-                .invalidOperator(name: expression.operatorToken.lexeme),
+                .invalidOperator(expression.operatorToken.lexeme),
                 token: expression.operatorToken
             )
         }
@@ -362,7 +362,7 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Int, let right = right as? Double { return Double(left) * right }
             throw Yaproq.runtimeError(.operandsMustBeNumbers, token: token)
         default:
-            throw Yaproq.runtimeError(.invalidOperator(name: token.lexeme), token: token)
+            throw Yaproq.runtimeError(.invalidOperator(token.lexeme), token: token)
         }
     }
 
@@ -402,7 +402,7 @@ extension Interpreter: ExpressionVisitor {
             if let right = right as? Int { return -right }
             throw Yaproq.runtimeError(.operandMustBeNumber, token: token)
         default:
-            throw Yaproq.syntaxError(.invalidOperator(name: token.lexeme), token: token)
+            throw Yaproq.syntaxError(.invalidOperator(token.lexeme), token: token)
         }
     }
 
@@ -415,13 +415,13 @@ extension Interpreter: ExpressionVisitor {
 
             if let array = value as? [Any] {
                 if let index = key as? Int { return array[index] }
-                throw Yaproq.runtimeError(.indexMustBeInteger(index: "\(key ?? "")"), token: token)
+                throw Yaproq.runtimeError(.indexMustBeInteger("\(key ?? "")"), token: token)
             } else if let dictionary = value as? [AnyHashable: Any] {
                 if let key = key as? AnyHashable { return dictionary[key] }
-                throw Yaproq.runtimeError(.keyMustBeHashable(key: "\(key ?? "")"), token: token)
+                throw Yaproq.runtimeError(.keyMustBeHashable("\(key ?? "")"), token: token)
             }
 
-            throw Yaproq.runtimeError(.variableMustBeEitherArrayOrDictionary(name: token.lexeme), token: token)
+            throw Yaproq.runtimeError(.variableMustBeEitherArrayOrDictionary(token.lexeme), token: token)
         }
 
         return value
@@ -466,7 +466,7 @@ extension Interpreter: StatementVisitor {
         if let filePath = value as? String {
             try extendFile(at: filePath)
         } else {
-            throw Yaproq.templateError(.invalidTemplateFilePath(filePath: "\(value)"), filePath: "\(value)")
+            throw Yaproq.templateError(.invalidTemplateFile, filePath: "\(value)")
         }
     }
 
@@ -508,7 +508,7 @@ extension Interpreter: StatementVisitor {
                     try assign(value: value, for: key, on: token)
                 }
             } else {
-                throw Yaproq.syntaxError(.invalidOperator(name: token.lexeme), token: token)
+                throw Yaproq.syntaxError(.invalidOperator(token.lexeme), token: token)
             }
         } else if let expression = statement.expression.expression as? VariableExpression {
             let value = try expression.accept(visitor: self)
@@ -523,7 +523,7 @@ extension Interpreter: StatementVisitor {
                     try assign(value: value, for: key, on: token)
                 }
             } else {
-                throw Yaproq.runtimeError(.variableMustBeEitherArrayOrDictionary(name: token.lexeme), token: token)
+                throw Yaproq.runtimeError(.variableMustBeEitherArrayOrDictionary(token.lexeme), token: token)
             }
         }
     }
@@ -538,7 +538,7 @@ extension Interpreter: StatementVisitor {
                 result += try templating.doRenderTemplate(at: filePath)
             }
         } else {
-            throw Yaproq.templateError(.invalidTemplateFilePath(filePath: "\(value)"), filePath: "\(value)")
+            throw Yaproq.templateError(.invalidTemplateFile, filePath: "\(value)")
         }
     }
 

@@ -97,34 +97,34 @@ enum ErrorType: CustomStringConvertible {
     case delimitersMustBeUnique
 
     // TemplateError
-    case contentMustBeUTF8Encodable(filePath: String)
+    case contentMustBeUTF8Encodable
     case extendingMultipleTemplatesNotSupported
     case extendMustBeFirstStatement
-    case invalidTemplateFilePath(filePath: String)
+    case invalidTemplateFile
 
     // SyntaxError
-    case expectingCharacter(character: String)
+    case expectingCharacter(_ character: String)
     case expectingExpression
     case expectingVariable
     case invalidAssignmentTarget
-    case invalidBlock(name: String)
-    case invalidCharacter(character: String)
-    case invalidDelimiterEnd(delimiterEnd: String)
-    case invalidOperator(name: String)
+    case invalidBlockName(_ name: String)
+    case invalidCharacter(_ character: String)
+    case invalidDelimiterEnd(_ delimiterEnd: String)
+    case invalidOperator(_ name: String)
     case unterminatedString
 
     // RuntimeError
-    case indexMustBeInteger(index: String)
-    case keyMustBeHashable(key: String)
+    case indexMustBeInteger(_ index: String)
+    case keyMustBeHashable(_ key: String)
     case operandMustBeBoolean
     case operandMustBeNumber
     case operandsMustBeComparable
     case operandsMustBeEitherIntegersOrDoubles
     case operandsMustBeEitherNumbersOrStrings
     case operandsMustBeNumbers
-    case variableExists(name: String)
-    case variableMustBeEitherArrayOrDictionary(name: String)
-    case undefinedVariable(name: String)
+    case variableExists(_ name: String)
+    case variableMustBeEitherArrayOrDictionary(_ name: String)
+    case undefinedVariable(_ name: String)
 
     var description: String { message }
 
@@ -135,17 +135,17 @@ enum ErrorType: CustomStringConvertible {
 
         // YaproqError
         case .delimitersMustBeUnique:
-            return "Delimiters must be unique."
+            return "The delimiters must be unique."
 
         // TemplateError
-        case .contentMustBeUTF8Encodable(let filePath):
-            return "A template file at `\(filePath)` must be UTF8 encodable."
+        case .contentMustBeUTF8Encodable:
+            return "The template file must be UTF8 encodable."
         case .extendingMultipleTemplatesNotSupported:
             return "Extending multiple templates is not supported."
         case .extendMustBeFirstStatement:
-            return "An `\(Token.Kind.extend.rawValue)` must the first statement in a template file."
-        case .invalidTemplateFilePath(let filePath):
-            return "An invalid template at `\(filePath)`."
+            return "The `\(Token.Kind.extend.rawValue)` must be the first statement."
+        case .invalidTemplateFile:
+            return "An invalid template file."
 
         // SyntaxError
         case .expectingCharacter(let character):
@@ -156,12 +156,12 @@ enum ErrorType: CustomStringConvertible {
             return "Expecting a variable."
         case .invalidAssignmentTarget:
             return "An invalid assignment target."
-        case .invalidBlock(let name):
+        case .invalidBlockName(let name):
             return "An invalid block name `\(name)."
         case .invalidCharacter(let character):
             return "An invalid character `\(character)`."
         case .invalidDelimiterEnd(let delimiterEnd):
-            return "The closing delimiter `\(delimiterEnd)` is invalid."
+            return "An invalid closing delimiter `\(delimiterEnd)`."
         case .invalidOperator(let name):
             return "An invalid operator `\(name)`."
         case .unterminatedString:
@@ -181,13 +181,13 @@ enum ErrorType: CustomStringConvertible {
         case .operandsMustBeEitherIntegersOrDoubles:
             return "The operands must be either integers or doubles."
         case .operandsMustBeEitherNumbersOrStrings:
-            return "The operands must be numbers or strings."
+            return "The operands must be either numbers or strings."
         case .operandsMustBeNumbers:
             return "The operands must be numbers."
         case .variableExists(let name):
             return "The variable `\(name)` already exists."
         case .variableMustBeEitherArrayOrDictionary(let name):
-            return "The `\(name)` must be an array or dictionary."
+            return "The `\(name)` must be either an array or dictionary."
         case .undefinedVariable(let name):
             return "An undefined variable `\(name)`."
         }

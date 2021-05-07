@@ -26,10 +26,10 @@ extension Yaproq {
     public func loadTemplate(at filePath: String) throws -> Template {
         let fileManager = FileManager.default
         guard let data = fileManager.contents(atPath: filePath) else {
-            throw Yaproq.templateError(.invalidTemplateFilePath(filePath: filePath), filePath: filePath)
+            throw Yaproq.templateError(.invalidTemplateFile, filePath: filePath)
         }
         guard let source = String(data: data, encoding: .utf8) else {
-            throw Yaproq.templateError(.contentMustBeUTF8Encodable(filePath: filePath), filePath: filePath)
+            throw Yaproq.templateError(.contentMustBeUTF8Encodable, filePath: filePath)
         }
 
         return Template(source, filePath: filePath)

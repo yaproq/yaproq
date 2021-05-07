@@ -37,7 +37,7 @@ final class TemplateErrorTests: BaseTests {
 
         // Arrange
         let filePath = "/"
-        let message = ErrorType.invalidTemplateFilePath(filePath: filePath).message
+        let message = ErrorType.invalidTemplateFile.message
 
         // Act
         error = TemplateError(message, filePath: filePath)
@@ -124,5 +124,76 @@ final class RuntimeErrorTests: BaseTests {
         XCTAssertEqual(error.line, line)
         XCTAssertEqual(error.column, column)
         XCTAssertEqual(error.errorDescription, error.message)
+    }
+}
+
+final class ErrorTypeTests: BaseTests {
+    func testTypes() {
+        // Arrange
+        let blockName = ""
+        let delimiterEnd = "%}"
+        let index = "index"
+        let key = "key"
+        let operatorName = "**"
+        let rightBrace = Token.Kind.rightBrace.rawValue
+        let semicolon = ";"
+        let variableName = "result"
+
+        // Assert
+        XCTAssertEqual(ErrorType.unknownedError.message, "An unknown error.")
+
+        // YaproqError
+        XCTAssertEqual(ErrorType.delimitersMustBeUnique.message, "The delimiters must be unique.")
+
+        // TemplateError
+        XCTAssertEqual(ErrorType.contentMustBeUTF8Encodable.message, "The template file must be UTF8 encodable.")
+        XCTAssertEqual(
+            ErrorType.extendingMultipleTemplatesNotSupported.message,
+            "Extending multiple templates is not supported."
+        )
+        XCTAssertEqual(
+            ErrorType.extendMustBeFirstStatement.message,
+            "The `\(Token.Kind.extend.rawValue)` must be the first statement."
+        )
+        XCTAssertEqual(ErrorType.invalidTemplateFile.message, "An invalid template file.")
+
+        // SyntaxError
+        XCTAssertEqual(ErrorType.expectingCharacter(rightBrace).message, "Expecting `\(rightBrace)`.")
+        XCTAssertEqual(ErrorType.expectingExpression.message, "Expecting an expression.")
+        XCTAssertEqual(ErrorType.expectingVariable.message, "Expecting a variable.")
+        XCTAssertEqual(ErrorType.invalidAssignmentTarget.message, "An invalid assignment target.")
+        XCTAssertEqual(ErrorType.invalidBlockName(blockName).message, "An invalid block name `\(blockName).")
+        XCTAssertEqual(ErrorType.invalidCharacter(semicolon).message, "An invalid character `\(semicolon)`.")
+        XCTAssertEqual(
+            ErrorType.invalidDelimiterEnd(delimiterEnd).message,
+            "An invalid closing delimiter `\(delimiterEnd)`."
+        )
+        XCTAssertEqual(ErrorType.invalidOperator(operatorName).message, "An invalid operator `\(operatorName)`.")
+        XCTAssertEqual(ErrorType.unterminatedString.message, "An unterminated string.")
+
+        // RuntimeError
+        XCTAssertEqual(ErrorType.indexMustBeInteger(index).message, "The index `\(index)` must be an integer.")
+        XCTAssertEqual(ErrorType.keyMustBeHashable(key).message, "The key `\(key)` must be hashable.")
+        XCTAssertEqual(ErrorType.operandMustBeBoolean.message, "The operand must be a boolean.")
+        XCTAssertEqual(ErrorType.operandMustBeNumber.message, "The operand must be a number.")
+        XCTAssertEqual(ErrorType.operandsMustBeComparable.message, "The operands must be comparable.")
+        XCTAssertEqual(
+            ErrorType.operandsMustBeEitherIntegersOrDoubles.message,
+            "The operands must be either integers or doubles."
+        )
+        XCTAssertEqual(
+            ErrorType.operandsMustBeEitherNumbersOrStrings.message,
+            "The operands must be either numbers or strings."
+        )
+        XCTAssertEqual(ErrorType.operandsMustBeNumbers.message, "The operands must be numbers.")
+        XCTAssertEqual(
+            ErrorType.variableExists(variableName).message,
+            "The variable `\(variableName)` already exists."
+        )
+        XCTAssertEqual(
+            ErrorType.variableMustBeEitherArrayOrDictionary(variableName).message,
+            "The `\(variableName)` must be either an array or dictionary."
+        )
+        XCTAssertEqual(ErrorType.undefinedVariable(variableName).message, "An undefined variable `\(variableName)`.")
     }
 }

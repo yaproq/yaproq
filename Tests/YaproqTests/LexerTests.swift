@@ -545,7 +545,7 @@ extension LexerTests {
             XCTAssertEqual(error.errorDescription, """
             [Line: \(error.line), Column: \(error.column)] \
             \(String(describing: SyntaxError.self)): \
-            \(ErrorType.invalidCharacter(character: Token.Kind.dot.rawValue))
+            \(ErrorType.invalidCharacter(Token.Kind.dot.rawValue))
             """
             )
         }
@@ -567,7 +567,7 @@ extension LexerTests {
             XCTAssertEqual(error.errorDescription, """
             [Line: \(error.line), Column: \(error.column)] \
             \(String(describing: SyntaxError.self)): \
-            \(ErrorType.invalidCharacter(character: Token.Kind.dot.rawValue))
+            \(ErrorType.invalidCharacter(Token.Kind.dot.rawValue))
             """
             )
         }
@@ -669,7 +669,7 @@ extension LexerTests {
             XCTAssertEqual(error.errorDescription, """
             [Line: \(error.line), Column: \(error.column)] \
             \(String(describing: SyntaxError.self)): \
-            \(ErrorType.invalidDelimiterEnd(delimiterEnd: Delimiter.statement.end))
+            \(ErrorType.invalidDelimiterEnd(Delimiter.statement.end))
             """
             )
         }
@@ -691,7 +691,7 @@ extension LexerTests {
             XCTAssertEqual(error.errorDescription, """
             [Line: \(error.line), Column: \(error.column)] \
             \(String(describing: SyntaxError.self)): \
-            \(ErrorType.invalidCharacter(character: Token.Kind.dot.rawValue))
+            \(ErrorType.invalidCharacter(Token.Kind.dot.rawValue))
             """
             )
         }

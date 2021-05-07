@@ -73,10 +73,10 @@ extension Parser {
         }
 
         if name == nil {
-            throw Yaproq.syntaxError(.invalidBlock(name: name ?? ""), token: previous)
+            throw Yaproq.syntaxError(.invalidBlockName(name ?? ""), token: previous)
         }
 
-        try consume(leftBrace, elseError: .expectingCharacter(character: leftBrace.rawValue))
+        try consume(leftBrace, elseError: .expectingCharacter(leftBrace.rawValue))
 
         return BlockStatement(name: name, statements: try blockStatements())
     }
@@ -89,7 +89,7 @@ extension Parser {
             if let statement = try variableDeclarationStatement() { statements.append(statement) }
         }
 
-        try consume(rightBrace, elseError: .expectingCharacter(character: rightBrace.rawValue))
+        try consume(rightBrace, elseError: .expectingCharacter(rightBrace.rawValue))
 
         return statements
     }
@@ -123,7 +123,7 @@ extension Parser {
         }
 
         let token = Token.Kind.in
-        try consume(token, elseError: .expectingCharacter(character: token.rawValue))
+        try consume(token, elseError: .expectingCharacter(token.rawValue))
 
         return ForStatement(
             key: key,
@@ -264,7 +264,7 @@ extension Parser {
         let rightParenthesis = Token.Kind.rightParenthesis
         try consume(
             rightParenthesis,
-            elseError: .expectingCharacter(character: rightParenthesis.rawValue)
+            elseError: .expectingCharacter(rightParenthesis.rawValue)
         )
 
         return AnyExpression(GroupingExpression(expression: expression))
@@ -353,7 +353,7 @@ extension Parser {
             }
 
             if !isTernary {
-                throw Yaproq.syntaxError(.invalidCharacter(character: firstToken.kind.rawValue), token: firstToken)
+                throw Yaproq.syntaxError(.invalidCharacter(firstToken.kind.rawValue), token: firstToken)
             }
         }
 
@@ -374,7 +374,7 @@ extension Parser {
             let rightBracket = Token.Kind.rightBracket
             try consume(
                 rightBracket,
-                elseError: .expectingCharacter(character: rightBracket.rawValue)
+                elseError: .expectingCharacter(rightBracket.rawValue)
             )
 
             return AnyExpression(VariableExpression(token: token, key: key))

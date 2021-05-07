@@ -32,7 +32,7 @@ extension Lexer {
 
         if let delimiter = currentDelimiter {
             throw Yaproq.syntaxError(
-                .invalidDelimiterEnd(delimiterEnd: delimiter.end),
+                .invalidDelimiterEnd(delimiter.end),
                 filePath: template.filePath,
                 line: line,
                 column: column
@@ -163,7 +163,7 @@ extension Lexer {
                     addToken(kind: .range)
                 } else {
                     throw Yaproq.syntaxError(
-                        .invalidCharacter(character: character),
+                        .invalidCharacter(character),
                         filePath: template.filePath,
                         line: line,
                         column: column
@@ -171,7 +171,7 @@ extension Lexer {
                 }
             } else {
                 throw Yaproq.syntaxError(
-                    .invalidCharacter(character: character),
+                    .invalidCharacter(character),
                     filePath: template.filePath,
                     line: line,
                     column: column
@@ -224,7 +224,7 @@ extension Lexer {
                 try addIdentifierToken()
             } else {
                 throw Yaproq.syntaxError(
-                    .invalidCharacter(character: character),
+                    .invalidCharacter(character),
                     filePath: template.filePath,
                     line: line,
                     column: column
@@ -244,7 +244,7 @@ extension Lexer {
 
         if let lastCharacter = lexeme.last, String(lastCharacter) == dot {
             throw Yaproq.syntaxError(
-                .invalidCharacter(character: dot),
+                .invalidCharacter(dot),
                 filePath: template.filePath,
                 line: line,
                 column: column
