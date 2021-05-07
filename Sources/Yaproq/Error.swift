@@ -97,10 +97,10 @@ enum ErrorType: CustomStringConvertible {
     case delimitersMustBeUnique
 
     // TemplateError
-    case contentMustBeUTF8Encodable
     case extendingMultipleTemplatesNotSupported
     case extendMustBeFirstStatement
     case invalidTemplateFile
+    case templateFileMustBeUTF8Encodable
 
     // SyntaxError
     case expectingCharacter(_ character: String)
@@ -138,14 +138,14 @@ enum ErrorType: CustomStringConvertible {
             return "The delimiters must be unique."
 
         // TemplateError
-        case .contentMustBeUTF8Encodable:
-            return "The template file must be UTF8 encodable."
         case .extendingMultipleTemplatesNotSupported:
             return "Extending multiple templates is not supported."
         case .extendMustBeFirstStatement:
             return "The `\(Token.Kind.extend.rawValue)` must be the first statement."
         case .invalidTemplateFile:
             return "An invalid template file."
+        case .templateFileMustBeUTF8Encodable:
+            return "The template file must be UTF8 encodable."
 
         // SyntaxError
         case .expectingCharacter(let character):

@@ -29,7 +29,7 @@ extension Yaproq {
             throw Yaproq.templateError(.invalidTemplateFile, filePath: filePath)
         }
         guard let source = String(data: data, encoding: .utf8) else {
-            throw Yaproq.templateError(.contentMustBeUTF8Encodable, filePath: filePath)
+            throw Yaproq.templateError(.templateFileMustBeUTF8Encodable, filePath: filePath)
         }
 
         return Template(source, filePath: filePath)

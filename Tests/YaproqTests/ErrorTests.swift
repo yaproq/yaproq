@@ -146,7 +146,6 @@ final class ErrorTypeTests: BaseTests {
         XCTAssertEqual(ErrorType.delimitersMustBeUnique.message, "The delimiters must be unique.")
 
         // TemplateError
-        XCTAssertEqual(ErrorType.contentMustBeUTF8Encodable.message, "The template file must be UTF8 encodable.")
         XCTAssertEqual(
             ErrorType.extendingMultipleTemplatesNotSupported.message,
             "Extending multiple templates is not supported."
@@ -156,6 +155,10 @@ final class ErrorTypeTests: BaseTests {
             "The `\(Token.Kind.extend.rawValue)` must be the first statement."
         )
         XCTAssertEqual(ErrorType.invalidTemplateFile.message, "An invalid template file.")
+        XCTAssertEqual(
+            ErrorType.templateFileMustBeUTF8Encodable.message,
+            "The template file must be UTF8 encodable."
+        )
 
         // SyntaxError
         XCTAssertEqual(ErrorType.expectingCharacter(rightBrace).message, "Expecting `\(rightBrace)`.")
