@@ -250,7 +250,49 @@ extension YaproqTests {
 
     func testExtendStatement() {
         // Arrange
-        let template = Template("""
+        var template = Template("""
+        {% block title %}Home{% endblock %}
+        {% extend "content.html" %}
+        """
+        )
+
+        // Act/Assert
+        XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
+            guard let error = error as? TemplateError else {
+                XCTFail("The error is not of \(String(describing: TemplateError.self)) type.")
+                return
+            }
+
+            XCTAssertNil(error.filePath)
+            XCTAssertEqual(error.errorDescription, """
+            \(String(describing: TemplateError.self)): \(ErrorType.extendMustBeFirstStatement)
+            """
+            )
+        }
+
+        // Arrange
+        template = Template("""
+        {% extend "header.html" %}
+        {% extend "content.html" %}
+        """
+        )
+
+        // Act/Assert
+        XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
+            guard let error = error as? TemplateError else {
+                XCTFail("The error is not of \(String(describing: TemplateError.self)) type.")
+                return
+            }
+
+            XCTAssertNil(error.filePath)
+            XCTAssertEqual(error.errorDescription, """
+            \(String(describing: TemplateError.self)): \(ErrorType.extendingMultipleTemplatesNotSupported)
+            """
+            )
+        }
+
+        // Arrange
+        template = Template("""
         {% extend "content.html" %}
         {% block title %}Home{% endblock %}
         {% block body %}
