@@ -22,7 +22,7 @@ final class Interpreter {
         if let extendStatement = statements.first as? ExtendStatement {
             try extendStatement.accept(visitor: self)
         } else {
-            processBlock(statements: &statements)
+            try processBlock(statements: &statements)
 
             for statement in statements {
                 try execute(statement: statement)
@@ -32,7 +32,7 @@ final class Interpreter {
         return result
     }
 
-    private func processBlock(statements: inout [Statement]) {
+    private func processBlock(statements: inout [Statement]) throws {
         var blockStatements: [String: Int] = .init()
         var indexSet: IndexSet = .init()
 
@@ -43,8 +43,9 @@ final class Interpreter {
                     var childStatements: [Statement] = .init()
 
                     for childStatement in blockStatement.statements {
-                        if childStatement is SuperStatement {
+                        if let superStatement = childStatement as? SuperStatement {
                             childStatements += parentBlockStatement.statements
+                            try superStatement.accept(visitor: self)
                         } else {
                             childStatements.append(childStatement)
                         }
@@ -57,7 +58,7 @@ final class Interpreter {
                     indexSet.insert(index)
                 }
 
-                processBlock(statements: &blockStatement.statements)
+                try processBlock(statements: &blockStatement.statements)
             } else {
                 indexSet.insert(index)
             }
