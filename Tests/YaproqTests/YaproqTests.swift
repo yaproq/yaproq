@@ -604,6 +604,23 @@ extension YaproqTests {
 
         // Assert
         XCTAssertEqual(result, "\(number)")
+
+        // Arrange
+        template = Template("""
+        {% var text = "text" %}
+        {% if text %}
+        true
+        {% else %}
+        false
+        {% endif %}
+        """
+        )
+
+        // Act
+        result = try? templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "false")
     }
 
     func testIncludeStatement() {
@@ -1440,8 +1457,7 @@ extension YaproqTests {
             XCTAssertEqual(error.column, 9)
             XCTAssertEqual(error.errorDescription, """
             [Line: \(error.line), Column: \(error.column)] \
-            \(String(describing: SyntaxError.self)): \
-            \(ErrorType.invalidCharacter(Token.Kind.question.rawValue))
+            \(String(describing: SyntaxError.self)): \(ErrorType.invalidCharacter(Token.Kind.question.rawValue))
             """
             )
         }
