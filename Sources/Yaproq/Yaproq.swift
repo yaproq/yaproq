@@ -142,10 +142,6 @@ extension Yaproq {
         YaproqError(errorType?.message)
     }
 
-    static func error(_ message: String) -> YaproqError {
-        YaproqError(message)
-    }
-
     static func templateError(_ errorType: ErrorType? = nil, filePath: String? = nil) -> TemplateError {
         templateError(errorType?.message, filePath: filePath)
     }
@@ -156,10 +152,6 @@ extension Yaproq {
 
     static func syntaxError(_ errorType: ErrorType? = nil, token: Token) -> SyntaxError {
         syntaxError(errorType?.message, filePath: token.filePath, line: token.line, column: token.column)
-    }
-
-    static func syntaxError(_ message: String? = nil, token: Token) -> SyntaxError {
-        syntaxError(message, filePath: token.filePath, line: token.line, column: token.column)
     }
 
     static func syntaxError(
