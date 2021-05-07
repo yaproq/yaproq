@@ -41,23 +41,25 @@ final class Environment {
     @discardableResult
     func getVariableValue(for token: Token) throws -> Any? {
         var components = token.lexeme.components(separatedBy: Token.Kind.dot.rawValue)
-        let name = components.first ?? ""
 
-        if hasVariable(named: name) {
-            var value = variables[name]
-            components.removeFirst()
+        if let name = components.first {
+            if hasVariable(named: name) {
+                var value = variables[name]
+                components.removeFirst()
 
-            for property in components {
-                if let object = value as? Encodable {
-                    value = try object.asDictionary()?[property]
+                for property in components {
+                    if let object = value as? Encodable {
+                        value = try object.asDictionary()?[property]
+                    }
                 }
+
+                return value
             }
 
-            return value
+            if let parent = parent { return try parent.getVariableValue(for: token) }
         }
 
-        if let parent = parent { return try parent.getVariableValue(for: token) }
-        throw Yaproq.runtimeError(.undefinedVariable(name: name), token: token)
+        throw Yaproq.runtimeError(.undefinedVariable(name: token.lexeme), token: token)
     }
 
     func clear() {
