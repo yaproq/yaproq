@@ -41,7 +41,7 @@ extension Token: Equatable {
 }
 
 extension Token {
-    enum Kind: String {
+    enum Kind: String, CaseIterable {
         // Single-character.
         case carriageReturn = "\r"
         case colon = ":"
