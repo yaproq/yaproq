@@ -658,6 +658,26 @@ extension YaproqTests {
 extension YaproqTests {
     func testAssignmentOperator() {
         // Arrange
+        let template = Template("{% true += 1 %}")
+
+        // Act/Assert
+        XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
+            guard let error = error as? SyntaxError else {
+                XCTFail("The error is not of \(String(describing: SyntaxError.self)) type.")
+                return
+            }
+
+            XCTAssertNil(error.filePath)
+            XCTAssertEqual(error.line, 1)
+            XCTAssertEqual(error.column, 12)
+            XCTAssertEqual(error.errorDescription, """
+            [Line: \(error.line), Column: \(error.column)] \
+            \(String(describing: SyntaxError.self)): \(ErrorType.invalidAssignmentTarget)
+            """
+            )
+        }
+
+        // Arrange
         let data: [String: [(String, String, String, String)]] = [ // variable, initial value, assigned value, result
             Token.Kind.minusEqual.rawValue: [
                 ("result", "1", "1", "0"),
