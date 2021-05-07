@@ -513,6 +513,31 @@ extension YaproqTests {
     }
 
     func testIfStatement() {
+        // Arrange
+        let data: [String: String] = [ // condition, result
+            "nil == nil": "true",
+            "nil == \"text\"": "false",
+            "\"text\"": "false"
+        ]
+
+        for (key, value) in data {
+            // Arrange
+            let template = Template("""
+            {% if \(key) %}
+            true
+            {% else %}
+            false
+            {% endif %}
+            """
+            )
+
+            // Act
+            let result = try? templating.renderTemplate(template)
+
+            // Assert
+            XCTAssertEqual(result, value)
+        }
+
         for number in 0...3 {
             // Arrange
             let template = Template("""
@@ -604,23 +629,6 @@ extension YaproqTests {
 
         // Assert
         XCTAssertEqual(result, "\(number)")
-
-        // Arrange
-        template = Template("""
-        {% var text = "text" %}
-        {% if text %}
-        true
-        {% else %}
-        false
-        {% endif %}
-        """
-        )
-
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
-        XCTAssertEqual(result, "false")
     }
 
     func testIncludeStatement() {
