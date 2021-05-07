@@ -1359,6 +1359,30 @@ extension YaproqTests {
 
         // Assert
         XCTAssertEqual(result, "0")
+
+        // Arrange
+        template = Template("""
+        {{ true ? 1 }}
+        """
+        )
+
+        // Act/Assert
+        XCTAssertThrowsError(try templating.renderTemplate(template)) { error in
+            guard let error = error as? SyntaxError else {
+                XCTFail("The error is not of \(String(describing: SyntaxError.self)) type.")
+                return
+            }
+
+            XCTAssertNil(error.filePath)
+            XCTAssertEqual(error.line, 1)
+            XCTAssertEqual(error.column, 9)
+            XCTAssertEqual(error.errorDescription, """
+            [Line: \(error.line), Column: \(error.column)] \
+            \(String(describing: SyntaxError.self)): \
+            \(ErrorType.invalidCharacter(character: Token.Kind.question.rawValue))
+            """
+            )
+        }
     }
 
     func testUnaryOperators() {
