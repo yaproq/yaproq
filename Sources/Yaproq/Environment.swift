@@ -12,13 +12,10 @@ final class Environment {
 
         if hasVariable(named: name) {
             setVariable(value: value, for: name)
+        } else if let parent = parent {
+            try parent.assignVariable(value: value, for: token)
         } else {
-            do {
-                try getVariableValue(for: token)
-                setVariable(value: value, for: name)
-            } catch {
-                throw error
-            }
+            throw Yaproq.runtimeError(.undefinedVariable(name: name), token: token)
         }
     }
 

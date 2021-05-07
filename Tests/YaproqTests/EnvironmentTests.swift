@@ -60,10 +60,10 @@ final class EnvironmentTests: BaseTests {
         XCTAssertEqual(try? parentEnvironment.getVariableValue(for: token) as? String, value1)
         XCTAssertEqual(try? childEnvironment.getVariableValue(for: token) as? String, value1)
         XCTAssertNoThrow(try childEnvironment.assignVariable(value: value2, for: token))
-        XCTAssertEqual(try? parentEnvironment.getVariableValue(for: token) as? String, value1)
+        XCTAssertEqual(try? parentEnvironment.getVariableValue(for: token) as? String, value2)
         XCTAssertEqual(try? childEnvironment.getVariableValue(for: token) as? String, value2)
         XCTAssertNoThrow(try childEnvironment.assignVariable(value: value3, for: token))
-        XCTAssertEqual(try? parentEnvironment.getVariableValue(for: token) as? String, value1)
+        XCTAssertEqual(try? parentEnvironment.getVariableValue(for: token) as? String, value3)
         XCTAssertEqual(try? childEnvironment.getVariableValue(for: token) as? String, value3)
     }
 

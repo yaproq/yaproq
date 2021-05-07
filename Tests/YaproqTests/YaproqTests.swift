@@ -566,24 +566,24 @@ extension YaproqTests {
         XCTAssertEqual(result, "1, 2.5, text2, 3.2, text2")
     }
 
-//    func testWhileStatement() {
-//        // Arrange
-//        let template = Template("""
-//        {% var number = 0 %}
-//        {% var maxNumber = 3 %}
-//        {% while number < maxNumber %}
-//        {{ number }}
-//        {% number += 1 %}
-//        {% endwhile %}
-//        """
-//        )
-//
-//        // Act
-//        let result = try? templating.renderTemplate(template)
-//
-//        // Assert
-//        XCTAssertEqual(result, "012")
-//    }
+    func testWhileStatement() {
+        // Arrange
+        let template = Template("""
+        {% var number = 0 %}
+        {% var maxNumber = 3 %}
+        {% while number < maxNumber %}
+        {{ number }}
+        {% number += 1 %}
+        {% endwhile %}
+        """
+        )
+
+        // Act
+        let result = try? templating.renderTemplate(template)
+
+        // Assert
+        XCTAssertEqual(result, "012")
+    }
 }
 
 extension YaproqTests {
