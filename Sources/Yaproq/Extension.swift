@@ -10,5 +10,5 @@ extension Encodable {
 }
 
 extension String {
-    var normalizedPath: String { last == Character("/") ? self : self + "/" }
+    public var normalizedPath: String { last == Character("/") ? self : self + "/" }
 }
