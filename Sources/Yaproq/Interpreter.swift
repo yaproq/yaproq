@@ -31,7 +31,9 @@ final class Interpreter {
 
         return result
     }
+}
 
+extension Interpreter {
     private func processBlock(statements: inout [Statement]) throws {
         var blockStatements: [String: Int] = .init()
         var indexSet: IndexSet = .init()
@@ -66,9 +68,29 @@ final class Interpreter {
 
         statements = indexSet.map { statements[$0] }
     }
-}
 
-extension Interpreter {
+    private func extendTemplate(at filePath: String) throws {
+        let template: Template
+
+        do {
+            template = try templating.loadTemplate(named: filePath)
+        } catch is TemplateError {
+            template = try templating.loadTemplate(at: filePath)
+        }
+
+        statements.removeFirst()
+        statements = try templating.parseTemplate(template) + statements
+        result = try interpret()
+    }
+
+    private func includeTemplate(at filePath: String) throws {
+        do {
+            result += try templating.doRenderTemplate(named: filePath)
+        } catch is TemplateError {
+            result += try templating.doRenderTemplate(at: filePath)
+        }
+    }
+
     private func isEqual(_ left: Any?, _ right: Any?) -> Bool {
         if left == nil && right == nil {
             return true
@@ -428,23 +450,6 @@ extension Interpreter: ExpressionVisitor {
     }
 }
 
-extension Interpreter {
-    private func extendFile(at filePath: String) throws {
-        let template: Template
-
-        do {
-            template = try templating.loadTemplate(named: filePath)
-        } catch is TemplateError {
-            template = try templating.loadTemplate(at: filePath)
-        }
-
-        let statements = try templating.parseTemplate(template)
-        self.statements.removeFirst()
-        self.statements = statements + self.statements
-        result = try interpret()
-    }
-}
-
 extension Interpreter: StatementVisitor {
     func visitBlock(statement: BlockStatement) throws {
         let environment = Environment(parent: templating.currentEnvironment)
@@ -464,7 +469,7 @@ extension Interpreter: StatementVisitor {
         guard let value = try evaluate(expression: statement.expression) else { return }
 
         if let filePath = value as? String {
-            try extendFile(at: filePath)
+            try extendTemplate(at: filePath)
         } else {
             throw templateError(.invalidTemplateFile, filePath: "\(value)")
         }
@@ -532,11 +537,7 @@ extension Interpreter: StatementVisitor {
         guard let value = try evaluate(expression: statement.expression) else { return }
 
         if let filePath = value as? String {
-            do {
-                result += try templating.doRenderTemplate(named: filePath)
-            } catch is TemplateError {
-                result += try templating.doRenderTemplate(at: filePath)
-            }
+            try includeTemplate(at: filePath)
         } else {
             throw templateError(.invalidTemplateFile, filePath: "\(value)")
         }
