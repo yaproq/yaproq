@@ -4,7 +4,11 @@ public struct YaproqError: LocalizedError {
     let message: String
     public var errorDescription: String? { message }
 
-    init(_ message: String? = nil) {
+    public init(_ errorType: ErrorType) {
+        self.init(errorType.message)
+    }
+
+    public init(_ message: String? = nil) {
         let errorType = String(describing: type(of: self))
 
         if let message = message, !message.isEmpty {
@@ -20,7 +24,11 @@ public struct TemplateError: LocalizedError {
     private(set) var message: String
     public var errorDescription: String? { message }
 
-    init(_ message: String? = nil, filePath: String? = nil) {
+    public init(_ errorType: ErrorType, filePath: String? = nil) {
+        self.init(errorType.message, filePath: filePath)
+    }
+
+    public init(_ message: String? = nil, filePath: String? = nil) {
         self.filePath = filePath
         let errorType = String(describing: type(of: self))
 
@@ -43,7 +51,11 @@ public struct SyntaxError: LocalizedError {
     public let column: Int
     public var errorDescription: String? { message }
 
-    init(_ message: String? = nil, filePath: String? = nil, line: Int, column: Int) {
+    public init(_ errorType: ErrorType, filePath: String? = nil, line: Int, column: Int) {
+        self.init(errorType.message, filePath: filePath, line: line, column: column)
+    }
+
+    public init(_ message: String? = nil, filePath: String? = nil, line: Int, column: Int) {
         self.filePath = filePath
         self.line = line
         self.column = column
@@ -70,7 +82,11 @@ public struct RuntimeError: LocalizedError {
     public let column: Int
     public var errorDescription: String? { message }
 
-    init(_ message: String? = nil, filePath: String? = nil, line: Int, column: Int) {
+    public init(_ errorType: ErrorType, filePath: String? = nil, line: Int, column: Int) {
+        self.init(errorType.message, filePath: filePath, line: line, column: column)
+    }
+
+    public init(_ message: String? = nil, filePath: String? = nil, line: Int, column: Int) {
         self.filePath = filePath
         self.line = line
         self.column = column
@@ -90,7 +106,7 @@ public struct RuntimeError: LocalizedError {
     }
 }
 
-enum ErrorType: CustomStringConvertible {
+public enum ErrorType: CustomStringConvertible {
     case unknownedError
 
     // YaproqError
@@ -126,9 +142,9 @@ enum ErrorType: CustomStringConvertible {
     case variableMustBeEitherArrayOrDictionary(_ name: String)
     case undefinedVariable(_ name: String)
 
-    var description: String { message }
+    public var description: String { message }
 
-    var message: String {
+    public var message: String {
         switch self {
         case .unknownedError:
             return "An unknown error."
@@ -194,34 +210,22 @@ enum ErrorType: CustomStringConvertible {
     }
 }
 
-func error(_ errorType: ErrorType? = nil) -> YaproqError {
-    YaproqError(errorType?.message)
+func error(_ errorType: ErrorType) -> YaproqError {
+    YaproqError(errorType)
 }
 
-func templateError(_ errorType: ErrorType? = nil, filePath: String? = nil) -> TemplateError {
-    templateError(errorType?.message, filePath: filePath)
+func templateError(_ errorType: ErrorType, filePath: String? = nil) -> TemplateError {
+    TemplateError(errorType, filePath: filePath)
 }
 
-func templateError(_ message: String? = nil, filePath: String? = nil) -> TemplateError {
-    TemplateError(message, filePath: filePath)
+func syntaxError(_ errorType: ErrorType, token: Token) -> SyntaxError {
+    syntaxError(errorType, filePath: token.filePath, line: token.line, column: token.column)
 }
 
-func syntaxError(_ errorType: ErrorType? = nil, token: Token) -> SyntaxError {
-    syntaxError(errorType?.message, filePath: token.filePath, line: token.line, column: token.column)
+func syntaxError(_ errorType: ErrorType, filePath: String? = nil, line: Int, column: Int) -> SyntaxError {
+    SyntaxError(errorType, filePath: filePath, line: line, column: column)
 }
 
-func syntaxError(_ errorType: ErrorType? = nil, filePath: String? = nil, line: Int, column: Int) -> SyntaxError {
-    syntaxError(errorType?.message, filePath: filePath, line: line, column: column)
-}
-
-func syntaxError(_ message: String? = nil, filePath: String? = nil, line: Int, column: Int) -> SyntaxError {
-    SyntaxError(message, filePath: filePath, line: line, column: column)
-}
-
-func runtimeError(_ errorType: ErrorType? = nil, token: Token) -> RuntimeError {
-    runtimeError(errorType?.message, token: token)
-}
-
-func runtimeError(_ message: String? = nil, token: Token) -> RuntimeError {
-    RuntimeError(message, filePath: token.filePath, line: token.line, column: token.column)
+func runtimeError(_ errorType: ErrorType, token: Token) -> RuntimeError {
+    RuntimeError(errorType, filePath: token.filePath, line: token.line, column: token.column)
 }
