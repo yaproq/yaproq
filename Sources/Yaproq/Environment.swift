@@ -15,7 +15,7 @@ final class Environment {
         } else if let parent = parent {
             try parent.assignVariable(value: value, for: token)
         } else {
-            throw Yaproq.runtimeError(.undefinedVariable(name), token: token)
+            throw runtimeError(.undefinedVariable(name), token: token)
         }
     }
 
@@ -23,7 +23,7 @@ final class Environment {
         let name = token.lexeme
 
         if hasVariable(named: name) {
-            throw Yaproq.runtimeError(.variableExists(name), token: token)
+            throw runtimeError(.variableExists(name), token: token)
         }
 
         setVariable(value: value, for: name)
@@ -59,7 +59,7 @@ final class Environment {
             if let parent = parent { return try parent.getVariableValue(for: token) }
         }
 
-        throw Yaproq.runtimeError(.undefinedVariable(token.lexeme), token: token)
+        throw runtimeError(.undefinedVariable(token.lexeme), token: token)
     }
 
     func clear() {

@@ -31,7 +31,7 @@ extension Lexer {
         }
 
         if let delimiter = currentDelimiter {
-            throw Yaproq.syntaxError(
+            throw syntaxError(
                 .invalidDelimiterEnd(delimiter.end),
                 filePath: template.filePath,
                 line: line,
@@ -162,7 +162,7 @@ extension Lexer {
                 } else if matches(Token.Kind.less.rawValue) {
                     addToken(kind: .range)
                 } else {
-                    throw Yaproq.syntaxError(
+                    throw syntaxError(
                         .invalidCharacter(character),
                         filePath: template.filePath,
                         line: line,
@@ -170,7 +170,7 @@ extension Lexer {
                     )
                 }
             } else {
-                throw Yaproq.syntaxError(
+                throw syntaxError(
                     .invalidCharacter(character),
                     filePath: template.filePath,
                     line: line,
@@ -223,7 +223,7 @@ extension Lexer {
             } else if isAlpha(character) {
                 try addIdentifierToken()
             } else {
-                throw Yaproq.syntaxError(
+                throw syntaxError(
                     .invalidCharacter(character),
                     filePath: template.filePath,
                     line: line,
@@ -243,7 +243,7 @@ extension Lexer {
         let lexeme = substring(from: start, to: current)
 
         if let lastCharacter = lexeme.last, String(lastCharacter) == dot {
-            throw Yaproq.syntaxError(
+            throw syntaxError(
                 .invalidCharacter(dot),
                 filePath: template.filePath,
                 line: line,
@@ -305,7 +305,7 @@ extension Lexer {
         while peek() != Token.Kind.quote.rawValue && !isAtEnd { advance() }
 
         if isAtEnd {
-            throw Yaproq.syntaxError(.unterminatedString, filePath: template.filePath, line: line, column: column)
+            throw syntaxError(.unterminatedString, filePath: template.filePath, line: line, column: column)
         }
 
         advance()

@@ -40,7 +40,7 @@ extension Parser {
     @discardableResult
     private func consume(_ kind: Token.Kind, elseError error: ErrorType) throws -> Token {
         if check(kind) { return advance() }
-        throw Yaproq.syntaxError(error, token: peek)
+        throw syntaxError(error, token: peek)
     }
 
     private func match(_ kinds: Token.Kind...) -> Bool {
@@ -73,7 +73,7 @@ extension Parser {
         }
 
         if name == nil {
-            throw Yaproq.syntaxError(.invalidBlockName(name ?? ""), token: previous)
+            throw syntaxError(.invalidBlockName(name ?? ""), token: previous)
         }
 
         try consume(leftBrace, elseError: .expectingCharacter(leftBrace.rawValue))
@@ -225,7 +225,7 @@ extension Parser {
                 )
             }
 
-            throw Yaproq.syntaxError(.invalidAssignmentTarget, token: previous)
+            throw syntaxError(.invalidAssignmentTarget, token: previous)
         }
 
         return expression
@@ -326,7 +326,7 @@ extension Parser {
         if match(.false, .nil, .number, .string, .true) { return literalExpression() }
         if match(.identifier) { return try variableExpression() }
         if match(.leftParenthesis) { return try groupingExpression() }
-        throw Yaproq.syntaxError(.expectingExpression, token: peek)
+        throw syntaxError(.expectingExpression, token: peek)
     }
 
     private func ternaryExpression() throws -> AnyExpression {
@@ -353,7 +353,7 @@ extension Parser {
             }
 
             if !isTernary {
-                throw Yaproq.syntaxError(.invalidCharacter(firstToken.kind.rawValue), token: firstToken)
+                throw syntaxError(.invalidCharacter(firstToken.kind.rawValue), token: firstToken)
             }
         }
 

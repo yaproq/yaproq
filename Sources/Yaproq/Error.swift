@@ -193,3 +193,35 @@ enum ErrorType: CustomStringConvertible {
         }
     }
 }
+
+func error(_ errorType: ErrorType? = nil) -> YaproqError {
+    YaproqError(errorType?.message)
+}
+
+func templateError(_ errorType: ErrorType? = nil, filePath: String? = nil) -> TemplateError {
+    templateError(errorType?.message, filePath: filePath)
+}
+
+func templateError(_ message: String? = nil, filePath: String? = nil) -> TemplateError {
+    TemplateError(message, filePath: filePath)
+}
+
+func syntaxError(_ errorType: ErrorType? = nil, token: Token) -> SyntaxError {
+    syntaxError(errorType?.message, filePath: token.filePath, line: token.line, column: token.column)
+}
+
+func syntaxError(_ errorType: ErrorType? = nil, filePath: String? = nil, line: Int, column: Int) -> SyntaxError {
+    syntaxError(errorType?.message, filePath: filePath, line: line, column: column)
+}
+
+func syntaxError(_ message: String? = nil, filePath: String? = nil, line: Int, column: Int) -> SyntaxError {
+    SyntaxError(message, filePath: filePath, line: line, column: column)
+}
+
+func runtimeError(_ errorType: ErrorType? = nil, token: Token) -> RuntimeError {
+    runtimeError(errorType?.message, token: token)
+}
+
+func runtimeError(_ message: String? = nil, token: Token) -> RuntimeError {
+    RuntimeError(message, filePath: token.filePath, line: token.line, column: token.column)
+}

@@ -15,8 +15,8 @@ final class Interpreter {
         let count = extendStatements.count
 
         if count > 0 {
-            if !(statements.first is ExtendStatement) { throw Yaproq.templateError(.extendMustBeFirstStatement) }
-            if count > 1 { throw Yaproq.templateError(.extendingMultipleTemplatesNotSupported) }
+            if !(statements.first is ExtendStatement) { throw templateError(.extendMustBeFirstStatement) }
+            if count > 1 { throw templateError(.extendingMultipleTemplatesNotSupported) }
         }
 
         if let extendStatement = statements.first as? ExtendStatement {
@@ -81,7 +81,7 @@ extension Interpreter {
 
     private func isTruthy(_ value: Any?, for token: Token? = nil) throws -> Bool {
         if let value = value as? Bool { return value }
-        if let token = token { throw Yaproq.runtimeError(.operandMustBeBoolean, token: token) }
+        if let token = token { throw runtimeError(.operandMustBeBoolean, token: token) }
 
         return false
     }
@@ -243,9 +243,9 @@ extension Interpreter: ExpressionVisitor {
                 return value
             }
 
-            throw Yaproq.runtimeError(.operandsMustBeNumbers, token: expression.operatorToken)
+            throw runtimeError(.operandsMustBeNumbers, token: expression.operatorToken)
         default:
-            throw Yaproq.syntaxError(
+            throw syntaxError(
                 .invalidOperator(expression.operatorToken.lexeme),
                 token: expression.operatorToken
             )
@@ -268,7 +268,7 @@ extension Interpreter: ExpressionVisitor {
                 return expression.token.kind == .closedRange ? lowerBound...upperBound : lowerBound..<upperBound
             }
 
-            throw Yaproq.runtimeError(.operandsMustBeEitherIntegersOrDoubles, token: token)
+            throw runtimeError(.operandsMustBeEitherIntegersOrDoubles, token: token)
         case .equalEqual:
             return isEqual(left, right)
         case .greater:
@@ -278,7 +278,7 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Int, let right = right as? Double { return Double(left) > right }
             if let left = left as? String, let right = right as? String { return left > right }
             if let left = left as? Date, let right = right as? Date { return left > right }
-            throw Yaproq.runtimeError(.operandsMustBeComparable, token: token)
+            throw runtimeError(.operandsMustBeComparable, token: token)
         case .greaterOrEqual:
             if let left = left as? Double, let right = right as? Double { return left >= right }
             if let left = left as? Int, let right = right as? Int { return left >= right }
@@ -286,7 +286,7 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Int, let right = right as? Double { return Double(left) >= right }
             if let left = left as? String, let right = right as? String { return left >= right }
             if let left = left as? Date, let right = right as? Date { return left >= right }
-            throw Yaproq.runtimeError(.operandsMustBeComparable, token: token)
+            throw runtimeError(.operandsMustBeComparable, token: token)
         case .less:
             if let left = left as? Double, let right = right as? Double { return left < right }
             if let left = left as? Int, let right = right as? Int { return left < right }
@@ -294,7 +294,7 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Int, let right = right as? Double { return Double(left) < right }
             if let left = left as? String, let right = right as? String { return left < right }
             if let left = left as? Date, let right = right as? Date { return left < right }
-            throw Yaproq.runtimeError(.operandsMustBeComparable, token: token)
+            throw runtimeError(.operandsMustBeComparable, token: token)
         case .lessOrEqual:
             if let left = left as? Double, let right = right as? Double { return left <= right }
             if let left = left as? Int, let right = right as? Int { return left <= right }
@@ -302,13 +302,13 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Int, let right = right as? Double { return Double(left) <= right }
             if let left = left as? String, let right = right as? String { return left <= right }
             if let left = left as? Date, let right = right as? Date { return left <= right }
-            throw Yaproq.runtimeError(.operandsMustBeComparable, token: token)
+            throw runtimeError(.operandsMustBeComparable, token: token)
         case .minus:
             if let left = left as? Double, let right = right as? Double { return left - right }
             if let left = left as? Int, let right = right as? Int { return left - right }
             if let left = left as? Double, let right = right as? Int { return left - Double(right) }
             if let left = left as? Int, let right = right as? Double { return Double(left) - right }
-            throw Yaproq.runtimeError(.operandsMustBeNumbers, token: token)
+            throw runtimeError(.operandsMustBeNumbers, token: token)
         case .percent:
             if let left = left as? Double, let right = right as? Double {
                 return left.truncatingRemainder(dividingBy: right)
@@ -320,7 +320,7 @@ extension Interpreter: ExpressionVisitor {
                 return Double(left).truncatingRemainder(dividingBy: right)
             }
 
-            throw Yaproq.runtimeError(.operandsMustBeNumbers, token: token)
+            throw runtimeError(.operandsMustBeNumbers, token: token)
         case .plus:
             if let left = left as? Double, let right = right as? Double {
                 return left + right
@@ -334,7 +334,7 @@ extension Interpreter: ExpressionVisitor {
                 return left + right
             }
 
-            throw Yaproq.runtimeError(.operandsMustBeEitherNumbersOrStrings, token: token)
+            throw runtimeError(.operandsMustBeEitherNumbersOrStrings, token: token)
         case .power:
             if let left = left as? Double, let right = right as? Double {
                 return pow(left, right)
@@ -346,7 +346,7 @@ extension Interpreter: ExpressionVisitor {
                 return pow(Double(left), right)
             }
 
-            throw Yaproq.runtimeError(.operandsMustBeNumbers, token: token)
+            throw runtimeError(.operandsMustBeNumbers, token: token)
         case .questionQuestion:
             return left ?? right
         case .slash:
@@ -354,15 +354,15 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Int, let right = right as? Int { return Double(left) / Double(right) }
             if let left = left as? Double, let right = right as? Int { return left / Double(right) }
             if let left = left as? Int, let right = right as? Double { return Double(left) / right }
-            throw Yaproq.runtimeError(.operandsMustBeNumbers, token: token)
+            throw runtimeError(.operandsMustBeNumbers, token: token)
         case .star:
             if let left = left as? Double, let right = right as? Double { return left * right }
             if let left = left as? Int, let right = right as? Int { return left * right }
             if let left = left as? Double, let right = right as? Int { return left * Double(right) }
             if let left = left as? Int, let right = right as? Double { return Double(left) * right }
-            throw Yaproq.runtimeError(.operandsMustBeNumbers, token: token)
+            throw runtimeError(.operandsMustBeNumbers, token: token)
         default:
-            throw Yaproq.runtimeError(.invalidOperator(token.lexeme), token: token)
+            throw runtimeError(.invalidOperator(token.lexeme), token: token)
         }
     }
 
@@ -400,9 +400,9 @@ extension Interpreter: ExpressionVisitor {
         case .minus:
             if let right = right as? Double { return -right }
             if let right = right as? Int { return -right }
-            throw Yaproq.runtimeError(.operandMustBeNumber, token: token)
+            throw runtimeError(.operandMustBeNumber, token: token)
         default:
-            throw Yaproq.syntaxError(.invalidOperator(token.lexeme), token: token)
+            throw syntaxError(.invalidOperator(token.lexeme), token: token)
         }
     }
 
@@ -415,13 +415,13 @@ extension Interpreter: ExpressionVisitor {
 
             if let array = value as? [Any] {
                 if let index = key as? Int { return array[index] }
-                throw Yaproq.runtimeError(.indexMustBeInteger("\(key ?? "")"), token: token)
+                throw runtimeError(.indexMustBeInteger("\(key ?? "")"), token: token)
             } else if let dictionary = value as? [AnyHashable: Any] {
                 if let key = key as? AnyHashable { return dictionary[key] }
-                throw Yaproq.runtimeError(.keyMustBeHashable("\(key ?? "")"), token: token)
+                throw runtimeError(.keyMustBeHashable("\(key ?? "")"), token: token)
             }
 
-            throw Yaproq.runtimeError(.variableMustBeEitherArrayOrDictionary(token.lexeme), token: token)
+            throw runtimeError(.variableMustBeEitherArrayOrDictionary(token.lexeme), token: token)
         }
 
         return value
@@ -466,7 +466,7 @@ extension Interpreter: StatementVisitor {
         if let filePath = value as? String {
             try extendFile(at: filePath)
         } else {
-            throw Yaproq.templateError(.invalidTemplateFile, filePath: "\(value)")
+            throw templateError(.invalidTemplateFile, filePath: "\(value)")
         }
     }
 
@@ -481,7 +481,7 @@ extension Interpreter: StatementVisitor {
                     statementKey.token.literal = key
                     blockStatement.variables.append(statementKey)
                 } else {
-                    throw Yaproq.runtimeError(.expectingVariable, token: token)
+                    throw runtimeError(.expectingVariable, token: token)
                 }
             }
 
@@ -489,7 +489,7 @@ extension Interpreter: StatementVisitor {
                 statementValue.token.literal = value
                 blockStatement.variables.append(statementValue)
             } else {
-                throw Yaproq.runtimeError(.expectingVariable, token: token)
+                throw runtimeError(.expectingVariable, token: token)
             }
 
             try blockStatement.accept(visitor: self)
@@ -508,7 +508,7 @@ extension Interpreter: StatementVisitor {
                     try assign(value: value, for: key, on: token)
                 }
             } else {
-                throw Yaproq.syntaxError(.invalidOperator(token.lexeme), token: token)
+                throw syntaxError(.invalidOperator(token.lexeme), token: token)
             }
         } else if let expression = statement.expression.expression as? VariableExpression {
             let value = try expression.accept(visitor: self)
@@ -523,7 +523,7 @@ extension Interpreter: StatementVisitor {
                     try assign(value: value, for: key, on: token)
                 }
             } else {
-                throw Yaproq.runtimeError(.variableMustBeEitherArrayOrDictionary(token.lexeme), token: token)
+                throw runtimeError(.variableMustBeEitherArrayOrDictionary(token.lexeme), token: token)
             }
         }
     }
@@ -538,7 +538,7 @@ extension Interpreter: StatementVisitor {
                 result += try templating.doRenderTemplate(at: filePath)
             }
         } else {
-            throw Yaproq.templateError(.invalidTemplateFile, filePath: "\(value)")
+            throw templateError(.invalidTemplateFile, filePath: "\(value)")
         }
     }
 

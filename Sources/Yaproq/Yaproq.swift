@@ -26,10 +26,10 @@ extension Yaproq {
     public func loadTemplate(at filePath: String) throws -> Template {
         let fileManager = FileManager.default
         guard let data = fileManager.contents(atPath: filePath) else {
-            throw Yaproq.templateError(.invalidTemplateFile, filePath: filePath)
+            throw templateError(.invalidTemplateFile, filePath: filePath)
         }
         guard let source = String(data: data, encoding: .utf8) else {
-            throw Yaproq.templateError(.templateFileMustBeUTF8Encodable, filePath: filePath)
+            throw templateError(.templateFileMustBeUTF8Encodable, filePath: filePath)
         }
 
         return Template(source, filePath: filePath)
@@ -138,50 +138,6 @@ extension Yaproq {
 }
 
 extension Yaproq {
-    static func error(_ errorType: ErrorType? = nil) -> YaproqError {
-        YaproqError(errorType?.message)
-    }
-
-    static func templateError(_ errorType: ErrorType? = nil, filePath: String? = nil) -> TemplateError {
-        templateError(errorType?.message, filePath: filePath)
-    }
-
-    static func templateError(_ message: String? = nil, filePath: String? = nil) -> TemplateError {
-        TemplateError(message, filePath: filePath)
-    }
-
-    static func syntaxError(_ errorType: ErrorType? = nil, token: Token) -> SyntaxError {
-        syntaxError(errorType?.message, filePath: token.filePath, line: token.line, column: token.column)
-    }
-
-    static func syntaxError(
-        _ errorType: ErrorType? = nil,
-        filePath: String? = nil,
-        line: Int,
-        column: Int
-    ) -> SyntaxError {
-        syntaxError(errorType?.message, filePath: filePath, line: line, column: column)
-    }
-
-    static func syntaxError(
-        _ message: String? = nil,
-        filePath: String? = nil,
-        line: Int,
-        column: Int
-    ) -> SyntaxError {
-        SyntaxError(message, filePath: filePath, line: line, column: column)
-    }
-
-    static func runtimeError(_ errorType: ErrorType? = nil, token: Token) -> RuntimeError {
-        runtimeError(errorType?.message, token: token)
-    }
-
-    static func runtimeError(_ message: String? = nil, token: Token) -> RuntimeError {
-        RuntimeError(message, filePath: token.filePath, line: token.line, column: token.column)
-    }
-}
-
-extension Yaproq {
     public struct Configuration {
         public static let defaultDirectoryPath = "/"
         public let directoryPath: String
@@ -229,7 +185,7 @@ extension Yaproq {
             )
 
             if updatedRawDelimiters.count != initialRawDelimiters.count {
-                throw Yaproq.error(.delimitersMustBeUnique)
+                throw error(.delimitersMustBeUnique)
             }
         }
     }
