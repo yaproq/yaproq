@@ -6,6 +6,7 @@ public final class Yaproq {
     private var defaultEnvironment: Environment
     private var environments: [String: Environment]
     private var cache = Cache<String, [Statement]>()
+    private(set) var templates: [String: Template] = .init()
 
     public init(configuration: Configuration = .init()) {
         self.configuration = configuration
@@ -34,6 +35,37 @@ extension Yaproq {
 
         return Template(source, filePath: filePath)
     }
+
+    private func loadTemplates(in statements: [Statement], with interpreter: Interpreter) throws {
+        for statement in statements {
+            if let extendStatement = statement as? ExtendStatement {
+                try loadTemplate(from: extendStatement.expression, with: interpreter)
+            } else if let includeStatement = statement as? IncludeStatement {
+                try loadTemplate(from: includeStatement.expression, with: interpreter)
+            } else if let blockStatement = statement as? BlockStatement {
+                try loadTemplates(in: blockStatement.statements, with: interpreter)
+            }
+        }
+    }
+
+    private func loadTemplate(from expression: AnyExpression, with interpreter: Interpreter) throws {
+        if var filePath = try interpreter.evaluate(expression: expression) as? String {
+            if templates[filePath] == nil {
+                let template: Template
+
+                do {
+                    template = try loadTemplate(named: filePath)
+                    filePath = configuration.directoryPath + filePath
+                } catch is TemplateError {
+                    template = try loadTemplate(at: filePath)
+                }
+
+                let childStatements = try parseTemplate(template)
+                templates[filePath] = template
+                try loadTemplates(in: childStatements, with: interpreter)
+            }
+        }
+    }
 }
 
 extension Yaproq {
@@ -44,6 +76,16 @@ extension Yaproq {
 
         return try parser.parse()
     }
+
+    func interpretTemplate(_ template: Template, preload: Bool = false) throws -> String {
+        let statements = try cachedStatements(for: template)
+        let interpreter = Interpreter(templating: self, statements: statements)
+        if preload { try loadTemplates(in: statements, with: interpreter) }
+        let result = try interpreter.interpret()
+        cache(statements, for: template)
+
+        return result
+    }
 }
 
 extension Yaproq {
@@ -51,33 +93,16 @@ extension Yaproq {
         try renderTemplate(at: configuration.directoryPath + name, in: context)
     }
 
-    func doRenderTemplate(named name: String, in context: [String: Encodable] = .init()) throws -> String {
-        try doRenderTemplate(at: configuration.directoryPath + name, in: context)
-    }
-
     public func renderTemplate(at filePath: String, in context: [String: Encodable] = .init()) throws -> String {
-        setCurrentEnvironment(for: filePath)
-
-        do {
-            let result = try doRenderTemplate(at: filePath, in: context)
-            clearEnvironments()
-
-            return result
-        } catch {
-            clearEnvironments()
-            throw error
-        }
-    }
-
-    func doRenderTemplate(at filePath: String, in context: [String: Encodable] = .init()) throws -> String {
-        try doRenderTemplate(try loadTemplate(at: filePath), in: context)
+        try renderTemplate(try loadTemplate(at: filePath), in: context)
     }
 
     public func renderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
         setCurrentEnvironment(for: template.filePath)
+        for (name, value) in context { currentEnvironment.setVariable(value: value, for: name) }
 
         do {
-            let result = try doRenderTemplate(template, in: context)
+            let result = try interpretTemplate(template, preload: true)
             clearEnvironments()
 
             return result
@@ -86,9 +111,10 @@ extension Yaproq {
             throw error
         }
     }
+}
 
-    func doRenderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
-        for (name, value) in context { currentEnvironment.setVariable(value: value, for: name) }
+extension Yaproq {
+    private func cachedStatements(for template: Template) throws -> [Statement] {
         let statements: [Statement]
 
         if configuration.isDebug {
@@ -105,19 +131,18 @@ extension Yaproq {
             }
         }
 
-        let interpreter = Interpreter(templating: self, statements: statements)
-        let result = try interpreter.interpret()
+        return statements
+    }
 
+    private func cache(_ statements: [Statement], for template: Template) {
         if let filePath = template.filePath, cache.getValue(forKey: filePath) == nil {
             cache.setValue(statements, forKey: filePath)
         }
-
-        return result
     }
 }
 
 extension Yaproq {
-    private func setCurrentEnvironment(for filePath: String? = nil) {
+    func setCurrentEnvironment(for filePath: String? = nil) {
         if let filePath = filePath {
             if let environment = environments[filePath] {
                 self.currentEnvironment = environment
@@ -130,7 +155,7 @@ extension Yaproq {
         }
     }
 
-    private func clearEnvironments() {
+    func clearEnvironments() {
         environments.removeAll()
         setCurrentEnvironment()
         currentEnvironment.clear()

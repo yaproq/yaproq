@@ -9,7 +9,9 @@ final class Interpreter {
         self.templating = templating
         self.statements = statements
     }
+}
 
+extension Interpreter {
     func interpret() throws -> String {
         let extendStatements = statements.filter { $0 is ExtendStatement }
         let count = extendStatements.count
@@ -22,19 +24,30 @@ final class Interpreter {
         if let extendStatement = statements.first as? ExtendStatement {
             try extendStatement.accept(visitor: self)
         } else {
-            try processBlock(statements: &statements)
-
-            for statement in statements {
-                try execute(statement: statement)
-            }
+            try processSuper(in: &statements)
+            for statement in statements { try execute(statement: statement) }
         }
 
         return result
     }
-}
 
-extension Interpreter {
-    private func processBlock(statements: inout [Statement]) throws {
+    @discardableResult
+    func evaluate(expression: AnyExpression) throws -> Any? {
+        try expression.accept(visitor: self)
+    }
+
+    private func execute(statement: Statement) throws {
+        try statement.accept(visitor: self)
+    }
+
+    private func execute(statements: [Statement], in environment: Environment) throws {
+        let previousEnvironment = templating.currentEnvironment
+        templating.currentEnvironment = environment
+        defer { templating.currentEnvironment = previousEnvironment }
+        for statement in statements { try execute(statement: statement) }
+    }
+
+    private func processSuper(in statements: inout [Statement]) throws {
         var blockStatements: [String: Int] = .init()
         var indexSet: IndexSet = .init()
 
@@ -60,35 +73,13 @@ extension Interpreter {
                     indexSet.insert(index)
                 }
 
-                try processBlock(statements: &blockStatement.statements)
+                try processSuper(in: &blockStatement.statements)
             } else {
                 indexSet.insert(index)
             }
         }
 
         statements = indexSet.map { statements[$0] }
-    }
-
-    private func extendTemplate(at filePath: String) throws {
-        let template: Template
-
-        do {
-            template = try templating.loadTemplate(named: filePath)
-        } catch is TemplateError {
-            template = try templating.loadTemplate(at: filePath)
-        }
-
-        statements.removeFirst()
-        statements = try templating.parseTemplate(template) + statements
-        result = try interpret()
-    }
-
-    private func includeTemplate(at filePath: String) throws {
-        do {
-            result += try templating.doRenderTemplate(named: filePath)
-        } catch is TemplateError {
-            result += try templating.doRenderTemplate(at: filePath)
-        }
     }
 
     private func isEqual(_ left: Any?, _ right: Any?) -> Bool {
@@ -123,22 +114,6 @@ extension Interpreter {
         }
 
         return String(describing: value)
-    }
-
-    @discardableResult
-    private func evaluate(expression: AnyExpression) throws -> Any? {
-        try expression.accept(visitor: self)
-    }
-
-    private func execute(statement: Statement) throws {
-        try statement.accept(visitor: self)
-    }
-
-    private func execute(statements: [Statement], in environment: Environment) throws {
-        let previousEnvironment = templating.currentEnvironment
-        templating.currentEnvironment = environment
-        defer { templating.currentEnvironment = previousEnvironment }
-        for statement in statements { try execute(statement: statement) }
     }
 }
 
@@ -468,8 +443,22 @@ extension Interpreter: StatementVisitor {
     func visitExtend(statement: ExtendStatement) throws {
         guard let value = try evaluate(expression: statement.expression) else { return }
 
-        if let filePath = value as? String {
-            try extendTemplate(at: filePath)
+        if var filePath = value as? String {
+            func interpretTemplate(_ template: Template) throws {
+                statements.removeFirst()
+                statements = try templating.parseTemplate(template) + statements
+                result = try interpret()
+            }
+
+            if let template = templating.templates[filePath] {
+                try interpretTemplate(template)
+            } else {
+                filePath = templating.configuration.directoryPath + filePath
+
+                if let template = templating.templates[filePath] {
+                    try interpretTemplate(template)
+                }
+            }
         } else {
             throw templateError(.invalidTemplateFile, filePath: "\(value)")
         }
@@ -536,8 +525,16 @@ extension Interpreter: StatementVisitor {
     func visitInclude(statement: IncludeStatement) throws {
         guard let value = try evaluate(expression: statement.expression) else { return }
 
-        if let filePath = value as? String {
-            try includeTemplate(at: filePath)
+        if var filePath = value as? String {
+            if let template = templating.templates[filePath] {
+                result += try templating.interpretTemplate(template)
+            } else {
+                filePath = templating.configuration.directoryPath + filePath
+
+                if let template = templating.templates[filePath] {
+                    result += try templating.interpretTemplate(template)
+                }
+            }
         } else {
             throw templateError(.invalidTemplateFile, filePath: "\(value)")
         }
