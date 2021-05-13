@@ -72,10 +72,7 @@ extension Parser {
             }
         }
 
-        if name == nil {
-            throw syntaxError(.invalidBlockName(name ?? ""), token: previous)
-        }
-
+        if name == nil { throw syntaxError(.invalidBlockName(name ?? ""), token: previous) }
         try consume(leftBrace, elseError: .expectingCharacter(leftBrace.rawValue))
 
         return BlockStatement(name: name, statements: try blockStatements())
