@@ -3,7 +3,6 @@ import Foundation
 public final class Yaproq {
     public var configuration: Configuration
     private var cache = Cache<String, [Statement]>()
-    private(set) var templates: [String: Template] = .init()
 
     public init(configuration: Configuration = .init()) {
         self.configuration = configuration
@@ -43,7 +42,7 @@ extension Yaproq {
 
     private func loadTemplate(from expression: AnyExpression, with interpreter: Interpreter) throws {
         if var filePath = try interpreter.evaluate(expression: expression) as? String {
-            if templates[filePath] == nil {
+            if interpreter.environment.templates[filePath] == nil {
                 let template: Template
 
                 do {
@@ -54,7 +53,7 @@ extension Yaproq {
                 }
 
                 let childStatements = try parseTemplate(template)
-                templates[filePath] = template
+                interpreter.environment.templates[filePath] = template
                 try loadTemplates(in: childStatements, with: interpreter)
             }
         }
@@ -81,19 +80,19 @@ extension Yaproq {
     }
 
     public func renderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
-        let statements = try cachedStatements(for: template)
-        let interpreter = Interpreter(templating: self, statements: statements)
+        let interpreter = Interpreter(environment: .init(directoryPath: configuration.directoryPath))
+        let statements = try cachedStatements(for: template, with: interpreter)
         for (name, value) in context { interpreter.environment.setVariable(value: value, for: name) }
         try loadTemplates(in: statements, with: interpreter)
-        let result = try interpreter.interpret()
-        cache(statements, for: template)
+        let result = try interpreter.interpret(statements: statements)
+        cache(statements, for: template, with: interpreter)
 
         return result
     }
 }
 
 extension Yaproq {
-    private func cachedStatements(for template: Template) throws -> [Statement] {
+    private func cachedStatements(for template: Template, with interpreter: Interpreter) throws -> [Statement] {
         let statements: [Statement]
 
         if configuration.isDebug {
@@ -113,7 +112,7 @@ extension Yaproq {
         return statements
     }
 
-    private func cache(_ statements: [Statement], for template: Template) {
+    private func cache(_ statements: [Statement], for template: Template, with interpreter: Interpreter) {
         if let filePath = template.filePath, cache.getValue(forKey: filePath) == nil {
             cache.setValue(statements, forKey: filePath)
         }

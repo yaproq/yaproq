@@ -1,54 +1,38 @@
 import Foundation
 
 final class Interpreter {
-    let templating: Yaproq
-    var environment: Environment = .init()
-    private var statements: [Statement]
+    private(set) var environment: Environment
+    private var statements: [Statement] = .init()
     private var result = ""
 
-    init(templating: Yaproq, statements: [Statement] = .init()) {
-        self.templating = templating
-        self.statements = statements
+    init(environment: Environment) {
+        self.environment = environment
     }
 }
 
 extension Interpreter {
-    func interpret() throws -> String {
-        let extendStatements = statements.filter { $0 is ExtendStatement }
+    func interpret(statements: [Statement]) throws -> String {
+        self.statements = statements
+        let extendStatements = self.statements.filter { $0 is ExtendStatement }
         let count = extendStatements.count
 
         if count > 0 {
-            if !(statements.first is ExtendStatement) { throw templateError(.extendMustBeFirstStatement) }
+            if !(self.statements.first is ExtendStatement) { throw templateError(.extendMustBeFirstStatement) }
             if count > 1 { throw templateError(.extendingMultipleTemplatesNotSupported) }
         }
 
-        if let extendStatement = statements.first as? ExtendStatement {
+        if let extendStatement = self.statements.first as? ExtendStatement {
             try execute(statement: extendStatement)
         } else {
-            try processSuper(in: &statements)
-            for statement in statements { try execute(statement: statement) }
+            try processSuper(in: &self.statements)
+            for statement in self.statements { try execute(statement: statement) }
         }
 
         return result
     }
+}
 
-    private func parseTemplate(_ template: Template) throws -> [Statement] {
-        let lexer = Lexer(template: template)
-        let tokens = try lexer.scan()
-        let parser = Parser(tokens: tokens)
-
-        return try parser.parse()
-    }
-
-    private func interpretTemplate(_ template: Template) throws -> String {
-        let statements = try parseTemplate(template)
-        let interpreter = Interpreter(templating: templating, statements: statements)
-        interpreter.environment = environment
-        let result = try interpreter.interpret()
-
-        return result
-    }
-
+extension Interpreter {
     @discardableResult
     func evaluate(expression: AnyExpression) throws -> Any? {
         try expression.accept(visitor: self)
@@ -63,6 +47,41 @@ extension Interpreter {
         self.environment = environment
         defer { self.environment = previousEnvironment }
         for statement in statements { try execute(statement: statement) }
+    }
+
+    private func isEqual(_ left: Any?, _ right: Any?) -> Bool {
+        if left == nil && right == nil {
+            return true
+        } else if let left = left as? AnyHashable, let right = right as? AnyHashable {
+            return left == right || left.description == right.description
+        }
+
+        return false
+    }
+
+    private func isTruthy(_ value: Any?, for token: Token? = nil) throws -> Bool {
+        if let value = value as? Bool { return value }
+        if let token = token { throw runtimeError(.operandMustBeBoolean, token: token) }
+
+        return false
+    }
+
+    private func interpretTemplate(_ template: Template) throws -> String {
+        let statements = try parseTemplate(template)
+//        let statements = try cachedStatements(for: template)
+        let interpreter = Interpreter(environment: environment)
+        let result = try interpreter.interpret(statements: statements)
+//        cache(statements, for: template)
+
+        return result
+    }
+
+    private func parseTemplate(_ template: Template) throws -> [Statement] {
+        let lexer = Lexer(template: template)
+        let tokens = try lexer.scan()
+        let parser = Parser(tokens: tokens)
+
+        return try parser.parse()
     }
 
     private func processSuper(in statements: inout [Statement]) throws {
@@ -98,23 +117,6 @@ extension Interpreter {
         }
 
         statements = indexSet.map { statements[$0] }
-    }
-
-    private func isEqual(_ left: Any?, _ right: Any?) -> Bool {
-        if left == nil && right == nil {
-            return true
-        } else if let left = left as? AnyHashable, let right = right as? AnyHashable {
-            return left == right || left.description == right.description
-        }
-
-        return false
-    }
-
-    private func isTruthy(_ value: Any?, for token: Token? = nil) throws -> Bool {
-        if let value = value as? Bool { return value }
-        if let token = token { throw runtimeError(.operandMustBeBoolean, token: token) }
-
-        return false
     }
 
     private func stringify(_ value: Any?) -> String {
@@ -271,8 +273,7 @@ extension Interpreter: ExpressionVisitor {
         let right = try evaluate(expression: expression.right)
 
         switch token.kind {
-        case .bangEqual:
-            return !isEqual(left, right)
+        case .bangEqual: return !isEqual(left, right)
         case .closedRange,
              .range:
             if let lowerBound = left as? Double, let upperBound = right as? Double {
@@ -282,8 +283,7 @@ extension Interpreter: ExpressionVisitor {
             }
 
             throw runtimeError(.operandsMustBeEitherIntegersOrDoubles, token: token)
-        case .equalEqual:
-            return isEqual(left, right)
+        case .equalEqual: return isEqual(left, right)
         case .greater:
             if let left = left as? Double, let right = right as? Double { return left > right }
             if let left = left as? Int, let right = right as? Int { return left > right }
@@ -360,8 +360,7 @@ extension Interpreter: ExpressionVisitor {
             }
 
             throw runtimeError(.operandsMustBeNumbers, token: token)
-        case .questionQuestion:
-            return left ?? right
+        case .questionQuestion: return left ?? right
         case .slash:
             if let left = left as? Double, let right = right as? Double { return left / right }
             if let left = left as? Int, let right = right as? Int { return Double(left) / Double(right) }
@@ -374,8 +373,7 @@ extension Interpreter: ExpressionVisitor {
             if let left = left as? Double, let right = right as? Int { return left * Double(right) }
             if let left = left as? Int, let right = right as? Double { return Double(left) * right }
             throw runtimeError(.operandsMustBeNumbers, token: token)
-        default:
-            throw runtimeError(.invalidOperator(token.lexeme), token: token)
+        default: throw runtimeError(.invalidOperator(token.lexeme), token: token)
         }
     }
 
@@ -414,8 +412,7 @@ extension Interpreter: ExpressionVisitor {
             if let right = right as? Double { return -right }
             if let right = right as? Int { return -right }
             throw runtimeError(.operandMustBeNumber, token: token)
-        default:
-            throw syntaxError(.invalidOperator(token.lexeme), token: token)
+        default: throw syntaxError(.invalidOperator(token.lexeme), token: token)
         }
     }
 
@@ -443,7 +440,8 @@ extension Interpreter: ExpressionVisitor {
 
 extension Interpreter: StatementVisitor {
     func visitBlock(statement: BlockStatement) throws {
-        let environment = Environment(parent: self.environment)
+        let environment = Environment(directoryPath: self.environment.directoryPath, parent: self.environment)
+        environment.templates = self.environment.templates
 
         for variable in statement.variables {
             try environment.defineVariable(value: variable.token.literal, for: variable.token)
@@ -463,17 +461,14 @@ extension Interpreter: StatementVisitor {
             func interpretTemplate(_ template: Template) throws {
                 statements.removeFirst()
                 statements = try parseTemplate(template) + statements
-                result = try interpret()
+                result = try interpret(statements: statements)
             }
 
-            if let template = templating.templates[filePath] {
+            if let template = environment.templates[filePath] {
                 try interpretTemplate(template)
             } else {
-                filePath = templating.configuration.directoryPath + filePath
-
-                if let template = templating.templates[filePath] {
-                    try interpretTemplate(template)
-                }
+                filePath = environment.directoryPath + filePath
+                if let template = environment.templates[filePath] { try interpretTemplate(template) }
             }
         } else {
             throw templateError(.invalidTemplateFile, filePath: "\(value)")
@@ -510,13 +505,9 @@ extension Interpreter: StatementVisitor {
             let token = expression.token
 
             if let closedRange = value as? ClosedRange<Int> {
-                for (key, value) in closedRange.enumerated() {
-                    try assign(value: value, for: key, on: token)
-                }
+                for (key, value) in closedRange.enumerated() { try assign(value: value, for: key, on: token) }
             } else if let range = value as? Range<Int> {
-                for (key, value) in range.enumerated() {
-                    try assign(value: value, for: key, on: token)
-                }
+                for (key, value) in range.enumerated() { try assign(value: value, for: key, on: token) }
             } else {
                 throw syntaxError(.invalidOperator(token.lexeme), token: token)
             }
@@ -525,13 +516,9 @@ extension Interpreter: StatementVisitor {
             let token = expression.token
 
             if let array = value as? [Any] {
-                for (key, value) in array.enumerated() {
-                    try assign(value: value, for: key, on: token)
-                }
+                for (key, value) in array.enumerated() { try assign(value: value, for: key, on: token) }
             } else if let dictionary = value as? [AnyHashable: Any] {
-                for (key, value) in dictionary {
-                    try assign(value: value, for: key, on: token)
-                }
+                for (key, value) in dictionary { try assign(value: value, for: key, on: token) }
             } else {
                 throw runtimeError(.variableMustBeEitherArrayOrDictionary(token.lexeme), token: token)
             }
@@ -542,14 +529,11 @@ extension Interpreter: StatementVisitor {
         guard let value = try evaluate(expression: statement.expression) else { return }
 
         if var filePath = value as? String {
-            if let template = templating.templates[filePath] {
+            if let template = environment.templates[filePath] {
                 result += try interpretTemplate(template)
             } else {
-                filePath = templating.configuration.directoryPath + filePath
-
-                if let template = templating.templates[filePath] {
-                    result += try interpretTemplate(template)
-                }
+                filePath = environment.directoryPath + filePath
+                if let template = environment.templates[filePath] { result += try interpretTemplate(template) }
             }
         } else {
             throw templateError(.invalidTemplateFile, filePath: "\(value)")
@@ -570,15 +554,12 @@ extension Interpreter: StatementVisitor {
                 }
             }
 
-            if !isTruthy, let elseBranch = statement.elseBranch {
-                try execute(statement: elseBranch)
-            }
+            if !isTruthy, let elseBranch = statement.elseBranch { try execute(statement: elseBranch) }
         }
     }
 
     func visitPrint(statement: PrintStatement) throws {
-        let value = try evaluate(expression: statement.expression)
-        result += stringify(value)
+        result += stringify(try evaluate(expression: statement.expression))
     }
 
     func visitSuper(statement: SuperStatement) throws {}
