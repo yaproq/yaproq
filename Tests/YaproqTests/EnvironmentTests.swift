@@ -67,7 +67,7 @@ final class EnvironmentTests: BaseTests {
         XCTAssertEqual(try? childEnvironment.getVariableValue(for: token) as? String, value3)
     }
 
-    func testSetVariableAndClear() {
+    func testSetVariable() {
         // Arrange
         let token1 = Token(kind: .identifier, lexeme: "name1", literal: "value1", line: -1, column: -1)
         let token2 = Token(kind: .identifier, lexeme: "name2", literal: "value2", line: -1, column: -1)
@@ -80,12 +80,5 @@ final class EnvironmentTests: BaseTests {
         // Assert
         XCTAssertEqual(try? environment.getVariableValue(for: token1) as? String, token1.literal as? String)
         XCTAssertEqual(try? environment.getVariableValue(for: token2) as? String, token2.literal as? String)
-
-        // Act
-        environment.clear()
-
-        // Assert
-        XCTAssertNil(try? environment.getVariableValue(for: token1) as? String)
-        XCTAssertNil(try? environment.getVariableValue(for: token2) as? String)
     }
 }

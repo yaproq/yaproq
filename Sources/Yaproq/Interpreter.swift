@@ -2,8 +2,9 @@ import Foundation
 
 final class Interpreter {
     let templating: Yaproq
-    private var result = ""
+    var environment: Environment = .init()
     private var statements: [Statement]
+    private var result = ""
 
     init(templating: Yaproq, statements: [Statement] = .init()) {
         self.templating = templating
@@ -22,11 +23,28 @@ extension Interpreter {
         }
 
         if let extendStatement = statements.first as? ExtendStatement {
-            try extendStatement.accept(visitor: self)
+            try execute(statement: extendStatement)
         } else {
             try processSuper(in: &statements)
             for statement in statements { try execute(statement: statement) }
         }
+
+        return result
+    }
+
+    private func parseTemplate(_ template: Template) throws -> [Statement] {
+        let lexer = Lexer(template: template)
+        let tokens = try lexer.scan()
+        let parser = Parser(tokens: tokens)
+
+        return try parser.parse()
+    }
+
+    private func interpretTemplate(_ template: Template) throws -> String {
+        let statements = try parseTemplate(template)
+        let interpreter = Interpreter(templating: templating, statements: statements)
+        interpreter.environment = environment
+        let result = try interpreter.interpret()
 
         return result
     }
@@ -41,9 +59,9 @@ extension Interpreter {
     }
 
     private func execute(statements: [Statement], in environment: Environment) throws {
-        let previousEnvironment = templating.currentEnvironment
-        templating.currentEnvironment = environment
-        defer { templating.currentEnvironment = previousEnvironment }
+        let previousEnvironment = environment
+        self.environment = environment
+        defer { self.environment = previousEnvironment }
         for statement in statements { try execute(statement: statement) }
     }
 
@@ -60,7 +78,7 @@ extension Interpreter {
                     for childStatement in blockStatement.statements {
                         if let superStatement = childStatement as? SuperStatement {
                             childStatements += parentBlockStatement.statements
-                            try superStatement.accept(visitor: self)
+                            try execute(statement: superStatement)
                         } else {
                             childStatements.append(childStatement)
                         }
@@ -141,12 +159,10 @@ extension Interpreter: ExpressionVisitor {
     }
 
     func visitAssignment(expression: AssignmentExpression) throws -> Any? {
-        let currentEnvironment = templating.currentEnvironment
-
         switch expression.operatorToken.kind {
         case .equal:
             let value = try evaluate(expression: expression.value)
-            try currentEnvironment.assignVariable(value: value, for: expression.identifierToken)
+            try environment.assignVariable(value: value, for: expression.identifierToken)
             return value
         case .minusEqual,
              .percentEqual,
@@ -154,7 +170,7 @@ extension Interpreter: ExpressionVisitor {
              .powerEqual,
              .slashEqual,
              .starEqual:
-            if let left = try currentEnvironment.getVariableValue(for: expression.identifierToken) as? Double,
+            if let left = try environment.getVariableValue(for: expression.identifierToken) as? Double,
                let right = try evaluate(expression: expression.value) as? Double {
                 let value: Any
 
@@ -172,10 +188,10 @@ extension Interpreter: ExpressionVisitor {
                     value = left * right
                 }
 
-                try currentEnvironment.assignVariable(value: value, for: expression.identifierToken)
+                try environment.assignVariable(value: value, for: expression.identifierToken)
 
                 return value
-            } else if let left = try currentEnvironment.getVariableValue(for: expression.identifierToken) as? Int,
+            } else if let left = try environment.getVariableValue(for: expression.identifierToken) as? Int,
                       let right = try evaluate(expression: expression.value) as? Int {
                 let value: Any
 
@@ -193,11 +209,11 @@ extension Interpreter: ExpressionVisitor {
                     value = left * right
                 }
 
-                try currentEnvironment.assignVariable(value: value, for: expression.identifierToken)
+                try environment.assignVariable(value: value, for: expression.identifierToken)
 
                 return value
-            } else if let left = try currentEnvironment.getVariableValue(for: expression.identifierToken) as? Double,
-                      let right = try evaluate(expression: expression.value) as? Int {
+            } else if let left = try environment.getVariableValue(for: expression.identifierToken) as? Double,
+                let right = try evaluate(expression: expression.value) as? Int {
                 let value: Any
 
                 if expression.operatorToken.kind == .minusEqual {
@@ -214,10 +230,10 @@ extension Interpreter: ExpressionVisitor {
                     value = left * Double(right)
                 }
 
-                try currentEnvironment.assignVariable(value: value, for: expression.identifierToken)
+                try environment.assignVariable(value: value, for: expression.identifierToken)
 
                 return value
-            } else if let left = try currentEnvironment.getVariableValue(for: expression.identifierToken) as? Int,
+            } else if let left = try environment.getVariableValue(for: expression.identifierToken) as? Int,
                       let right = try evaluate(expression: expression.value) as? Double {
                 let value: Any
 
@@ -235,7 +251,7 @@ extension Interpreter: ExpressionVisitor {
                     value = Double(left) * right
                 }
 
-                try currentEnvironment.assignVariable(value: value, for: expression.identifierToken)
+                try environment.assignVariable(value: value, for: expression.identifierToken)
 
                 return value
             }
@@ -405,7 +421,7 @@ extension Interpreter: ExpressionVisitor {
 
     func visitVariable(expression: VariableExpression) throws -> Any? {
         let token = expression.token
-        let value = try templating.currentEnvironment.getVariableValue(for: token)
+        let value = try environment.getVariableValue(for: token)
 
         if let key = expression.key {
             let key = try evaluate(expression: key)
@@ -427,7 +443,7 @@ extension Interpreter: ExpressionVisitor {
 
 extension Interpreter: StatementVisitor {
     func visitBlock(statement: BlockStatement) throws {
-        let environment = Environment(parent: templating.currentEnvironment)
+        let environment = Environment(parent: self.environment)
 
         for variable in statement.variables {
             try environment.defineVariable(value: variable.token.literal, for: variable.token)
@@ -446,7 +462,7 @@ extension Interpreter: StatementVisitor {
         if var filePath = value as? String {
             func interpretTemplate(_ template: Template) throws {
                 statements.removeFirst()
-                statements = try templating.parseTemplate(template) + statements
+                statements = try parseTemplate(template) + statements
                 result = try interpret()
             }
 
@@ -486,7 +502,7 @@ extension Interpreter: StatementVisitor {
                 throw runtimeError(.expectingVariable, token: token)
             }
 
-            try blockStatement.accept(visitor: self)
+            try execute(statement: blockStatement)
         }
 
         if let expression = statement.expression.expression as? BinaryExpression {
@@ -527,12 +543,12 @@ extension Interpreter: StatementVisitor {
 
         if var filePath = value as? String {
             if let template = templating.templates[filePath] {
-                result += try templating.interpretTemplate(template)
+                result += try interpretTemplate(template)
             } else {
                 filePath = templating.configuration.directoryPath + filePath
 
                 if let template = templating.templates[filePath] {
-                    result += try templating.interpretTemplate(template)
+                    result += try interpretTemplate(template)
                 }
             }
         } else {
@@ -570,7 +586,7 @@ extension Interpreter: StatementVisitor {
     func visitVariable(statement: VariableStatement) throws {
         var value: Any?
         if let expression = statement.expression { value = try evaluate(expression: expression) }
-        try templating.currentEnvironment.defineVariable(value: value, for: statement.token)
+        try environment.defineVariable(value: value, for: statement.token)
     }
 
     func visitWhile(statement: WhileStatement) throws {

@@ -2,18 +2,11 @@ import Foundation
 
 public final class Yaproq {
     public var configuration: Configuration
-    var currentEnvironment: Environment
-    private var defaultEnvironment: Environment
-    private var environments: [String: Environment]
     private var cache = Cache<String, [Statement]>()
     private(set) var templates: [String: Template] = .init()
 
     public init(configuration: Configuration = .init()) {
         self.configuration = configuration
-        defaultEnvironment = .init()
-        currentEnvironment = defaultEnvironment
-        environments = .init()
-        setCurrentEnvironment()
         cache.costLimit = configuration.caching.costLimit
         cache.countLimit = configuration.caching.countLimit
     }
@@ -69,22 +62,12 @@ extension Yaproq {
 }
 
 extension Yaproq {
-    func parseTemplate(_ template: Template) throws -> [Statement] {
+    private func parseTemplate(_ template: Template) throws -> [Statement] {
         let lexer = Lexer(template: template)
         let tokens = try lexer.scan()
         let parser = Parser(tokens: tokens)
 
         return try parser.parse()
-    }
-
-    func interpretTemplate(_ template: Template, preload: Bool = false) throws -> String {
-        let statements = try cachedStatements(for: template)
-        let interpreter = Interpreter(templating: self, statements: statements)
-        if preload { try loadTemplates(in: statements, with: interpreter) }
-        let result = try interpreter.interpret()
-        cache(statements, for: template)
-
-        return result
     }
 }
 
@@ -98,18 +81,14 @@ extension Yaproq {
     }
 
     public func renderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
-        setCurrentEnvironment(for: template.filePath)
-        for (name, value) in context { currentEnvironment.setVariable(value: value, for: name) }
+        let statements = try cachedStatements(for: template)
+        let interpreter = Interpreter(templating: self, statements: statements)
+        for (name, value) in context { interpreter.environment.setVariable(value: value, for: name) }
+        try loadTemplates(in: statements, with: interpreter)
+        let result = try interpreter.interpret()
+        cache(statements, for: template)
 
-        do {
-            let result = try interpretTemplate(template, preload: true)
-            clearEnvironments()
-
-            return result
-        } catch {
-            clearEnvironments()
-            throw error
-        }
+        return result
     }
 }
 
@@ -138,27 +117,6 @@ extension Yaproq {
         if let filePath = template.filePath, cache.getValue(forKey: filePath) == nil {
             cache.setValue(statements, forKey: filePath)
         }
-    }
-}
-
-extension Yaproq {
-    func setCurrentEnvironment(for filePath: String? = nil) {
-        if let filePath = filePath {
-            if let environment = environments[filePath] {
-                self.currentEnvironment = environment
-            } else {
-                currentEnvironment = .init()
-                environments[filePath] = currentEnvironment
-            }
-        } else {
-            currentEnvironment = defaultEnvironment
-        }
-    }
-
-    func clearEnvironments() {
-        environments.removeAll()
-        setCurrentEnvironment()
-        currentEnvironment.clear()
     }
 }
 
