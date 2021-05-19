@@ -42,7 +42,7 @@ final class Cache<Key: Hashable, Value> {
         cache.removeObject(forKey: key)
     }
 
-    func removeAllValues() {
+    func clear() {
         cache.removeAllObjects()
     }
 }

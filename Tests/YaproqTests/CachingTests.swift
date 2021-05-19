@@ -52,7 +52,7 @@ final class CachingTests: BaseTests {
         XCTAssertEqual(cache.getValue(forKey: key2), value2)
 
         // Act
-        cache.removeAllValues()
+        cache.clear()
 
         // Assert
         XCTAssertNil(cache.getValue(forKey: key1))
