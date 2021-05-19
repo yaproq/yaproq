@@ -80,7 +80,8 @@ extension Yaproq {
     }
 
     public func renderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
-        let interpreter = Interpreter(environment: .init(directoryPath: configuration.directoryPath))
+        let interpreter = Interpreter()
+        interpreter.environment.directoryPath = configuration.directoryPath
         let statements = try cachedStatements(for: template, with: interpreter)
         for (name, value) in context { interpreter.environment.setVariable(value: value, for: name) }
         try loadTemplates(in: statements, with: interpreter)

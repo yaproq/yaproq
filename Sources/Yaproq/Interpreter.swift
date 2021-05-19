@@ -5,7 +5,7 @@ final class Interpreter {
     private var statements: [Statement] = .init()
     private var result = ""
 
-    init(environment: Environment) {
+    init(environment: Environment = .init()) {
         self.environment = environment
     }
 }
@@ -440,7 +440,8 @@ extension Interpreter: ExpressionVisitor {
 
 extension Interpreter: StatementVisitor {
     func visitBlock(statement: BlockStatement) throws {
-        let environment = Environment(directoryPath: self.environment.directoryPath, parent: self.environment)
+        let environment = Environment(parent: self.environment)
+        environment.directoryPath = self.environment.directoryPath
         environment.templates = self.environment.templates
 
         for variable in statement.variables {

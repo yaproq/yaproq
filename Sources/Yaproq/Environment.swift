@@ -1,12 +1,11 @@
 final class Environment {
     let parent: Environment?
-    var directoryPath: String
+    var directoryPath = "/"
     var templates: [String: Template] = .init()
     private var variables: [String: Any] = .init()
     private var variableNames: Set<String> = .init()
 
-    init(directoryPath: String = "/", parent: Environment? = nil) {
-        self.directoryPath = directoryPath
+    init(parent: Environment? = nil) {
         self.parent = parent
     }
 
