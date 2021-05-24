@@ -13,43 +13,43 @@ final class YaproqConfigurationTests: BaseTests {
 
         // Assert
         XCTAssertFalse(configuration.isDebug)
-        XCTAssertEqual(configuration.directoryPath, Yaproq.Configuration.defaultDirectoryPath)
+        XCTAssertEqual(configuration.directories, Set(arrayLiteral: Yaproq.Configuration.defaultDirectoryPath))
         XCTAssertEqual(configuration.caching.costLimit, 0)
         XCTAssertEqual(configuration.caching.countLimit, 0)
 
         // Arrange
-        var directoryPath = "/templates"
+        var directories = Set(arrayLiteral: "/templates")
         var costLimit = 1
         var countLimit = 2
 
         // Act
         configuration = Yaproq.Configuration(
             isDebug: true,
-            directoryPath: directoryPath,
+            directories: directories,
             caching: .init(costLimit: costLimit, countLimit: countLimit)
         )
 
         // Assert
         XCTAssertTrue(configuration.isDebug)
-        XCTAssertEqual(configuration.directoryPath, "\(directoryPath)/")
+        XCTAssertEqual(configuration.directories, Set(directories.map { $0 + "/" }))
         XCTAssertEqual(configuration.caching.costLimit, costLimit)
         XCTAssertEqual(configuration.caching.countLimit, countLimit)
 
         // Arrange
-        directoryPath = "/templates/"
+        directories = Set(arrayLiteral: "/templates/")
         costLimit = 3
         countLimit = 4
 
         // Act
         configuration = Yaproq.Configuration(
             isDebug: true,
-            directoryPath: directoryPath,
+            directories: directories,
             caching: .init(costLimit: costLimit, countLimit: countLimit)
         )
 
         // Assert
         XCTAssertTrue(configuration.isDebug)
-        XCTAssertEqual(configuration.directoryPath, directoryPath)
+        XCTAssertEqual(configuration.directories, directories)
         XCTAssertEqual(configuration.caching.costLimit, costLimit)
         XCTAssertEqual(configuration.caching.countLimit, countLimit)
 
@@ -57,19 +57,19 @@ final class YaproqConfigurationTests: BaseTests {
         var delimiters: Set<Delimiter> = .init()
 
         // Act/Assert
-        XCTAssertNoThrow(try Yaproq.Configuration(directoryPath: directoryPath, delimiters: delimiters))
+        XCTAssertNoThrow(try Yaproq.Configuration(directories: directories, delimiters: delimiters))
 
         // Arrange
         delimiters = [.comment("{#", "#}"), .output("{{", "}}"), .statement("{%", "%}")]
 
         // Act/Assert
-        XCTAssertNoThrow(try Yaproq.Configuration(directoryPath: directoryPath, delimiters: delimiters))
+        XCTAssertNoThrow(try Yaproq.Configuration(directories: directories, delimiters: delimiters))
 
         // Arrange
         delimiters = [.comment("{*", "*}"), .output("{$", "$}"), .statement("{$", "$}")]
 
         // Act/Assert
-        XCTAssertThrowsError(try Yaproq.Configuration(directoryPath: directoryPath, delimiters: delimiters)) { error in
+        XCTAssertThrowsError(try Yaproq.Configuration(directories: directories, delimiters: delimiters)) { error in
             let error = error as? YaproqError
             XCTAssertEqual(
                 error?.errorDescription,
@@ -108,7 +108,10 @@ final class YaproqTests: BaseTests {
     override func setUp() {
         super.setUp()
 
-        let configuration = Yaproq.Configuration(isDebug: true, directoryPath: Bundle.module.resourcePath!)
+        let configuration = Yaproq.Configuration(
+            isDebug: true,
+            directories: Set(arrayLiteral: Bundle.module.resourcePath!)
+        )
         templating = Yaproq(configuration: configuration)
         pages = [
             Page(title: "Home", url: URL(string: "/")!),
@@ -179,7 +182,7 @@ extension YaproqTests {
         """
         )
         templating.configuration = .init(
-            directoryPath: Bundle.module.resourcePath!,
+            directories: Set(arrayLiteral: Bundle.module.resourcePath!),
             caching: .init(costLimit: 2, countLimit: 3)
         )
 
@@ -205,7 +208,7 @@ extension YaproqTests {
         """
         )
         templating.configuration = .init(
-            directoryPath: Bundle.module.resourcePath!,
+            directories: Set(arrayLiteral: Bundle.module.resourcePath!),
             caching: .init(costLimit: 2, countLimit: 3)
         )
 

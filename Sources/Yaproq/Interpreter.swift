@@ -439,7 +439,7 @@ extension Interpreter: ExpressionVisitor {
 extension Interpreter: StatementVisitor {
     func visitBlock(statement: BlockStatement) throws {
         let environment = Environment(parent: self.environment)
-        environment.directoryPath = self.environment.directoryPath
+        environment.directories = self.environment.directories
         environment.templates = self.environment.templates
 
         for variable in statement.variables {
@@ -456,7 +456,7 @@ extension Interpreter: StatementVisitor {
     func visitExtend(statement: ExtendStatement) throws {
         guard let value = try evaluate(expression: statement.expression) else { return }
 
-        if var filePath = value as? String {
+        if let filePath = value as? String {
             func interpretTemplate(_ template: Template) throws {
                 statements.removeFirst()
                 statements = try parseTemplate(template) + statements
@@ -466,8 +466,14 @@ extension Interpreter: StatementVisitor {
             if let template = environment.templates[filePath] {
                 try interpretTemplate(template)
             } else {
-                filePath = environment.directoryPath + filePath
-                if let template = environment.templates[filePath] { try interpretTemplate(template) }
+                for directory in environment.directories {
+                    let absoluteFilePath = directory + filePath
+
+                    if let template = environment.templates[absoluteFilePath] {
+                        try interpretTemplate(template)
+                        break
+                    }
+                }
             }
         } else {
             throw templateError(.invalidTemplateFile, filePath: "\(value)")
@@ -527,12 +533,18 @@ extension Interpreter: StatementVisitor {
     func visitInclude(statement: IncludeStatement) throws {
         guard let value = try evaluate(expression: statement.expression) else { return }
 
-        if var filePath = value as? String {
+        if let filePath = value as? String {
             if let template = environment.templates[filePath] {
                 result += try interpretTemplate(template)
             } else {
-                filePath = environment.directoryPath + filePath
-                if let template = environment.templates[filePath] { result += try interpretTemplate(template) }
+                for directory in environment.directories {
+                    let absoluteFilePath = directory + filePath
+
+                    if let template = environment.templates[absoluteFilePath] {
+                        result += try interpretTemplate(template)
+                        break
+                    }
+                }
             }
         } else {
             throw templateError(.invalidTemplateFile, filePath: "\(value)")

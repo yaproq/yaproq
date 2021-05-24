@@ -1,6 +1,6 @@
 final class Environment {
     let parent: Environment?
-    var directoryPath = "/"
+    var directories: Set<String> = .init(arrayLiteral: "/")
     var templates: [String: Template] = .init()
     private var variables: [String: Any] = .init()
     private var variableNames: Set<String> = .init()

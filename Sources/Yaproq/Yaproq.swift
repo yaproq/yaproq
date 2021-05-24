@@ -17,7 +17,17 @@ public final class Yaproq {
 
 extension Yaproq {
     public func loadTemplate(named name: String) throws -> Template {
-        try loadTemplate(at: configuration.directoryPath + name)
+        let directories = Array(configuration.directories)
+
+        for directory in directories {
+            do {
+                return try loadTemplate(at: directory + name)
+            } catch {
+                if directory == directories.last { throw error }
+            }
+        }
+
+        throw templateError(.invalidTemplateFile, filePath: name)
     }
 
     public func loadTemplate(at filePath: String) throws -> Template {
@@ -46,22 +56,36 @@ extension Yaproq {
 
     private func loadTemplate(from expression: AnyExpression, with interpreter: Interpreter) throws {
         if var filePath = try interpreter.evaluate(expression: expression) as? String {
-            let absoluteFilePath = configuration.directoryPath + filePath
+            var directories = Array(configuration.directories)
+            directories.append("/")
 
-            if cachedTemplate(at: absoluteFilePath) == nil && cachedTemplate(at: filePath) == nil {
-                let template: Template
+            for directory in directories {
+                let absoluteFilePath = directory + filePath
 
-                do {
-                    template = try loadAndCacheTemplate(at: absoluteFilePath)
-                    filePath = absoluteFilePath
-                } catch is TemplateError {
-                    template = try loadAndCacheTemplate(at: filePath)
+                if cachedTemplate(at: absoluteFilePath) == nil && cachedTemplate(at: filePath) == nil {
+                    var template: Template?
+
+                    do {
+                        template = try loadAndCacheTemplate(at: absoluteFilePath)
+                        filePath = absoluteFilePath
+                    } catch {
+                        do {
+                            template = try loadAndCacheTemplate(at: filePath)
+                        } catch {
+                            if directory == directories.last { throw error }
+                        }
+                    }
+
+                    if let template = template {
+                        let childStatements = try parseTemplate(template)
+                        cacheStatements(childStatements, for: template)
+                        if templates[filePath] == nil { templates[filePath] = template }
+                        try loadTemplates(in: childStatements, with: interpreter)
+                        break
+                    }
+                } else {
+                    break
                 }
-
-                let childStatements = try parseTemplate(template)
-                cacheStatements(childStatements, for: template)
-                if templates[filePath] == nil { templates[filePath] = template }
-                try loadTemplates(in: childStatements, with: interpreter)
             }
         }
     }
@@ -89,7 +113,17 @@ extension Yaproq {
 
 extension Yaproq {
     public func renderTemplate(named name: String, in context: [String: Encodable] = .init()) throws -> String {
-        try renderTemplate(at: configuration.directoryPath + name, in: context)
+        let directories = Array(configuration.directories)
+
+        for directory in directories {
+            do {
+                return try renderTemplate(at: directory + name, in: context)
+            } catch {
+                if directory == directories.last { throw error }
+            }
+        }
+
+        throw templateError(.invalidTemplateFile, filePath: name)
     }
 
     public func renderTemplate(at filePath: String, in context: [String: Encodable] = .init()) throws -> String {
@@ -98,7 +132,7 @@ extension Yaproq {
 
     public func renderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
         let interpreter = Interpreter()
-        interpreter.environment.directoryPath = configuration.directoryPath
+        interpreter.environment.directories = configuration.directories
         let statements = try cachedStatements(for: template)
         for (name, value) in context { interpreter.environment.setVariable(value: value, for: name) }
         try loadTemplates(in: statements, with: interpreter)
@@ -150,27 +184,27 @@ extension Yaproq {
     public struct Configuration {
         public static let defaultDirectoryPath = "/"
         public let isDebug: Bool
-        public let directoryPath: String
+        public let directories: Set<String>
         public let caching: CachingConfiguration
 
         public init(
             isDebug: Bool = false,
-            directoryPath: String = defaultDirectoryPath,
+            directories: Set<String> = Set(arrayLiteral: defaultDirectoryPath),
             caching: CachingConfiguration = .init()
         ) {
             self.isDebug = isDebug
-            self.directoryPath = directoryPath.normalizedPath
+            self.directories = Set<String>(directories.map { $0.normalizedPath })
             self.caching = caching
             Delimiter.reset()
         }
 
         public init(
             isDebug: Bool = false,
-            directoryPath: String = defaultDirectoryPath,
+            directories: Set<String> = Set(arrayLiteral: defaultDirectoryPath),
             caching: CachingConfiguration = .init(),
             delimiters: Set<Delimiter>
         ) throws {
-            self.init(isDebug: isDebug, directoryPath: directoryPath, caching: caching)
+            self.init(isDebug: isDebug, directories: directories, caching: caching)
 
             let initialDelimiters = Delimiter.allCases
             let initialRawDelimiters = Set<String>(
