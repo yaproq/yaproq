@@ -1,6 +1,7 @@
 public struct Template: CustomStringConvertible, Equatable, ExpressibleByStringLiteral {
     public let source: String
     public let filePath: String?
+    public internal(set) var isCached = false
     public var description: String { source }
 
     public init(stringLiteral source: String) {

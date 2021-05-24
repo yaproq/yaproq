@@ -2,12 +2,16 @@ import Foundation
 
 public final class Yaproq {
     public var configuration: Configuration
-    private var cache = Cache<String, [Statement]>()
+    public private(set) var templates: [String: Template] = .init()
+    private var templateCache = Cache<String, Template>()
+    private var statementCache = Cache<String, [Statement]>()
 
     public init(configuration: Configuration = .init()) {
         self.configuration = configuration
-        cache.costLimit = configuration.caching.costLimit
-        cache.countLimit = configuration.caching.countLimit
+        templateCache.costLimit = configuration.caching.costLimit
+        templateCache.countLimit = configuration.caching.countLimit
+        statementCache.costLimit = configuration.caching.costLimit
+        statementCache.countLimit = configuration.caching.countLimit
     }
 }
 
@@ -42,21 +46,34 @@ extension Yaproq {
 
     private func loadTemplate(from expression: AnyExpression, with interpreter: Interpreter) throws {
         if var filePath = try interpreter.evaluate(expression: expression) as? String {
-            if interpreter.environment.templates[filePath] == nil {
+            let absoluteFilePath = configuration.directoryPath + filePath
+
+            if cachedTemplate(at: absoluteFilePath) == nil && cachedTemplate(at: filePath) == nil {
                 let template: Template
 
                 do {
-                    template = try loadTemplate(named: filePath)
-                    filePath = configuration.directoryPath + filePath
+                    template = try loadAndCacheTemplate(at: absoluteFilePath)
+                    filePath = absoluteFilePath
                 } catch is TemplateError {
-                    template = try loadTemplate(at: filePath)
+                    template = try loadAndCacheTemplate(at: filePath)
                 }
 
                 let childStatements = try parseTemplate(template)
-                interpreter.environment.templates[filePath] = template
+                cacheStatements(childStatements, for: template)
+                if templates[filePath] == nil { templates[filePath] = template }
                 try loadTemplates(in: childStatements, with: interpreter)
             }
         }
+    }
+
+    private func cachedTemplate(at filePath: String) -> Template? {
+        if let template = templateCache.getValue(forKey: filePath) {
+            return template
+        } else if let template = templates[filePath] {
+            return template
+        }
+
+        return nil
     }
 }
 
@@ -76,46 +93,55 @@ extension Yaproq {
     }
 
     public func renderTemplate(at filePath: String, in context: [String: Encodable] = .init()) throws -> String {
-        try renderTemplate(try loadTemplate(at: filePath), in: context)
+        try renderTemplate(try loadAndCacheTemplate(at: filePath), in: context)
     }
 
     public func renderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
         let interpreter = Interpreter()
         interpreter.environment.directoryPath = configuration.directoryPath
-        let statements = try cachedStatements(for: template, with: interpreter)
+        let statements = try cachedStatements(for: template)
         for (name, value) in context { interpreter.environment.setVariable(value: value, for: name) }
         try loadTemplates(in: statements, with: interpreter)
+        interpreter.environment.templates = templates
         let result = try interpreter.interpret(statements: statements)
-        cache(statements, for: template, with: interpreter)
+        cacheStatements(statements, for: template)
 
         return result
     }
 }
 
 extension Yaproq {
-    private func cachedStatements(for template: Template, with interpreter: Interpreter) throws -> [Statement] {
-        let statements: [Statement]
-
+    private func loadAndCacheTemplate(at filePath: String) throws -> Template {
         if configuration.isDebug {
-            statements = try parseTemplate(template)
-        } else {
-            if let filePath = template.filePath {
-                if let cachedStatements = cache.getValue(forKey: filePath) {
-                    statements = cachedStatements
-                } else {
-                    statements = try parseTemplate(template)
-                }
-            } else {
-                statements = try parseTemplate(template)
-            }
+            templateCache.removeValue(forKey: filePath)
+            statementCache.removeValue(forKey: filePath)
         }
 
-        return statements
+        if let template = templateCache.getValue(forKey: filePath) { return template }
+        let template = try loadTemplate(at: filePath)
+
+        if !configuration.isDebug {
+            var template = template
+            template.isCached = true
+            templateCache.setValue(template, forKey: filePath)
+        }
+
+        return template
     }
 
-    private func cache(_ statements: [Statement], for template: Template, with interpreter: Interpreter) {
-        if let filePath = template.filePath, cache.getValue(forKey: filePath) == nil {
-            cache.setValue(statements, forKey: filePath)
+    private func cachedStatements(for template: Template) throws -> [Statement] {
+        if template.isCached,
+           let filePath = template.filePath,
+           let statements = statementCache.getValue(forKey: filePath) {
+            return statements
+        }
+
+        return try parseTemplate(template)
+    }
+
+    private func cacheStatements(_ statements: [Statement], for template: Template) {
+        if !configuration.isDebug, !template.isCached, let filePath = template.filePath {
+            statementCache.setValue(statements, forKey: filePath)
         }
     }
 }
