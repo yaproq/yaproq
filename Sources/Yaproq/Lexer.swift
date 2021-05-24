@@ -1,7 +1,7 @@
 final class Lexer {
     let template: Template
     private let count: Int
-    private let delimiters: [Delimiter]
+    private let delimiters: Set<Delimiter>
 
     private var currentDelimiter: Delimiter?
     private var isAtEnd: Bool { current >= count }
@@ -14,7 +14,7 @@ final class Lexer {
     init(template: Template) {
         self.template = template
         count = template.source.count
-        delimiters = Delimiter.allCases
+        delimiters = Set(Delimiter.allCases)
     }
 }
 
