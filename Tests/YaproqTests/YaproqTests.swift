@@ -12,8 +12,8 @@ final class YaproqConfigurationTests: BaseTests {
         var configuration = Yaproq.Configuration()
 
         // Assert
-        XCTAssertEqual(configuration.directoryPath, Yaproq.Configuration.defaultDirectoryPath)
         XCTAssertFalse(configuration.isDebug)
+        XCTAssertEqual(configuration.directoryPath, Yaproq.Configuration.defaultDirectoryPath)
         XCTAssertEqual(configuration.caching.costLimit, 0)
         XCTAssertEqual(configuration.caching.countLimit, 0)
 
@@ -24,14 +24,14 @@ final class YaproqConfigurationTests: BaseTests {
 
         // Act
         configuration = Yaproq.Configuration(
-            directoryPath: directoryPath,
             isDebug: true,
+            directoryPath: directoryPath,
             caching: .init(costLimit: costLimit, countLimit: countLimit)
         )
 
         // Assert
-        XCTAssertEqual(configuration.directoryPath, "\(directoryPath)/")
         XCTAssertTrue(configuration.isDebug)
+        XCTAssertEqual(configuration.directoryPath, "\(directoryPath)/")
         XCTAssertEqual(configuration.caching.costLimit, costLimit)
         XCTAssertEqual(configuration.caching.countLimit, countLimit)
 
@@ -42,14 +42,14 @@ final class YaproqConfigurationTests: BaseTests {
 
         // Act
         configuration = Yaproq.Configuration(
-            directoryPath: directoryPath,
             isDebug: true,
+            directoryPath: directoryPath,
             caching: .init(costLimit: costLimit, countLimit: countLimit)
         )
 
         // Assert
-        XCTAssertEqual(configuration.directoryPath, directoryPath)
         XCTAssertTrue(configuration.isDebug)
+        XCTAssertEqual(configuration.directoryPath, directoryPath)
         XCTAssertEqual(configuration.caching.costLimit, costLimit)
         XCTAssertEqual(configuration.caching.countLimit, countLimit)
 
@@ -108,7 +108,7 @@ final class YaproqTests: BaseTests {
     override func setUp() {
         super.setUp()
 
-        let configuration = Yaproq.Configuration(directoryPath: Bundle.module.resourcePath!, isDebug: true)
+        let configuration = Yaproq.Configuration(isDebug: true, directoryPath: Bundle.module.resourcePath!)
         templating = Yaproq(configuration: configuration)
         pages = [
             Page(title: "Home", url: URL(string: "/")!),

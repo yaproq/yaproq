@@ -149,29 +149,29 @@ extension Yaproq {
 extension Yaproq {
     public struct Configuration {
         public static let defaultDirectoryPath = "/"
-        public let directoryPath: String
         public let isDebug: Bool
+        public let directoryPath: String
         public let caching: CachingConfiguration
 
         public init(
-            directoryPath: String = defaultDirectoryPath,
             isDebug: Bool = false,
+            directoryPath: String = defaultDirectoryPath,
             caching: CachingConfiguration = .init()
         ) {
-            self.directoryPath = directoryPath.normalizedPath
             self.isDebug = isDebug
+            self.directoryPath = directoryPath.normalizedPath
             self.caching = caching
+            Delimiter.reset()
         }
 
         public init(
-            directoryPath: String = defaultDirectoryPath,
             isDebug: Bool = false,
+            directoryPath: String = defaultDirectoryPath,
             caching: CachingConfiguration = .init(),
             delimiters: Set<Delimiter>
         ) throws {
-            self.directoryPath = directoryPath.normalizedPath
-            self.isDebug = isDebug
-            self.caching = caching
+            self.init(isDebug: isDebug, directoryPath: directoryPath, caching: caching)
+
             let initialDelimiters = Delimiter.allCases
             let initialRawDelimiters = Set<String>(
                 initialDelimiters.map { $0.start } + initialDelimiters.map { $0.end }
@@ -179,12 +179,9 @@ extension Yaproq {
 
             for delimiter in delimiters {
                 switch delimiter {
-                case .comment(let start, let end):
-                    Delimiter.comment = .comment(start, end)
-                case .output(let start, let end):
-                    Delimiter.output = .output(start, end)
-                case .statement(let start, let end):
-                    Delimiter.statement = .statement(start, end)
+                case .comment(let start, let end): Delimiter.comment = .comment(start, end)
+                case .output(let start, let end): Delimiter.output = .output(start, end)
+                case .statement(let start, let end): Delimiter.statement = .statement(start, end)
                 }
             }
 
@@ -193,9 +190,7 @@ extension Yaproq {
                 updatedDelimiters.map { $0.start } + updatedDelimiters.map { $0.end }
             )
 
-            if updatedRawDelimiters.count != initialRawDelimiters.count {
-                throw error(.delimitersMustBeUnique)
-            }
+            if updatedRawDelimiters.count != initialRawDelimiters.count { throw error(.delimitersMustBeUnique) }
         }
     }
 }
