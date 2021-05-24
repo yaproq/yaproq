@@ -59,7 +59,6 @@ Yaproq is a templating language powered by fast, secure, and powerful Swift lang
 
 ## Todo
 * A simple array and dictionary declaration inside a template file
-* Search multiple directories for templates
 * Built-in filters
     * Array
     * Date
