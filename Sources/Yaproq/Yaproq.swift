@@ -56,8 +56,7 @@ extension Yaproq {
 
     private func loadTemplate(from expression: AnyExpression, with interpreter: Interpreter) throws {
         if var filePath = try interpreter.evaluate(expression: expression) as? String {
-            var directories = Array(configuration.directories)
-            directories.append("/")
+            let directories = Array(configuration.directories)
 
             for directory in directories {
                 let absoluteFilePath = directory + filePath
