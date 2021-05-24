@@ -290,7 +290,7 @@ struct Post: Encodable {
     var title: String
 }
 
-let templating = Yaproq(configuration: .init(directoryPath: "/templates"))
+let templating = Yaproq(configuration: .init(directories: Set(arrayLiteral: "/templates")))
 
 do {
     let templateName = "posts.html"
@@ -333,7 +333,7 @@ do {
 ```swift
 import Yaproq
 
-let templating = Yaproq(configuration: .init(directoryPath: "/templates"))
+let templating = Yaproq(configuration: .init(directories: Set(arrayLiteral: "/templates")))
 
 do {
     let templateName = "base.html"
@@ -364,7 +364,7 @@ do {
 ```swift
 import Yaproq
 
-let templating = Yaproq(configuration: .init(directoryPath: "/templates"))
+let templating = Yaproq(configuration: .init(directories: Set(arrayLiteral: "/templates")))
 
 do {
     let templateName = "base.html"
