@@ -68,10 +68,8 @@ extension Interpreter {
 
     private func interpretTemplate(_ template: Template) throws -> String {
         let statements = try parseTemplate(template)
-//        let statements = try cachedStatements(for: template)
         let interpreter = Interpreter(environment: environment)
         let result = try interpreter.interpret(statements: statements)
-//        cache(statements, for: template)
 
         return result
     }
