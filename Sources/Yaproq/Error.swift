@@ -39,7 +39,7 @@ public struct TemplateError: LocalizedError {
         }
 
         if let filePath = filePath {
-            self.message = "[Template: \(filePath)] " + self.message
+            self.message = "[Template: \"\(filePath)\"] " + self.message
         }
     }
 }
@@ -68,7 +68,7 @@ public struct SyntaxError: LocalizedError {
         }
 
         if let filePath = filePath {
-            self.message = "[Template: \(filePath), Line: \(line), Column: \(column)] " + self.message
+            self.message = "[Template: \"\(filePath)\", Line: \(line), Column: \(column)] " + self.message
         } else {
             self.message = "[Line: \(line), Column: \(column)] " + self.message
         }
@@ -99,7 +99,7 @@ public struct RuntimeError: LocalizedError {
         }
 
         if let filePath = filePath {
-            self.message = "[Template: \(filePath), Line: \(line), Column: \(column)] " + self.message
+            self.message = "[Template: \"\(filePath)\", Line: \(line), Column: \(column)] " + self.message
         } else {
             self.message = "[Line: \(line), Column: \(column)] " + self.message
         }

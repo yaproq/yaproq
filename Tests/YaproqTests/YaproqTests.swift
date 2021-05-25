@@ -165,7 +165,7 @@ extension YaproqTests {
 
             XCTAssertEqual(error.filePath, fileName)
             XCTAssertEqual(error.errorDescription, """
-            [Template: \(fileName)] \(String(describing: TemplateError.self)): \
+            [Template: "\(fileName)"] \(String(describing: TemplateError.self)): \
             \(ErrorType.invalidTemplateFile)
             """
             )
@@ -374,7 +374,7 @@ extension YaproqTests {
 
                 XCTAssertEqual(error.filePath, filePath)
                 XCTAssertEqual(error.errorDescription, """
-                [Template: \(filePath)] \(String(describing: TemplateError.self)): \
+                [Template: "\(filePath)"] \(String(describing: TemplateError.self)): \
                 \(ErrorType.invalidTemplateFile)
                 """
                 )
@@ -681,7 +681,7 @@ extension YaproqTests {
 
                 XCTAssertEqual(error.filePath, filePath)
                 XCTAssertEqual(error.errorDescription, """
-                [Template: \(filePath)] \(String(describing: TemplateError.self)): \
+                [Template: "\(filePath)"] \(String(describing: TemplateError.self)): \
                 \(ErrorType.invalidTemplateFile)
                 """
                 )

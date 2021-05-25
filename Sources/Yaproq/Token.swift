@@ -21,7 +21,7 @@ extension Token: CustomStringConvertible {
         var description: String
 
         if let filePath = filePath {
-            description = "[Template: \(filePath), Line: \(line), Column: \(column)]"
+            description = "[Template: \"\(filePath)\", Line: \(line), Column: \(column)]"
         } else {
             description = "[Line: \(line), Column: \(column)]"
         }
@@ -126,8 +126,8 @@ extension Token {
         case eof = "\0"
 
         static var keywords: Set<Kind> = [
-            .and, .block, .else, .elseif, .endblock, .endfor, .endif, .endwhile, .extend,
-            .false, .for, .if, .in, .include, .nil, .or, .super, .true, .var, .while
+            .and, .block, .else, .elseif, .endblock, .endfor, .endif, .endwhile, .extend, .false, .for, .if, .in,
+            .include, .nil, .or, .super, .true, .var, .while
         ]
         static var blockStartKeywords: Set<Kind> = [.block, .for, .if, .while]
         static var blockEndKeywords: Set<Kind> = [.endblock, .endfor, .endif, .endwhile]

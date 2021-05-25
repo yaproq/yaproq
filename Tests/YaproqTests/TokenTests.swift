@@ -21,6 +21,10 @@ final class TokenTests: BaseTests {
         XCTAssertEqual(token.filePath, filePath)
         XCTAssertEqual(token.line, line)
         XCTAssertEqual(token.column, column)
+        XCTAssertEqual(token.description, """
+        [Template: "/", Line: \(line), Column: \(column)] \(kind), \(lexeme), \(literal)
+        """
+        )
     }
 
     func testKinds() {
@@ -100,8 +104,8 @@ final class TokenTests: BaseTests {
     func testKeywords() {
         // Assert
         XCTAssertEqual(Token.Kind.keywords, [
-            .and, .block, .else, .elseif, .endblock, .endfor, .endif, .endwhile, .extend,
-            .false, .for, .if, .in, .include, .nil, .or, .super, .true, .var, .while
+            .and, .block, .else, .elseif, .endblock, .endfor, .endif, .endwhile, .extend, .false, .for, .if, .in,
+            .include, .nil, .or, .super, .true, .var, .while
         ])
         XCTAssertEqual(Token.Kind.blockStartKeywords, [.block, .for, .if, .while])
         XCTAssertEqual(Token.Kind.blockEndKeywords, [.endblock, .endfor, .endif, .endwhile])
