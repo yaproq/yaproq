@@ -81,7 +81,8 @@ final class SyntaxErrorTests: BaseTests {
 
         // Assert
         XCTAssertEqual(error.message, """
-        [Template: "\(filePath)", Line: \(line), Column: \(column)] \(String(describing: SyntaxError.self)): \(message)
+        [Template: "\(filePath)", Line: \(line), Column: \(column)] \(String(describing: SyntaxError.self)): \
+        \(message)
         """
         )
         XCTAssertEqual(error.filePath, filePath)
@@ -120,7 +121,8 @@ final class RuntimeErrorTests: BaseTests {
 
         // Assert
         XCTAssertEqual(error.message, """
-        [Template: "\(filePath)", Line: \(line), Column: \(column)] \(String(describing: RuntimeError.self)): \(message)
+        [Template: "\(filePath)", Line: \(line), Column: \(column)] \(String(describing: RuntimeError.self)): \
+        \(message)
         """
         )
         XCTAssertEqual(error.filePath, filePath)

@@ -127,7 +127,8 @@ extension YaproqTests {
         let fileName = "header.html"
         let template = Template("""
         <nav class="navbar navbar-expand-sm navbar-dark sticky-top">
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar" aria-controls="collapsibleNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar" \
+        aria-controls="collapsibleNavbar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-center" id="collapsibleNavbar">
@@ -322,7 +323,9 @@ extension YaproqTests {
             </head>
             <body>
                 <nav class="navbar navbar-expand-sm navbar-dark sticky-top">
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar" aria-controls="collapsibleNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" \
+        data-target="#collapsibleNavbar" aria-controls="collapsibleNavbar" aria-expanded="false" \
+        aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse justify-content-center" id="collapsibleNavbar">
