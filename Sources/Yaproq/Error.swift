@@ -140,7 +140,7 @@ public enum ErrorType: CustomStringConvertible {
     case operandsMustBeNumbers
     case variableExists(_ name: String)
     case variableMustBeEitherArrayOrDictionary(_ name: String)
-    case undefinedVariable(_ name: String)
+    case undefinedVariableOrProperty(_ name: String)
 
     public var description: String { message }
 
@@ -204,8 +204,8 @@ public enum ErrorType: CustomStringConvertible {
             return "The variable `\(name)` already exists."
         case .variableMustBeEitherArrayOrDictionary(let name):
             return "The `\(name)` must be either an array or dictionary."
-        case .undefinedVariable(let name):
-            return "An undefined variable `\(name)`."
+        case .undefinedVariableOrProperty(let name):
+            return "An undefined variable or property `\(name)`."
         }
     }
 }

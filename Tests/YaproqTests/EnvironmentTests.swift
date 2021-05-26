@@ -37,7 +37,7 @@ final class EnvironmentTests: BaseTests {
             XCTAssertEqual(error.column, -1)
             XCTAssertEqual(error.errorDescription, """
             [Line: \(error.line), Column: \(error.column)] \
-            \(String(describing: RuntimeError.self)): \(ErrorType.undefinedVariable(token.lexeme))
+            \(String(describing: RuntimeError.self)): \(ErrorType.undefinedVariableOrProperty(token.lexeme))
             """
             )
         }

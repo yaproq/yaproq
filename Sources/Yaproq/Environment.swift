@@ -17,7 +17,7 @@ final class Environment {
         } else if let parent = parent {
             try parent.assignVariable(value: value, for: token)
         } else {
-            throw runtimeError(.undefinedVariable(name), token: token)
+            throw runtimeError(.undefinedVariableOrProperty(name), token: token)
         }
     }
 
@@ -45,13 +45,29 @@ final class Environment {
                 var value = variables[name]
                 components.removeFirst()
 
-                for property in components {
+                for propertyName in components {
                     if let array = value as? [Encodable] {
-                        value = array
+                        if let property = Property(rawValue: propertyName) {
+                            value = try property.value(from: array, for: token)
+                        } else {
+                            throw runtimeError(.undefinedVariableOrProperty(propertyName), token: token)
+                        }
                     } else if let dictionary = value as? [String: Any] {
-                        value = dictionary[property]
+                        value = dictionary[propertyName]
+
+                        if value == nil {
+                            if let property = Property(rawValue: propertyName) {
+                                value = try property.value(from: dictionary, for: token)
+                            }
+                        }
                     } else if let object = value as? Encodable {
-                        value = try object.asDictionary()?[property]
+                        value = try object.asDictionary()?[propertyName]
+                    } else if let string = value as? String {
+                        if let property = Property(rawValue: propertyName) {
+                            value = try property.value(from: string, for: token)
+                        } else {
+                            throw runtimeError(.undefinedVariableOrProperty(propertyName), token: token)
+                        }
                     }
                 }
 
@@ -61,6 +77,6 @@ final class Environment {
             if let parent = parent { return try parent.getVariableValue(for: token) }
         }
 
-        throw runtimeError(.undefinedVariable(token.lexeme), token: token)
+        throw runtimeError(.undefinedVariableOrProperty(token.lexeme), token: token)
     }
 }

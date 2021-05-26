@@ -4,6 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "yaproq",
+    platforms: [.macOS(.v10_11)],
     products: [.library(name: "Yaproq", targets: ["Yaproq"])],
     targets: [
         .target(name: "Yaproq"),

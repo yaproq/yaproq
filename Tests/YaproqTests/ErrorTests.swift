@@ -202,6 +202,9 @@ final class ErrorTypeTests: BaseTests {
             ErrorType.variableMustBeEitherArrayOrDictionary(variableName).message,
             "The `\(variableName)` must be either an array or dictionary."
         )
-        XCTAssertEqual(ErrorType.undefinedVariable(variableName).message, "An undefined variable `\(variableName)`.")
+        XCTAssertEqual(
+            ErrorType.undefinedVariableOrProperty(variableName).message,
+            "An undefined variable or property `\(variableName)`."
+        )
     }
 }

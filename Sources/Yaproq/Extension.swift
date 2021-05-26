@@ -10,5 +10,6 @@ extension Encodable {
 }
 
 extension String {
-    public var normalizedPath: String { last == Character("/") ? self : self + "/" }
+    var capitalizeFirstCharacter: String { prefix(1).capitalized + dropFirst() }
+    var normalizedPath: String { last == Character("/") ? self : self + "/" }
 }
