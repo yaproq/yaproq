@@ -62,6 +62,11 @@ final class Environment {
                         }
                     } else if let object = value as? Encodable {
                         value = try object.asDictionary()?[propertyName]
+
+                        if value == nil &&
+                            !Mirror(reflecting: object).children.contains(where: { $0.label == propertyName }) {
+                            throw runtimeError(.undefinedVariableOrProperty(propertyName), token: token)
+                        }
                     } else if let string = value as? String {
                         if let property = Property(rawValue: propertyName) {
                             value = try property.value(from: string, for: token)
