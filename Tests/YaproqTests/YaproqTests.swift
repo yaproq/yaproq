@@ -1,11 +1,6 @@
 import XCTest
 @testable import Yaproq
 
-fileprivate struct Page: Encodable {
-    let title: String
-    let url: URL
-}
-
 final class YaproqConfigurationTests: BaseTests {
     func testInit() {
         // Act
@@ -103,7 +98,7 @@ final class YaproqCachingConfigurationTests: BaseTests {
 
 final class YaproqTests: BaseTests {
     var templating: Yaproq!
-    fileprivate var pages: [Page]!
+    var pages: [Page]!
 
     override func setUp() {
         super.setUp()

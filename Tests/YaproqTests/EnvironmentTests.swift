@@ -67,18 +67,60 @@ final class EnvironmentTests: BaseTests {
         XCTAssertEqual(try? childEnvironment.getVariableValue(for: token) as? String, value3)
     }
 
-    func testSetVariable() {
+    func testSetAndGetVariable() {
         // Arrange
-        let token1 = Token(kind: .identifier, lexeme: "name1", literal: "value1", line: -1, column: -1)
-        let token2 = Token(kind: .identifier, lexeme: "name2", literal: "value2", line: -1, column: -1)
-        let environment = Environment()
+        let data: [(String, Any?, String, Any?)] = [
+            ("", "text", "invalidProperty", nil),
+            ("string", "text", "string.count", 4),
+            ("string", "text", "string.invalidProperty", nil),
+            ("array", [1, 2], "array.count", 2),
+            ("array", [1, 2], "array.invalidProperty", nil),
+            ("dictionary", ["3": 3], "dictionary.count", 1),
+            ("dictionary", ["3": 3], "dictionary.invalidProperty", nil),
+            ("object", Page(title: "Blog", url: URL(string: "/blog")!), "object.title", "Blog"),
+            ("object", Page(title: "Blog", url: URL(string: "/blog")!), "object.title.count", 4),
+            ("object", Page(title: "Blog", url: URL(string: "/blog")!), "object.invalidProperty", nil),
+            ("object", Page(title: "Blog", url: URL(string: "/blog")!), "object.invalidProperty.count", nil)
+        ]
 
-        // Act
-        environment.setVariable(value: token1.literal, for: token1.lexeme)
-        environment.setVariable(value: token2.literal, for: token2.lexeme)
+        for tokenData in data {
+            // Arrange
+            let variableToken = Token(kind: .identifier, lexeme: tokenData.0, line: -1, column: -1)
+            let propertyToken = Token(kind: .identifier, lexeme: tokenData.2, line: -1, column: -1)
+            let environment = Environment()
 
-        // Assert
-        XCTAssertEqual(try? environment.getVariableValue(for: token1) as? String, token1.literal as? String)
-        XCTAssertEqual(try? environment.getVariableValue(for: token2) as? String, token2.literal as? String)
+            // Act
+            environment.setVariable(value: tokenData.1, for: variableToken.lexeme)
+
+            // Assert
+            XCTAssertEqual(
+                String(describing: try? environment.getVariableValue(for: variableToken)),
+                String(describing: tokenData.1)
+            )
+
+            if tokenData.3 == nil {
+                XCTAssertThrowsError(try environment.getVariableValue(for: propertyToken)) { error in
+                    guard let error = error as? RuntimeError else {
+                        XCTFail("The error is not of \(String(describing: RuntimeError.self)) type.")
+                        return
+                    }
+
+                    XCTAssertNil(error.filePath)
+                    XCTAssertEqual(error.line, -1)
+                    XCTAssertEqual(error.column, -1)
+                    XCTAssertEqual(error.errorDescription, """
+                    [Line: \(error.line), Column: \(error.column)] \
+                    \(String(describing: RuntimeError.self)): \
+                    \(ErrorType.undefinedVariableOrProperty("invalidProperty"))
+                    """
+                    )
+                }
+            } else {
+                XCTAssertEqual(
+                    String(describing: try! environment.getVariableValue(for: propertyToken)!),
+                    String(describing: tokenData.3!)
+                )
+            }
+        }
     }
 }
