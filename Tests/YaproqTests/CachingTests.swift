@@ -59,7 +59,7 @@ final class CachingTests: BaseTests {
         XCTAssertNil(cache.getValue(forKey: key2))
     }
 
-    #if os(macOS)
+    #if !os(Linux)
     func testCostLimit() {
         // Arrange
         let cache = Cache<String, String>(costLimit: 2)
