@@ -73,7 +73,7 @@ cd MyApp
 swift package init --type executable // Creates an executable app named "MyApp"
 ```
 
-### Package.swift
+#### Package.swift
 ```swift
 // swift-tools-version:5.3
 
@@ -98,11 +98,6 @@ let package = Package(
 ### Build
 ```shell
 swift build -c release
-```
-
-### Run
-```shell
-swift run
 ```
 
 ## Usage
