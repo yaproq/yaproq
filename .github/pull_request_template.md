@@ -14,4 +14,6 @@ Before you submit this PR, please make sure:
 Add `x` to mark that you have done it or leave it empty but provide a reason below why you haven't done it. Make sure you provide the appropriate checklist number.
 
 ## Actions Status
-[![Actions Status](https://github.com/yaproq/yaproq/actions/workflows/development.yaml/badge.svg)](https://github.com/yaproq/yaproq/actions/workflows/development.yaml)
+Copy your branch name and replace 2 `your-branch-name`s in the link with yours.
+
+[![Actions Status](https://github.com/yaproq/yaproq/actions/workflows/development.yaml/badge.svg?branch=your-branch-name)](https://github.com/yaproq/yaproq/actions/workflows/development.yaml?branch=your-branch-name)
