@@ -1,6 +1,9 @@
 ## Summary
 Please, describe what your code does and why it does that. Try to explain your approach if appropriate. Replace this text with your summary.
 
+## Issue
+[#number](link)
+
 ## Checklist
 Before you submit this PR, please make sure:
 1. [ ] You have successfully built your changes on your local computer
