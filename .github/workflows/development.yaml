@@ -15,6 +15,11 @@ jobs:
       run: swift build -v
     - name: Run tests
       run: swift test --enable-code-coverage --enable-test-discovery --sanitize=thread
+    - name: Generate documentation
+      uses: steven0351/publish-jazzy-docs@v1
+      with:
+        personal_access_token: ${{ secrets.ACCESS_TOKEN }}
+        args: "--theme fullwidth"
   ubuntu-bionic:
     runs-on: ubuntu-latest
     container:
