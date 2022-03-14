@@ -4,11 +4,11 @@ public struct YaproqError: LocalizedError {
     let message: String
     public var errorDescription: String? { message }
 
-    public init(_ errorType: ErrorType) {
+    init(_ errorType: ErrorType) {
         self.init(errorType.message)
     }
 
-    public init(_ message: String? = nil) {
+    init(_ message: String? = nil) {
         let errorType = String(describing: type(of: self))
 
         if let message = message, !message.isEmpty {
@@ -24,11 +24,11 @@ public struct TemplateError: LocalizedError {
     private(set) var message: String
     public var errorDescription: String? { message }
 
-    public init(_ errorType: ErrorType, filePath: String? = nil) {
+    init(_ errorType: ErrorType, filePath: String? = nil) {
         self.init(errorType.message, filePath: filePath)
     }
 
-    public init(_ message: String? = nil, filePath: String? = nil) {
+    init(_ message: String? = nil, filePath: String? = nil) {
         self.filePath = filePath
         let errorType = String(describing: type(of: self))
 
@@ -51,11 +51,11 @@ public struct SyntaxError: LocalizedError {
     public let column: Int
     public var errorDescription: String? { message }
 
-    public init(_ errorType: ErrorType, filePath: String? = nil, line: Int, column: Int) {
+    init(_ errorType: ErrorType, filePath: String? = nil, line: Int, column: Int) {
         self.init(errorType.message, filePath: filePath, line: line, column: column)
     }
 
-    public init(_ message: String? = nil, filePath: String? = nil, line: Int, column: Int) {
+    init(_ message: String? = nil, filePath: String? = nil, line: Int, column: Int) {
         self.filePath = filePath
         self.line = line
         self.column = column
@@ -82,11 +82,11 @@ public struct RuntimeError: LocalizedError {
     public let column: Int
     public var errorDescription: String? { message }
 
-    public init(_ errorType: ErrorType, filePath: String? = nil, line: Int, column: Int) {
+    init(_ errorType: ErrorType, filePath: String? = nil, line: Int, column: Int) {
         self.init(errorType.message, filePath: filePath, line: line, column: column)
     }
 
-    public init(_ message: String? = nil, filePath: String? = nil, line: Int, column: Int) {
+    init(_ message: String? = nil, filePath: String? = nil, line: Int, column: Int) {
         self.filePath = filePath
         self.line = line
         self.column = column
@@ -106,7 +106,7 @@ public struct RuntimeError: LocalizedError {
     }
 }
 
-public enum ErrorType: CustomStringConvertible {
+enum ErrorType: CustomStringConvertible {
     case unknownedError
 
     // YaproqError
@@ -142,9 +142,9 @@ public enum ErrorType: CustomStringConvertible {
     case variableMustBeEitherArrayOrDictionary(_ name: String)
     case undefinedVariableOrProperty(_ name: String)
 
-    public var description: String { message }
+    var description: String { message }
 
-    public var message: String {
+    var message: String {
         switch self {
         case .unknownedError:
             return "An unknown error."
