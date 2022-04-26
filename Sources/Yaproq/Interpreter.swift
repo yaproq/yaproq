@@ -141,6 +141,8 @@ extension Interpreter: ExpressionVisitor {
             return try expression.accept(visitor: self)
         } else if let expression = expression.expression as? BinaryExpression {
             return try expression.accept(visitor: self)
+        } else if let expression = expression.expression as? FunctionExpression {
+            return try expression.accept(visitor: self)
         } else if let expression = expression.expression as? GroupingExpression {
             return try expression.accept(visitor: self)
         } else if let expression = expression.expression as? LiteralExpression {
@@ -373,6 +375,50 @@ extension Interpreter: ExpressionVisitor {
             throw runtimeError(.operandsMustBeNumbers, token: token)
         default: throw runtimeError(.invalidOperator(token.lexeme), token: token)
         }
+    }
+
+    func visitFunction(expression: FunctionExpression) throws -> Any? {
+        var callee = try? evaluate(expression: expression.callee)
+
+        if let variableExpression = expression.callee.expression as? VariableExpression {
+            var components = variableExpression.token.lexeme.components(separatedBy: Token.Kind.dot.rawValue)
+            let functionName = components.removeLast()
+            let identifier = components.joined()
+
+            if functionName == "date" {
+                callee = DateFunction()
+            } else if functionName == "dateFormat" {
+                let token = Token(
+                    kind: .identifier,
+                    lexeme: identifier,
+                    line: variableExpression.token.line,
+                    column: variableExpression.token.column - functionName.count - 1
+                )
+
+                if let value = try visitVariable(expression: .init(token: token)) as? Date {
+                    callee = DateFormatFunction(date: value)
+                }
+            }
+        }
+
+        var arguments: [Any?] = .init()
+
+        for argument in expression.arguments {
+            arguments.append(try evaluate(expression: argument))
+        }
+
+        if let function = callee as? Function {
+            if arguments.count != function.arity {
+                throw runtimeError(
+                    .invalidArgumentsCountForFunction(expectedCount: function.arity, actualCount: arguments.count),
+                    token: expression.rightParenthesis
+                )
+            }
+
+            return function.call(interpreter: self, arguments: arguments)
+        }
+
+        throw runtimeError(.undefinedFunction(stringify(callee)), token: expression.rightParenthesis)
     }
 
     func visitGrouping(expression: GroupingExpression) throws -> Any? {

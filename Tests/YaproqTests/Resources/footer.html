@@ -1,3 +1,4 @@
+{% var today = date() %}
 <footer class="footer text-center">
-    <div class="inner"><p class="text-muted">Copyright &copy; 2020-2021.</p></div>
+    <div class="inner"><p class="text-muted">Copyright &copy; 2020-{{ today.dateFormat("yyyy") }}.</p></div>
 </footer>

@@ -280,33 +280,30 @@ extension Parser {
     }
 
     private func functionExpression() throws -> AnyExpression {
-        var expression = try primaryExpression()
+        let token = previous
 
-        while true {
-            if match(.leftParenthesis) {
-                var arguments: [AnyExpression] = .init()
+        if match(.leftParenthesis) {
+            var arguments: [AnyExpression] = .init()
 
-                if !check(.rightParenthesis) {
-                    repeat {
-                        arguments.append(try self.expression())
-                    } while match(.comma)
-                }
-
-                let kind = Token.Kind.rightParenthesis
-                let rightParenthesis = try consume(kind, elseError: .expectingCharacter(kind.rawValue))
-                expression = AnyExpression(
-                    FunctionExpression(
-                        callee: expression,
-                        arguments: arguments,
-                        rightParenthesis: rightParenthesis
-                    )
-                )
-            } else {
-                break
+            if !check(.rightParenthesis) {
+                repeat {
+                    arguments.append(try self.expression())
+                } while match(.comma)
             }
+
+            let kind = Token.Kind.rightParenthesis
+            let rightParenthesis = try consume(kind, elseError: .expectingCharacter(kind.rawValue))
+
+            return AnyExpression(
+                FunctionExpression(
+                    callee: AnyExpression(VariableExpression(token: token)),
+                    arguments: arguments,
+                    rightParenthesis: rightParenthesis
+                )
+            )
         }
 
-        return expression
+        return try variableExpression()
     }
 
     private func groupingExpression() throws -> AnyExpression {
@@ -361,7 +358,7 @@ extension Parser {
         if match(.false, .nil, .number, .string, .true) {
             return literalExpression()
         } else if match(.identifier) {
-            return try variableExpression()
+            return try functionExpression()
         } else if match(.leftParenthesis) {
             return try groupingExpression()
         }
@@ -415,7 +412,7 @@ extension Parser {
     private func unaryExpression() throws -> AnyExpression {
         match(.bang, .minus)
             ? AnyExpression(UnaryExpression(token: previous, right: try unaryExpression()))
-            : try functionExpression()
+            : try primaryExpression()
     }
 
     private func variableExpression() throws -> AnyExpression {

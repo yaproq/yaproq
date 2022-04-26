@@ -131,6 +131,7 @@ enum ErrorType: CustomStringConvertible {
 
     // RuntimeError
     case indexMustBeInteger(_ index: String)
+    case invalidArgumentsCountForFunction(expectedCount: Int, actualCount: Int)
     case keyMustBeHashable(_ key: String)
     case operandMustBeBoolean
     case operandMustBeNumber
@@ -140,6 +141,7 @@ enum ErrorType: CustomStringConvertible {
     case operandsMustBeNumbers
     case variableExists(_ name: String)
     case variableMustBeEitherArrayOrDictionary(_ name: String)
+    case undefinedFunction(_ name: String)
     case undefinedVariableOrProperty(_ name: String)
 
     var description: String { message }
@@ -186,6 +188,8 @@ enum ErrorType: CustomStringConvertible {
         // RuntimeError
         case .indexMustBeInteger(let index):
             return "The index `\(index)` must be an integer."
+        case .invalidArgumentsCountForFunction(let expectedCount, let actualCount):
+            return "Expected \(expectedCount) arguments but got \(actualCount)."
         case .keyMustBeHashable(let key):
             return "The key `\(key)` must be hashable."
         case .operandMustBeBoolean:
@@ -204,6 +208,8 @@ enum ErrorType: CustomStringConvertible {
             return "The variable `\(name)` already exists."
         case .variableMustBeEitherArrayOrDictionary(let name):
             return "The `\(name)` must be either an array or dictionary."
+        case .undefinedFunction(let name):
+            return "An undefined function `\(name)`."
         case .undefinedVariableOrProperty(let name):
             return "An undefined variable or property `\(name)`."
         }

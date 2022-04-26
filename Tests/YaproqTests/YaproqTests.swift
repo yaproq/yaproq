@@ -173,7 +173,7 @@ extension YaproqTests {
         let fileName = "footer.html"
         let template = Template("""
         <footer class="footer text-center">
-            <div class="inner"><p class="text-muted">Copyright &copy; 2020-2021.</p></div>
+            <div class="inner"><p class="text-muted">Copyright &copy; 2020-2022.</p></div>
         </footer>
         """
         )
@@ -199,7 +199,7 @@ extension YaproqTests {
         // Arrange
         let template = Template("""
         <footer class="footer text-center">
-            <div class="inner"><p class="text-muted">Copyright &copy; 2020-2021.</p></div>
+            <div class="inner"><p class="text-muted">Copyright &copy; 2020-2022.</p></div>
         </footer>
         """
         )
@@ -341,7 +341,7 @@ extension YaproqTests {
                     Content
                 </div>
                 <footer class="footer text-center">
-                    <div class="inner"><p class="text-muted">Copyright &copy; 2020-2021.</p></div>
+                    <div class="inner"><p class="text-muted">Copyright &copy; 2020-2022.</p></div>
                 </footer>
             </body>
         </html>
@@ -650,7 +650,7 @@ extension YaproqTests {
         // Assert
         XCTAssertEqual(result, """
         <footer class="footer text-center">
-            <div class="inner"><p class="text-muted">Copyright &copy; 2020-2021.</p></div>
+            <div class="inner"><p class="text-muted">Copyright &copy; 2020-2022.</p></div>
         </footer>
         """
         )

@@ -6,6 +6,7 @@ protocol ExpressionVisitor {
     func visitAny(expression: AnyExpression) throws -> Any?
     func visitAssignment(expression: AssignmentExpression) throws -> Any?
     func visitBinary(expression: BinaryExpression) throws -> Any?
+    func visitFunction(expression: FunctionExpression) throws -> Any?
     func visitGrouping(expression: GroupingExpression) throws -> Any?
     func visitLiteral(expression: LiteralExpression) throws -> Any?
     func visitLogical(expression: LogicalExpression) throws -> Any?
@@ -59,6 +60,22 @@ struct BinaryExpression: Expression {
 
     func accept(visitor: ExpressionVisitor) throws -> Any? {
         try visitor.visitBinary(expression: self)
+    }
+}
+
+struct FunctionExpression: Expression {
+    let callee: AnyExpression
+    let arguments: [AnyExpression]
+    let rightParenthesis: Token
+
+    init(callee: AnyExpression, arguments: [AnyExpression] = .init(), rightParenthesis: Token) {
+        self.callee = callee
+        self.arguments = arguments
+        self.rightParenthesis = rightParenthesis
+    }
+
+    func accept(visitor: ExpressionVisitor) throws -> Any? {
+        try visitor.visitFunction(expression: self)
     }
 }
 
