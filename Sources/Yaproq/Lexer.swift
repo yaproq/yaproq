@@ -71,7 +71,10 @@ extension Lexer {
     }
 
     private func matches(_ character: String) -> Bool {
-        if isAtEnd || character != self.character(at: current) { return false }
+        if isAtEnd || character != self.character(at: current) {
+            return false
+        }
+
         advance()
 
         return true
@@ -82,7 +85,10 @@ extension Lexer {
     }
 
     func substring(from start: Int, to end: Int) -> String {
-        if start < 0 || end < 0 || start > end || start > count { return Token.Kind.eof.rawValue }
+        if start < 0 || end < 0 || start > end || start > count {
+            return Token.Kind.eof.rawValue
+        }
+
         let end = end > count ? count : end
         let source = template.source
         let lowerBound = source.index(source.startIndex, offsetBy: start)
@@ -100,7 +106,11 @@ extension Lexer {
 extension Lexer {
     private func addIdentifierToken() throws {
         let dot = Token.Kind.dot.rawValue
-        while (isAlphaNumeric(peek()) || (peek() == dot && peek(next: 1) != dot)) && !isAtEnd { advance() }
+
+        while (isAlphaNumeric(peek()) || (peek() == dot && peek(next: 1) != dot)) && !isAtEnd {
+            advance()
+        }
+
         let lexeme = substring(from: start, to: current)
 
         if let lastCharacter = lexeme.last, String(lastCharacter) == dot {
@@ -148,9 +158,18 @@ extension Lexer {
     }
 
     private func addNumberToken() {
-        while isNumeric(peek()) && !isAtEnd { advance() }
-        if peek() == Token.Kind.dot.rawValue && isNumeric(peek(next: 1)) { advance() }
-        while isNumeric(peek()) && !isAtEnd { advance() }
+        while isNumeric(peek()) && !isAtEnd {
+            advance()
+        }
+
+        if peek() == Token.Kind.dot.rawValue && isNumeric(peek(next: 1)) {
+            advance()
+        }
+
+        while isNumeric(peek()) && !isAtEnd {
+            advance()
+        }
+
         let lexeme = substring(from: start, to: current)
         addToken(kind: .number, lexeme: lexeme, literal: Int(lexeme) ?? Double(lexeme))
     }
@@ -158,7 +177,10 @@ extension Lexer {
     private func addRawTextToken() {
         while !isAtEnd {
             currentDelimiter = delimiters.first(where: { $0.start == substring(next: $0.start.count) })
-            if currentDelimiter != nil { break }
+
+            if currentDelimiter != nil {
+                break
+            }
 
             if advance() == Token.Kind.newline.rawValue {
                 line += 1
@@ -169,21 +191,36 @@ extension Lexer {
         var lexeme = substring(from: start, to: current)
 
         if !lexeme.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            if lexeme.hasPrefix(Token.Kind.newline.rawValue) { lexeme.removeFirst() }
-            if lexeme.hasSuffix(Token.Kind.newline.rawValue) { lexeme.removeLast() }
+            if lexeme.hasPrefix(Token.Kind.newline.rawValue) {
+                lexeme.removeFirst()
+            }
+
+            if lexeme.hasSuffix(Token.Kind.newline.rawValue) {
+                lexeme.removeLast()
+            }
+
             addToken(kind: .print, line: -1, column: -1)
             addToken(kind: .string, lexeme: lexeme, literal: lexeme)
         }
 
         if let delimiter = currentDelimiter {
-            if delimiter == .output { addToken(kind: .print, line: -1, column: -1) }
+            if delimiter == .output {
+                addToken(kind: .print, line: -1, column: -1)
+            }
+
             advance(delimiter.start.count)
         }
     }
 
     private func addStringToken() throws {
-        while peek() != Token.Kind.quote.rawValue && !isAtEnd { advance() }
-        if isAtEnd { throw syntaxError(.unterminatedString, filePath: template.filePath, line: line, column: column) }
+        while peek() != Token.Kind.quote.rawValue && !isAtEnd {
+            advance()
+        }
+
+        if isAtEnd {
+            throw syntaxError(.unterminatedString, filePath: template.filePath, line: line, column: column)
+        }
+
         advance()
         let lexeme = substring(from: start, to: current)
         let value = substring(from: start + 1, to: current - 1)

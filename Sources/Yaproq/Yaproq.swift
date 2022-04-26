@@ -23,7 +23,9 @@ extension Yaproq {
             do {
                 return try loadTemplate(at: directory + name)
             } catch {
-                if directory == directories.last { throw error }
+                if directory == directories.last {
+                    throw error
+                }
             }
         }
 
@@ -71,14 +73,20 @@ extension Yaproq {
                         do {
                             template = try loadAndCacheTemplate(at: filePath)
                         } catch {
-                            if directory == directories.last { throw error }
+                            if directory == directories.last {
+                                throw error
+                            }
                         }
                     }
 
                     if let template = template {
                         let childStatements = try parseTemplate(template)
                         cacheStatements(childStatements, for: template)
-                        if templates[filePath] == nil { templates[filePath] = template }
+
+                        if templates[filePath] == nil {
+                            templates[filePath] = template
+                        }
+
                         try loadTemplates(in: childStatements, with: interpreter)
                         break
                     }
@@ -118,7 +126,9 @@ extension Yaproq {
             do {
                 return try renderTemplate(at: directory + name, in: context)
             } catch {
-                if directory == directories.last { throw error }
+                if directory == directories.last {
+                    throw error
+                }
             }
         }
 
@@ -133,7 +143,11 @@ extension Yaproq {
         let interpreter = Interpreter()
         interpreter.environment.directories = configuration.directories
         let statements = try cachedStatements(for: template)
-        for (name, value) in context { interpreter.environment.setVariable(value: value, for: name) }
+
+        for (name, value) in context {
+            interpreter.environment.setVariable(value: value, for: name)
+        }
+
         try loadTemplates(in: statements, with: interpreter)
         interpreter.environment.templates = templates
         let result = try interpreter.interpret(statements: statements)
@@ -150,7 +164,10 @@ extension Yaproq {
             statementCache.removeValue(forKey: filePath)
         }
 
-        if let template = templateCache.getValue(forKey: filePath) { return template }
+        if let template = templateCache.getValue(forKey: filePath) {
+            return template
+        }
+
         let template = try loadTemplate(at: filePath)
 
         if !configuration.isDebug {
@@ -223,7 +240,9 @@ extension Yaproq {
                 updatedDelimiters.map { $0.start } + updatedDelimiters.map { $0.end }
             )
 
-            if updatedRawDelimiters.count != initialRawDelimiters.count { throw error(.delimitersMustBeUnique) }
+            if updatedRawDelimiters.count != initialRawDelimiters.count {
+                throw error(.delimitersMustBeUnique)
+            }
         }
     }
 }

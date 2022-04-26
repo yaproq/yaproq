@@ -18,22 +18,25 @@ struct Token {
 
 extension Token: CustomStringConvertible {
     var description: String {
-        var description: String
+        var content: String
 
         if let filePath = filePath {
-            description = "[Template: \"\(filePath)\", Line: \(line), Column: \(column)]"
+            content = "[Template: \"\(filePath)\", Line: \(line), Column: \(column)]"
         } else {
-            description = "[Line: \(line), Column: \(column)]"
+            content = "[Line: \(line), Column: \(column)]"
         }
 
-        description += " \(kind), \(lexeme)"
+        content += " \(kind), \(lexeme)"
 
         if let literal = literal {
             let stringLiteral = String(describing: literal)
-            if !stringLiteral.isEmpty { description += ", \(stringLiteral)" }
+
+            if !stringLiteral.isEmpty {
+                content += ", \(stringLiteral)"
+            }
         }
 
-        return description
+        return content
     }
 }
 

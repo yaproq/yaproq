@@ -15,7 +15,12 @@ final class Parser {
 extension Parser {
     func parse() throws -> [Statement] {
         var statements: [Statement] = .init()
-        while !isAtEnd { if let statement = try variableDeclarationStatement() { statements.append(statement) }}
+
+        while !isAtEnd {
+            if let statement = try variableDeclarationStatement() {
+                statements.append(statement)
+            }
+        }
 
         return statements
     }
@@ -24,7 +29,10 @@ extension Parser {
 extension Parser {
     @discardableResult
     private func advance() -> Token {
-        if !isAtEnd { current += 1 }
+        if !isAtEnd {
+            current += 1
+        }
+
         return previous
     }
 
@@ -34,7 +42,10 @@ extension Parser {
 
     @discardableResult
     private func consume(_ kind: Token.Kind, elseError error: ErrorType) throws -> Token {
-        if check(kind) { return advance() }
+        if check(kind) {
+            return advance()
+        }
+
         throw syntaxError(error, token: peek)
     }
 
@@ -67,7 +78,10 @@ extension Parser {
             }
         }
 
-        if name == nil { throw syntaxError(.invalidBlockName(name ?? ""), token: previous) }
+        if name == nil {
+            throw syntaxError(.invalidBlockName(name ?? ""), token: previous)
+        }
+
         try consume(leftBrace, elseError: .expectingCharacter(leftBrace.rawValue))
 
         return BlockStatement(name: name, statements: try blockStatements())
@@ -78,7 +92,9 @@ extension Parser {
         let rightBrace = Token.Kind.rightBrace
 
         while !check(rightBrace) && !isAtEnd {
-            if let statement = try variableDeclarationStatement() { statements.append(statement) }
+            if let statement = try variableDeclarationStatement() {
+                statements.append(statement)
+            }
         }
 
         try consume(rightBrace, elseError: .expectingCharacter(rightBrace.rawValue))
@@ -120,7 +136,11 @@ extension Parser {
         let condition = try expression()
         let thenBranch = try statement()
         var elseIfBranches: [IfStatement] = .init()
-        while match(.elseif) { elseIfBranches.append(try elseIfStatement()) }
+
+        while match(.elseif) {
+            elseIfBranches.append(try elseIfStatement())
+        }
+
         let elseBranch = match(.else) ? try statement() : nil
 
         return IfStatement(
@@ -140,15 +160,25 @@ extension Parser {
     }
 
     private func statement() throws -> Statement {
-        if match(.block) { return try blockStatement() }
-        if match(.extend) { return try extendStatement() }
-        if match(.for) { return try forStatement() }
-        if match(.if) { return try ifStatement() }
-        if match(.include) { return try includeStatement() }
-        if match(.leftBrace) { return BlockStatement(statements: try blockStatements()) }
-        if match(.print) { return try printStatement() }
-        if match(.super) { return superStatement() }
-        if match(.while) { return try whileStatement() }
+        if match(.block) {
+            return try blockStatement()
+        } else if match(.extend) {
+            return try extendStatement()
+        } else if match(.for) {
+            return try forStatement()
+        } else if match(.if) {
+            return try ifStatement()
+        } else if match(.include) {
+            return try includeStatement()
+        } else if match(.leftBrace) {
+            return BlockStatement(statements: try blockStatements())
+        } else if match(.print) {
+            return try printStatement()
+        } else if match(.super) {
+            return superStatement()
+        } else if match(.while) {
+            return try whileStatement()
+        }
 
         return try expressionStatement()
     }
@@ -164,7 +194,10 @@ extension Parser {
     private func variableStatement() throws -> Statement {
         let token = try consume(.identifier, elseError: .expectingVariable)
         var expression: AnyExpression?
-        if match(.equal) { expression = try self.expression() }
+
+        if match(.equal) {
+            expression = try self.expression()
+        }
 
         return VariableStatement(token: token, expression: expression)
     }
@@ -246,6 +279,36 @@ extension Parser {
         try assignmentExpression()
     }
 
+    private func functionExpression() throws -> AnyExpression {
+        var expression = try primaryExpression()
+
+        while true {
+            if match(.leftParenthesis) {
+                var arguments: [AnyExpression] = .init()
+
+                if !check(.rightParenthesis) {
+                    repeat {
+                        arguments.append(try self.expression())
+                    } while match(.comma)
+                }
+
+                let kind = Token.Kind.rightParenthesis
+                let rightParenthesis = try consume(kind, elseError: .expectingCharacter(kind.rawValue))
+                expression = AnyExpression(
+                    FunctionExpression(
+                        callee: expression,
+                        arguments: arguments,
+                        rightParenthesis: rightParenthesis
+                    )
+                )
+            } else {
+                break
+            }
+        }
+
+        return expression
+    }
+
     private func groupingExpression() throws -> AnyExpression {
         let expression = try self.expression()
         let rightParenthesis = Token.Kind.rightParenthesis
@@ -295,9 +358,14 @@ extension Parser {
     }
 
     private func primaryExpression() throws -> AnyExpression {
-        if match(.false, .nil, .number, .string, .true) { return literalExpression() }
-        if match(.identifier) { return try variableExpression() }
-        if match(.leftParenthesis) { return try groupingExpression() }
+        if match(.false, .nil, .number, .string, .true) {
+            return literalExpression()
+        } else if match(.identifier) {
+            return try variableExpression()
+        } else if match(.leftParenthesis) {
+            return try groupingExpression()
+        }
+
         throw syntaxError(.expectingExpression, token: peek)
     }
 
@@ -336,7 +404,9 @@ extension Parser {
                 )
             }
 
-            if !isTernary { throw syntaxError(.invalidCharacter(firstToken.kind.rawValue), token: firstToken) }
+            if !isTernary {
+                throw syntaxError(.invalidCharacter(firstToken.kind.rawValue), token: firstToken)
+            }
         }
 
         return expression
@@ -345,7 +415,7 @@ extension Parser {
     private func unaryExpression() throws -> AnyExpression {
         match(.bang, .minus)
             ? AnyExpression(UnaryExpression(token: previous, right: try unaryExpression()))
-            : try primaryExpression()
+            : try functionExpression()
     }
 
     private func variableExpression() throws -> AnyExpression {
