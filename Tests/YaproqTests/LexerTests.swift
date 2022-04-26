@@ -254,7 +254,6 @@ extension LexerTests {
         // Arrange
         template = "{% var bool = true %}{% bool = !bool %}"
         lexer = Lexer(template: template)
-        tokens = nil
 
         // Act/Assert
         XCTAssertNoThrow(tokens = try lexer.scan())
@@ -324,7 +323,6 @@ extension LexerTests {
         #}
         """
         lexer = Lexer(template: template)
-        tokens = nil
 
         // Act/Assert
         XCTAssertNoThrow(tokens = try lexer.scan())
@@ -366,7 +364,6 @@ extension LexerTests {
         {% endfor %}
         """
         lexer = Lexer(template: template)
-        tokens = nil
 
         // Act/Assert
         XCTAssertNoThrow(tokens = try lexer.scan())
@@ -464,7 +461,6 @@ extension LexerTests {
         }}
         """
         lexer = Lexer(template: template)
-        tokens = nil
 
         // Act/Assert
         XCTAssertNoThrow(tokens = try lexer.scan())
@@ -482,7 +478,6 @@ extension LexerTests {
         // Arrange
         template = "{{ array[0] }}"
         lexer = Lexer(template: template)
-        tokens = nil
 
         // Act/Assert
         XCTAssertNoThrow(tokens = try lexer.scan())
@@ -499,7 +494,6 @@ extension LexerTests {
         // Arrange
         template = "{{ object.property }}"
         lexer = Lexer(template: template)
-        tokens = nil
 
         // Act/Assert
         XCTAssertNoThrow(tokens = try lexer.scan())
@@ -578,7 +572,6 @@ extension LexerTests {
         // Arrange
         template = "{% var bool = true %}{% bool = false %}"
         lexer = Lexer(template: template)
-        tokens = nil
 
         // Act/Assert
         XCTAssertNoThrow(tokens = try lexer.scan())
@@ -597,7 +590,6 @@ extension LexerTests {
         // Arrange
         template = "{% var string = \"Hello World\" %}"
         lexer = Lexer(template: template)
-        tokens = nil
 
         // Act/Assert
         XCTAssertNoThrow(tokens = try lexer.scan())
@@ -682,7 +674,6 @@ extension LexerTests {
         %}
         """
         lexer = Lexer(template: template)
-        tokens = nil
 
         // Act/Assert
         XCTAssertNoThrow(tokens = try lexer.scan())
