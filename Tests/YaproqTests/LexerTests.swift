@@ -23,11 +23,10 @@ extension LexerTests {
         // Arrange
         let template: Template = "{% var result = 5 * 4 / (3 + 2) - 7 % 2 ^ 2 %}"
         let lexer = Lexer(template: template)
+        var tokens: [Token]?
 
-        // Act
-        let tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
@@ -63,11 +62,10 @@ extension LexerTests {
         {% result = 4 != 3 %}
         """
         let lexer = Lexer(template: template)
+        var tokens: [Token]?
 
-        // Act
-        let tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
@@ -117,11 +115,10 @@ extension LexerTests {
         {% number ^= 7 %}
         """
         let lexer = Lexer(template: template)
+        var tokens: [Token]?
 
-        // Act
-        let tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
@@ -159,11 +156,10 @@ extension LexerTests {
         """
         )
         let lexer = Lexer(template: template)
+        var tokens: [Token]?
 
-        // Act
-        let tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
@@ -183,11 +179,10 @@ extension LexerTests {
         {% var closedRange = 10...20 %}
         """
         let lexer = Lexer(template: template)
+        var tokens: [Token]?
 
-        // Act
-        let tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
@@ -213,11 +208,10 @@ extension LexerTests {
         {{ number == 1 ? "One" : "Not one" }}
         """
         let lexer = Lexer(template: template)
+        var tokens: [Token]?
 
-        // Act
-        let tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
@@ -240,11 +234,10 @@ extension LexerTests {
         // Arrange
         var template: Template = "{% var number = 1 %}{% number = -number %}"
         var lexer = Lexer(template: template)
+        var tokens: [Token]?
 
-        // Act
-        var tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
@@ -261,11 +254,10 @@ extension LexerTests {
         // Arrange
         template = "{% var bool = true %}{% bool = !bool %}"
         lexer = Lexer(template: template)
+        tokens = nil
 
-        // Act
-        tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
@@ -294,11 +286,10 @@ extension LexerTests {
         {% endblock %}
         """
         let lexer = Lexer(template: template)
+        var tokens: [Token]?
 
-        // Act
-        let tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .extend, lexeme: Token.Kind.extend.rawValue, line: 1, column: 9),
@@ -316,11 +307,10 @@ extension LexerTests {
         // Arrange
         var template: Template = "{# A single-line comment #}"
         var lexer = Lexer(template: template)
+        var tokens: [Token]?
 
-        // Act
-        var tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 1, column: 27)
@@ -334,11 +324,10 @@ extension LexerTests {
         #}
         """
         lexer = Lexer(template: template)
+        tokens = nil
 
-        // Act
-        tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .eof, lexeme: Token.Kind.eof.rawValue, line: 4, column: 2)
@@ -353,11 +342,10 @@ extension LexerTests {
         {% endfor %}
         """
         var lexer = Lexer(template: template)
+        var tokens: [Token]?
 
-        // Act
-        var tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .for, lexeme: Token.Kind.for.rawValue, line: 1, column: 6),
@@ -378,11 +366,10 @@ extension LexerTests {
         {% endfor %}
         """
         lexer = Lexer(template: template)
+        tokens = nil
 
-        // Act
-        tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .for, lexeme: Token.Kind.for.rawValue, line: 1, column: 6),
@@ -415,11 +402,10 @@ extension LexerTests {
         {% endif %}
         """
         let lexer = Lexer(template: template)
+        var tokens: [Token]?
 
-        // Act
-        let tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
@@ -459,11 +445,10 @@ extension LexerTests {
         // Arrange
         var template: Template = "{{ 1 }}"
         var lexer = Lexer(template: template)
+        var tokens: [Token]?
 
-        // Act
-        var tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .print, lexeme: Token.Kind.print.rawValue, line: -1, column: -1),
@@ -479,11 +464,10 @@ extension LexerTests {
         }}
         """
         lexer = Lexer(template: template)
+        tokens = nil
 
-        // Act
-        tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
@@ -498,11 +482,10 @@ extension LexerTests {
         // Arrange
         template = "{{ array[0] }}"
         lexer = Lexer(template: template)
+        tokens = nil
 
-        // Act
-        tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .print, lexeme: Token.Kind.print.rawValue, line: -1, column: -1),
@@ -516,11 +499,10 @@ extension LexerTests {
         // Arrange
         template = "{{ object.property }}"
         lexer = Lexer(template: template)
+        tokens = nil
 
-        // Act
-        tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .print, lexeme: Token.Kind.print.rawValue, line: -1, column: -1),
@@ -577,11 +559,10 @@ extension LexerTests {
         // Arrange
         var template: Template = "{% var number = 1 %}{% number = 20.0 %}"
         var lexer = Lexer(template: template)
+        var tokens: [Token]?
 
-        // Act
-        var tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
@@ -597,11 +578,10 @@ extension LexerTests {
         // Arrange
         template = "{% var bool = true %}{% bool = false %}"
         lexer = Lexer(template: template)
+        tokens = nil
 
-        // Act
-        tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
@@ -617,11 +597,10 @@ extension LexerTests {
         // Arrange
         template = "{% var string = \"Hello World\" %}"
         lexer = Lexer(template: template)
+        tokens = nil
 
-        // Act
-        tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 1, column: 6),
@@ -703,11 +682,10 @@ extension LexerTests {
         %}
         """
         lexer = Lexer(template: template)
+        tokens = nil
 
-        // Act
-        tokens = try? lexer.scan()
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(tokens = try lexer.scan())
         XCTAssertEqual(lexer.template, template)
         XCTAssertEqual(tokens, [
             .init(kind: .var, lexeme: Token.Kind.var.rawValue, line: 2, column: 7),
