@@ -7,7 +7,7 @@ protocol Function {
 }
 
 struct DateFunction: Function {
-    var arity = 0
+    let arity = 0
 
     func call(interpreter: Interpreter, arguments: [Any?]) -> Any? {
         Date()
@@ -16,7 +16,7 @@ struct DateFunction: Function {
 
 struct DateFormatFunction: Function {
     let dateFormatter = DateFormatter()
-    var arity = 1
+    let arity = 1
     var date: Date
 
     func call(interpreter: Interpreter, arguments: [Any?]) -> Any? {
