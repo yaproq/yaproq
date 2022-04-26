@@ -72,7 +72,9 @@ final class PropertyTests: BaseTests {
             let actualResult: String
 
             if propertyData.0 == .keys || propertyData.0 == .values {
-                actualResult = String(describing: ((try? propertyData.0.value(from: propertyData.1, for: token))! as? [String])!.sorted())
+                actualResult = String(
+                    describing: ((try? propertyData.0.value(from: propertyData.1, for: token))! as? [String])!.sorted()
+                )
             } else {
                 actualResult = String(describing: (try? propertyData.0.value(from: propertyData.1, for: token))!)
             }
@@ -94,7 +96,8 @@ final class PropertyTests: BaseTests {
                 XCTAssertEqual(error.column, token.column)
                 XCTAssertEqual(error.errorDescription, """
                 [Line: \(error.line), Column: \(error.column)] \
-                \(String(describing: RuntimeError.self)): \(ErrorType.undefinedVariableOrProperty(propertyData.0.rawValue))
+                \(String(describing: RuntimeError.self)): \
+                \(ErrorType.undefinedVariableOrProperty(propertyData.0.rawValue))
                 """
                 )
             }
