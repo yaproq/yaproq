@@ -1,10 +1,12 @@
 public enum Delimiter: CaseIterable {
     case comment(String, String), output(String, String), statement(String, String)
 
+    /// See `CaseIterable`.
+    public static var allCases: [Delimiter] { [.comment, .output, .statement] }
+
     static var comment: Delimiter = .comment(Default.comment.start, Default.comment.end)
     static var output: Delimiter = .output(Default.output.start, Default.output.end)
     static var statement: Delimiter = .statement(Default.statement.start, Default.statement.end)
-    public static var allCases: [Delimiter] { [.comment, .output, .statement] }
 
     var name: String {
         switch self {
@@ -60,6 +62,13 @@ extension Delimiter {
 }
 
 extension Delimiter: Hashable {
-    public static func == (lhs: Delimiter, rhs: Delimiter) -> Bool { lhs.name == rhs.name }
-    public func hash(into hasher: inout Hasher) { hasher.combine(name) }
+    /// See `Equatable`.
+    public static func == (lhs: Delimiter, rhs: Delimiter) -> Bool {
+        lhs.name == rhs.name
+    }
+
+    /// See `Hashable`.
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+    }
 }
