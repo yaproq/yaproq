@@ -15,9 +15,13 @@ struct DateFunction: Function {
 }
 
 struct DateFormatFunction: Function {
-    let dateFormatter = DateFormatter()
-    let arity = 1
+    let arity: Int = 1
     var date: Date
+    private let dateFormatter = DateFormatter()
+
+    init(date: Date) {
+        self.date = date
+    }
 
     func call(interpreter: Interpreter, arguments: [Any?]) -> Any? {
         dateFormatter.dateFormat = arguments.first as? String
