@@ -10,3 +10,19 @@ final class DateFunctionTests: BaseTests {
         XCTAssertNotNil(function.call() as? Date)
     }
 }
+
+final class DateFormatFunctionTests: BaseTests {
+    func testInit() {
+        // Arrange
+        let date = Date()
+        let dateFormat = "dd/MM/yyyy"
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = dateFormat
+
+        // Act
+        let function = DateFormatFunction(date: date)
+
+        // Assert
+        XCTAssertEqual(function.call(arguments: [dateFormat]) as? String, dateFormatter.string(from: date))
+    }
+}
