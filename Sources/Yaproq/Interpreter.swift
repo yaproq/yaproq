@@ -387,7 +387,7 @@ extension Interpreter: ExpressionVisitor {
 
             if functionName == "date" {
                 callee = DateFunction()
-            } else if functionName == "dateFormat" {
+            } else if functionName == "formatted" {
                 let token = Token(
                     kind: .identifier,
                     lexeme: identifier,
