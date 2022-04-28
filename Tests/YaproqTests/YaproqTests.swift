@@ -142,13 +142,12 @@ extension YaproqTests {
         </nav>
         """
         )
+        var result: String?
 
-        // Act
-        let result = (try? templating.renderTemplate(named: fileName, in: ["pages": pages])) ?? ""
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(named: fileName, in: ["pages": pages]))
         XCTAssertEqual(
-            result.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: ""),
+            result?.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: ""),
             "\(template)".replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: "")
         )
 
@@ -181,17 +180,12 @@ extension YaproqTests {
             directories: Set(arrayLiteral: Bundle.module.resourcePath!),
             caching: .init(costLimit: 2, countLimit: 3)
         )
+        var result: String?
 
-        // Act
-        var result = try? templating.renderTemplate(named: fileName)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(named: fileName))
         XCTAssertEqual(result, "\(template)")
-
-        // Act
-        result = try? templating.renderTemplate(named: fileName)
-
-        // Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(named: fileName))
         XCTAssertEqual(result, "\(template)")
     }
 
@@ -207,11 +201,10 @@ extension YaproqTests {
             directories: Set(arrayLiteral: Bundle.module.resourcePath!),
             caching: .init(costLimit: 2, countLimit: 3)
         )
+        var result: String?
 
-        // Act
-        let result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "\(template)")
     }
 }
@@ -224,11 +217,10 @@ extension YaproqTests {
         {{ result }}
         """
         )
+        var result: String?
 
-        // Act
-        var result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1")
 
         // Arrange
@@ -245,10 +237,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "3")
     }
 
@@ -305,12 +295,11 @@ extension YaproqTests {
         {% endblock %}
         """
         )
+        var result: String?
 
-        // Act
-        let result = (try? templating.renderTemplate(template, in: ["pages": pages])) ?? ""
-
-        // Assert
-        XCTAssertEqual(result.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: ""), """
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template, in: ["pages": pages]))
+        XCTAssertEqual(result?.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "\n", with: ""), """
         <!doctype html>
         <html lang="en">
             <head>
@@ -390,11 +379,10 @@ extension YaproqTests {
         {% endfor %}
         """
         )
+        var result: String?
 
-        // Act
-        var result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "0123")
 
         // Arrange
@@ -405,10 +393,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "012")
 
         // Arrange
@@ -419,10 +405,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template, in: ["min": min, "max": max])
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template, in: ["min": min, "max": max]))
         XCTAssertEqual(result, "0123")
 
         // Arrange
@@ -433,10 +417,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template, in: ["min": min, "max": max])
-
         // Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template, in: ["min": min, "max": max]))
         XCTAssertEqual(result, "012")
 
         // Arrange
@@ -449,10 +431,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "0123")
 
         // Arrange
@@ -465,10 +445,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "012")
 
         // Arrange
@@ -480,10 +458,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template, in: ["array": array])
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template, in: ["array": array]))
         XCTAssertEqual(result, "123")
 
         // Arrange
@@ -494,11 +470,10 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template, in: ["array": array])
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template, in: ["array": array]))
         XCTAssertEqual(result, "0-1_11-2_22-3_3")
+
         // Arrange
         let dictionary = ["one": 1, "two": 2, "three": 3]
         template = Template("""
@@ -508,10 +483,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template, in: ["dictionary": dictionary])
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template, in: ["dictionary": dictionary]))
         XCTAssertEqual(result?.count, 23)
         XCTAssertTrue(result?.contains("one-1_1") ?? false)
         XCTAssertTrue(result?.contains("two-2_2") ?? false)
@@ -536,11 +509,10 @@ extension YaproqTests {
             {% endif %}
             """
             )
+            var result: String?
 
-            // Act
-            let result = try? templating.renderTemplate(template)
-
-            // Assert
+            // Act/Assert
+            XCTAssertNoThrow(result = try templating.renderTemplate(template))
             XCTAssertEqual(result, value)
         }
 
@@ -559,11 +531,10 @@ extension YaproqTests {
             {% endif %}
             """
             )
+            var result: String?
 
-            // Act
-            let result = try? templating.renderTemplate(template)
-
-            // Assert
+            // Act/Assert
+            XCTAssertNoThrow(result = try templating.renderTemplate(template))
             XCTAssertEqual(result, "\(number)")
         }
 
@@ -576,11 +547,10 @@ extension YaproqTests {
         {% endif %}
         """
         )
+        var result: String?
 
-        // Act
-        var result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "\(number)")
 
         // Arrange
@@ -594,10 +564,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "\(number)")
 
         // Arrange
@@ -611,10 +579,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "\(number)")
 
         // Arrange
@@ -630,10 +596,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "\(number)")
     }
 
@@ -643,11 +607,10 @@ extension YaproqTests {
         {% include "footer.html" %}
         """
         )
+        var result: String?
 
-        // Act
-        let result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, """
         <footer class="footer text-center">
             <div class="inner"><p class="text-muted">Copyright &copy; 2020-2022.</p></div>
@@ -700,11 +663,10 @@ extension YaproqTests {
         {{ integer }}, {{ float }}, {{ string }}
         """
         )
+        var result: String?
 
-        // Act
-        let result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1, 2.5, text2, 3.2, text2")
     }
 
@@ -719,11 +681,10 @@ extension YaproqTests {
         {% endwhile %}
         """
         )
+        var result: String?
 
-        // Act
-        let result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "012")
     }
 }
@@ -799,11 +760,10 @@ extension YaproqTests {
                 {{ \(item.0) }}
                 """
                 )
+                var result: String?
 
-                // Act
-                let result = try? templating.renderTemplate(template)
-
-                // Assert
+                // Act/Assert
+                XCTAssertNoThrow(result = try templating.renderTemplate(template))
                 XCTAssertEqual(result, "\(item.3)")
             }
         }
@@ -979,14 +939,13 @@ extension YaproqTests {
             for item in value {
                 // Arrange
                 let template = Template("{{ \(item.0) \(key) \(item.1) }}")
+                var result: String?
 
-                // Act
-                let result = try? templating.renderTemplate(
+                // Act/Assert
+                XCTAssertNoThrow(result = try templating.renderTemplate(
                     template,
                     in: ["startDate": startDate, "endDate": endDate]
-                )
-
-                // Assert
+                ))
                 XCTAssertEqual(result, "\(item.2)")
             }
         }
@@ -1057,11 +1016,10 @@ extension YaproqTests {
         {{ result }}
         """
         )
+        var result: String?
 
-        // Act
-        var result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1...3")
 
         // Arrange
@@ -1072,10 +1030,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1...3")
 
         // Arrange
@@ -1086,10 +1042,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1...3")
 
         // Arrange
@@ -1101,10 +1055,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1...3")
 
         // Arrange
@@ -1114,10 +1066,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1.5...3.0")
 
         // Arrange
@@ -1128,10 +1078,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1.0...3.5")
 
         // Arrange
@@ -1142,10 +1090,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1.5...3.0")
 
         // Arrange
@@ -1157,10 +1103,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1.0...3.5")
 
         // Arrange
@@ -1195,11 +1139,10 @@ extension YaproqTests {
         {{ true and true }}
         """
         )
+        var result: String?
 
-        // Act
-        var result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "true")
 
         // Arrange
@@ -1208,10 +1151,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "false")
 
         // Arrange
@@ -1220,10 +1161,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "false")
 
         // Arrange
@@ -1232,10 +1171,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "false")
     }
 
@@ -1245,11 +1182,10 @@ extension YaproqTests {
         {{ true or true }}
         """
         )
+        var result: String?
 
-        // Act
-        var result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "true")
 
         // Arrange
@@ -1258,10 +1194,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "true")
 
         // Arrange
@@ -1270,10 +1204,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "true")
 
         // Arrange
@@ -1282,10 +1214,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "false")
     }
 
@@ -1296,11 +1226,10 @@ extension YaproqTests {
         {{ result }}
         """
         )
+        var result: String?
 
-        // Act
-        var result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1..<3")
 
         // Arrange
@@ -1311,10 +1240,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1..<3")
 
         // Arrange
@@ -1325,10 +1252,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1..<3")
 
         // Arrange
@@ -1340,10 +1265,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1..<3")
 
         // Arrange
@@ -1353,10 +1276,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1.5..<3.0")
 
         // Arrange
@@ -1367,10 +1288,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1.0..<3.5")
 
         // Arrange
@@ -1381,10 +1300,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1.5..<3.0")
 
         // Arrange
@@ -1396,10 +1313,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1.0..<3.5")
 
         // Arrange
@@ -1434,11 +1349,10 @@ extension YaproqTests {
         {{ true ? 1 : 0 }}
         """
         )
+        var result: String?
 
-        // Act
-        var result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "1")
 
         // Arrange
@@ -1447,10 +1361,8 @@ extension YaproqTests {
         """
         )
 
-        // Act
-        result = try? templating.renderTemplate(template)
-
-        // Assert
+        // Act/Assert
+        XCTAssertNoThrow(result = try templating.renderTemplate(template))
         XCTAssertEqual(result, "0")
 
         // Arrange
@@ -1496,11 +1408,10 @@ extension YaproqTests {
             for item in value {
                 // Arrange
                 let template = Template("{{ \(key)\(item.0) }}")
+                var result: String?
 
-                // Act
-                let result = try? templating.renderTemplate(template)
-
-                // Assert
+                // Act/Assert
+                XCTAssertNoThrow(result = try templating.renderTemplate(template))
                 XCTAssertEqual(result, "\(item.1)")
             }
         }
