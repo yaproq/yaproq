@@ -6,6 +6,12 @@ protocol Function {
     func call(arguments: [Any?]) -> Any?
 }
 
+extension Function {
+    func call() -> Any? {
+        call(arguments: .init())
+    }
+}
+
 struct DateFunction: Function {
     let arity = 0
 
