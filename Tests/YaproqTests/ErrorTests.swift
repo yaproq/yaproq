@@ -135,8 +135,11 @@ final class RuntimeErrorTests: BaseTests {
 final class ErrorTypeTests: BaseTests {
     func testTypes() {
         // Arrange
+        let actualCount = 1
         let blockName = ""
         let delimiterEnd = "%}"
+        let expectedCount = 0
+        let functionName = "date"
         let index = "index"
         let key = "key"
         let operatorName = "**"
@@ -181,6 +184,13 @@ final class ErrorTypeTests: BaseTests {
 
         // RuntimeError
         XCTAssertEqual(ErrorType.indexMustBeInteger(index).message, "The index `\(index)` must be an integer.")
+        XCTAssertEqual(
+            ErrorType.invalidArgumentsCountForFunction(
+                expectedCount: expectedCount,
+                actualCount: actualCount
+            ).message,
+            "Expected \(expectedCount) arguments but got \(actualCount)."
+        )
         XCTAssertEqual(ErrorType.keyMustBeHashable(key).message, "The key `\(key)` must be hashable.")
         XCTAssertEqual(ErrorType.operandMustBeBoolean.message, "The operand must be a boolean.")
         XCTAssertEqual(ErrorType.operandMustBeNumber.message, "The operand must be a number.")
@@ -202,6 +212,7 @@ final class ErrorTypeTests: BaseTests {
             ErrorType.variableMustBeEitherArrayOrDictionary(variableName).message,
             "The `\(variableName)` must be either an array or dictionary."
         )
+        XCTAssertEqual(ErrorType.undefinedFunction(functionName).message, "An undefined function `\(functionName)`.")
         XCTAssertEqual(
             ErrorType.undefinedVariableOrProperty(variableName).message,
             "An undefined variable or property `\(variableName)`."
