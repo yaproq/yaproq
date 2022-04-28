@@ -415,7 +415,7 @@ extension Interpreter: ExpressionVisitor {
                 )
             }
 
-            return function.call(interpreter: self, arguments: arguments)
+            return function.call(arguments: arguments)
         }
 
         throw runtimeError(.undefinedFunction(stringify(callee)), token: expression.rightParenthesis)

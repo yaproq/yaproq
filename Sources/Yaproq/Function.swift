@@ -3,13 +3,13 @@ import Foundation
 protocol Function {
     var arity: Int { get }
 
-    func call(interpreter: Interpreter, arguments: [Any?]) -> Any?
+    func call(arguments: [Any?]) -> Any?
 }
 
 struct DateFunction: Function {
     let arity = 0
 
-    func call(interpreter: Interpreter, arguments: [Any?]) -> Any? {
+    func call(arguments: [Any?]) -> Any? {
         Date()
     }
 }
@@ -23,7 +23,7 @@ struct DateFormatFunction: Function {
         self.date = date
     }
 
-    func call(interpreter: Interpreter, arguments: [Any?]) -> Any? {
+    func call(arguments: [Any?]) -> Any? {
         dateFormatter.dateFormat = arguments.first as? String
 
         return dateFormatter.string(from: date)
