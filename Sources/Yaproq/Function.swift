@@ -13,10 +13,20 @@ extension Function {
 }
 
 struct DateFunction: Function {
-    let arity = 0
+    let arity: Int
+    private let dateFormatter = DateFormatter()
+
+    init(arity: Int = 0) {
+        self.arity = arity == 2 ? arity : 0
+    }
 
     func call(arguments: [Any?]) -> Any? {
-        Date()
+        if let dateFormat = arguments.first as? String, let value = arguments.last as? String {
+            dateFormatter.dateFormat = dateFormat
+            return dateFormatter.date(from: value)
+        }
+
+        return Date()
     }
 }
 

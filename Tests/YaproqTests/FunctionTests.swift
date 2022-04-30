@@ -4,10 +4,25 @@ import XCTest
 final class DateFunctionTests: BaseTests {
     func testInit() {
         // Act
-        let function = DateFunction()
+        var function = DateFunction()
 
         // Assert
         XCTAssertNotNil(function.call() as? Date)
+
+        // Arrange
+        let dateString = "14/10/1988"
+        let dateFormat = "dd/MM/yyyy"
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = dateFormat
+
+        // Act
+        function = DateFunction(arity: 2)
+
+        // Assert
+        XCTAssertEqual(
+            function.call(arguments: [dateFormat, dateString]) as? Date,
+            dateFormatter.date(from: dateString)
+        )
     }
 }
 

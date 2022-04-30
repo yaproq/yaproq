@@ -379,15 +379,26 @@ extension Interpreter: ExpressionVisitor {
 
     func visitFunction(expression: FunctionExpression) throws -> Any? {
         var callee = try? evaluate(expression: expression.callee)
+        var arguments: [Any?] = .init()
+
+        for argument in expression.arguments {
+            arguments.append(try evaluate(expression: argument))
+        }
+
+        let argumentsCount = arguments.count
 
         if let variableExpression = expression.callee.expression as? VariableExpression {
             var components = variableExpression.token.lexeme.components(separatedBy: Token.Kind.dot.rawValue)
             let functionName = components.removeLast()
-            let identifier = components.joined()
 
             if functionName == "date" {
-                callee = DateFunction()
+                if argumentsCount == 2 {
+                    callee = DateFunction(arity: argumentsCount)
+                } else {
+                    callee = DateFunction()
+                }
             } else if functionName == "formatted" {
+                let identifier = components.joined()
                 let token = Token(
                     kind: .identifier,
                     lexeme: identifier,
@@ -401,16 +412,10 @@ extension Interpreter: ExpressionVisitor {
             }
         }
 
-        var arguments: [Any?] = .init()
-
-        for argument in expression.arguments {
-            arguments.append(try evaluate(expression: argument))
-        }
-
         if let function = callee as? Function {
-            if arguments.count != function.arity {
+            if argumentsCount != function.arity {
                 throw runtimeError(
-                    .invalidArgumentsCountForFunction(expectedCount: function.arity, actualCount: arguments.count),
+                    .invalidArgumentsCountForFunction(expectedCount: function.arity, actualCount: argumentsCount),
                     token: expression.rightParenthesis
                 )
             }
