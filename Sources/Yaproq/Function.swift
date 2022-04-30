@@ -41,7 +41,6 @@ struct DateFormatFunction: Function {
 
     func call(arguments: [Any?]) -> Any? {
         dateFormatter.dateFormat = arguments.first as? String
-
         return dateFormatter.string(from: date)
     }
 }
