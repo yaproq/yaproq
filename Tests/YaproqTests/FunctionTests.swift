@@ -35,6 +35,8 @@ final class DateFormatFunctionTests: BaseTests {
         var function = DateFormatFunction(date: date)
 
         // Assert
+        XCTAssertEqual(function.arity, DateFormatFunction.arity)
+        XCTAssertEqual(function.date, date)
         XCTAssertNil(function.call())
 
         // Arrange
@@ -46,6 +48,36 @@ final class DateFormatFunctionTests: BaseTests {
         function = DateFormatFunction(date: date)
 
         // Assert
+        XCTAssertEqual(function.arity, DateFormatFunction.arity)
+        XCTAssertEqual(function.date, date)
+        XCTAssertNotNil(function.call(arguments: [dateFormat]) as? String)
         XCTAssertEqual(function.call(arguments: [dateFormat]) as? String, dateFormatter.string(from: date))
+
+        // Arrange
+        let arity = 2
+        var timeZone = "UTC"
+        dateFormatter.timeZone = TimeZone(abbreviation: timeZone)
+
+        // Act
+        function = DateFormatFunction(arity: arity, date: date)
+
+        // Assert
+        XCTAssertEqual(function.arity, arity)
+        XCTAssertEqual(function.date, date)
+        XCTAssertNotNil(function.call(arguments: [dateFormat, timeZone]) as? String)
+        XCTAssertEqual(function.call(arguments: [dateFormat, timeZone]) as? String, dateFormatter.string(from: date))
+
+        // Arrange
+        timeZone = "Asia/Tashkent"
+        dateFormatter.timeZone = TimeZone(identifier: timeZone)
+
+        // Act
+        function = DateFormatFunction(arity: arity, date: date)
+
+        // Assert
+        XCTAssertEqual(function.arity, arity)
+        XCTAssertEqual(function.date, date)
+        XCTAssertNotNil(function.call(arguments: [dateFormat, timeZone]) as? String)
+        XCTAssertEqual(function.call(arguments: [dateFormat, timeZone]) as? String, dateFormatter.string(from: date))
     }
 }

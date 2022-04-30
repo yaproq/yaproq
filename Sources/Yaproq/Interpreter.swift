@@ -408,6 +408,11 @@ extension Interpreter: ExpressionVisitor {
 
                 if let value = try visitVariable(expression: .init(token: token)) as? Date {
                     callee = DateFormatFunction(date: value)
+                    if argumentsCount == 2 {
+                        callee = DateFormatFunction(arity: argumentsCount, date: value)
+                    } else {
+                        callee = DateFormatFunction(date: value)
+                    }
                 }
             }
         }
