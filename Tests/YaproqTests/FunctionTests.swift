@@ -20,7 +20,7 @@ final class DateFunctionTests: BaseTests {
 
         // Assert
         XCTAssertEqual(
-            function.call(arguments: [dateFormat, dateString]) as? Date,
+            function.call(arguments: [dateString, dateFormat]) as? Date,
             dateFormatter.date(from: dateString)
         )
     }

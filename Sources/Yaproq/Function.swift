@@ -21,7 +21,7 @@ struct DateFunction: Function {
     }
 
     func call(arguments: [Any?]) -> Any? {
-        if let dateFormat = arguments.first as? String, let value = arguments.last as? String {
+        if let value = arguments.first as? String, let dateFormat = arguments.last as? String {
             dateFormatter.dateFormat = dateFormat
             return dateFormatter.date(from: value)
         }
