@@ -392,7 +392,7 @@ extension Interpreter: ExpressionVisitor {
             let functionName = components.removeLast()
 
             if functionName == "date" {
-                if argumentsCount == 2 {
+                if argumentsCount == 2 || argumentsCount == 3 {
                     callee = DateFunction(arity: argumentsCount)
                 } else {
                     callee = DateFunction()
