@@ -40,7 +40,11 @@ struct DateFormatFunction: Function {
     }
 
     func call(arguments: [Any?]) -> Any? {
-        dateFormatter.dateFormat = arguments.first as? String
-        return dateFormatter.string(from: date)
+        if let dateFormat = arguments.first as? String {
+            dateFormatter.dateFormat = dateFormat
+            return dateFormatter.string(from: date)
+        }
+
+        return nil
     }
 }
