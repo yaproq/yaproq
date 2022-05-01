@@ -44,20 +44,20 @@ extension Yaproq {
         return Template(source, filePath: filePath)
     }
 
-    private func loadTemplates(in statements: [Statement], with interpreter: Interpreter) throws {
+    private func loadTemplates(in statements: [Statement], with compiler: Compiler) throws {
         for statement in statements {
             if let extendStatement = statement as? ExtendStatement {
-                try loadTemplate(from: extendStatement.expression, with: interpreter)
+                try loadTemplate(from: extendStatement.expression, with: compiler)
             } else if let includeStatement = statement as? IncludeStatement {
-                try loadTemplate(from: includeStatement.expression, with: interpreter)
+                try loadTemplate(from: includeStatement.expression, with: compiler)
             } else if let blockStatement = statement as? BlockStatement {
-                try loadTemplates(in: blockStatement.statements, with: interpreter)
+                try loadTemplates(in: blockStatement.statements, with: compiler)
             }
         }
     }
 
-    private func loadTemplate(from expression: AnyExpression, with interpreter: Interpreter) throws {
-        if var filePath = try interpreter.evaluate(expression: expression) as? String {
+    private func loadTemplate(from expression: AnyExpression, with compiler: Compiler) throws {
+        if var filePath = try compiler.evaluate(expression: expression) as? String {
             let directories = Array(configuration.directories)
 
             for directory in directories {
@@ -87,7 +87,7 @@ extension Yaproq {
                             templates[filePath] = template
                         }
 
-                        try loadTemplates(in: childStatements, with: interpreter)
+                        try loadTemplates(in: childStatements, with: compiler)
                         break
                     }
                 } else {
@@ -140,17 +140,17 @@ extension Yaproq {
     }
 
     public func renderTemplate(_ template: Template, in context: [String: Encodable] = .init()) throws -> String {
-        let interpreter = Interpreter()
-        interpreter.environment.directories = configuration.directories
+        let compiler = Compiler()
+        compiler.environment.directories = configuration.directories
         let statements = try cachedStatements(for: template)
 
         for (name, value) in context {
-            interpreter.environment.setVariable(value: value, for: name)
+            compiler.environment.setVariable(value: value, for: name)
         }
 
-        try loadTemplates(in: statements, with: interpreter)
-        interpreter.environment.templates = templates
-        let result = try interpreter.interpret(statements: statements)
+        try loadTemplates(in: statements, with: compiler)
+        compiler.environment.templates = templates
+        let result = try compiler.compile(statements: statements)
         cacheStatements(statements, for: template)
 
         return result

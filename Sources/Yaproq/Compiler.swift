@@ -1,6 +1,6 @@
 import Foundation
 
-final class Interpreter {
+final class Compiler {
     private(set) var environment: Environment
     private var statements = [Statement]()
     private var result = ""
@@ -10,8 +10,8 @@ final class Interpreter {
     }
 }
 
-extension Interpreter {
-    func interpret(statements: [Statement]) throws -> String {
+extension Compiler {
+    func compile(statements: [Statement]) throws -> String {
         self.statements = statements
         let extendStatements = self.statements.filter { $0 is ExtendStatement }
         let count = extendStatements.count
@@ -32,7 +32,7 @@ extension Interpreter {
     }
 }
 
-extension Interpreter {
+extension Compiler {
     @discardableResult
     func evaluate(expression: AnyExpression) throws -> Any? {
         try expression.accept(visitor: self)
@@ -66,10 +66,10 @@ extension Interpreter {
         return false
     }
 
-    private func interpretTemplate(_ template: Template) throws -> String {
+    private func compileTemplate(_ template: Template) throws -> String {
         let statements = try parseTemplate(template)
-        let interpreter = Interpreter(environment: environment)
-        let result = try interpreter.interpret(statements: statements)
+        let compiler = Compiler(environment: environment)
+        let result = try compiler.compile(statements: statements)
 
         return result
     }
@@ -135,7 +135,7 @@ extension Interpreter {
     }
 }
 
-extension Interpreter: ExpressionVisitor {
+extension Compiler: ExpressionVisitor {
     func visitAny(expression: AnyExpression) throws -> Any? {
         if let expression = expression.expression as? AssignmentExpression {
             return try expression.accept(visitor: self)
@@ -492,7 +492,7 @@ extension Interpreter: ExpressionVisitor {
     }
 }
 
-extension Interpreter: StatementVisitor {
+extension Compiler: StatementVisitor {
     func visitBlock(statement: BlockStatement) throws {
         let environment = Environment(parent: self.environment)
         environment.directories = self.environment.directories
@@ -513,20 +513,20 @@ extension Interpreter: StatementVisitor {
         guard let value = try evaluate(expression: statement.expression) else { return }
 
         if let filePath = value as? String {
-            func interpretTemplate(_ template: Template) throws {
+            func compileTemplate(_ template: Template) throws {
                 statements.removeFirst()
                 statements = try parseTemplate(template) + statements
-                result = try interpret(statements: statements)
+                result = try compile(statements: statements)
             }
 
             if let template = environment.templates[filePath] {
-                try interpretTemplate(template)
+                try compileTemplate(template)
             } else {
                 for directory in environment.directories {
                     let absoluteFilePath = directory + filePath
 
                     if let template = environment.templates[absoluteFilePath] {
-                        try interpretTemplate(template)
+                        try compileTemplate(template)
                         break
                     }
                 }
@@ -591,13 +591,13 @@ extension Interpreter: StatementVisitor {
 
         if let filePath = value as? String {
             if let template = environment.templates[filePath] {
-                result += try interpretTemplate(template)
+                result += try compileTemplate(template)
             } else {
                 for directory in environment.directories {
                     let absoluteFilePath = directory + filePath
 
                     if let template = environment.templates[absoluteFilePath] {
-                        result += try interpretTemplate(template)
+                        result += try compileTemplate(template)
                         break
                     }
                 }
