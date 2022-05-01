@@ -19,9 +19,9 @@ final class YaproqConfigurationTests: BaseTests {
 
         // Act
         configuration = Yaproq.Configuration(
-            isDebug: true,
+            caching: .init(costLimit: costLimit, countLimit: countLimit),
             directories: directories,
-            caching: .init(costLimit: costLimit, countLimit: countLimit)
+            isDebug: true
         )
 
         // Assert
@@ -37,9 +37,9 @@ final class YaproqConfigurationTests: BaseTests {
 
         // Act
         configuration = Yaproq.Configuration(
-            isDebug: true,
+            caching: .init(costLimit: costLimit, countLimit: countLimit),
             directories: directories,
-            caching: .init(costLimit: costLimit, countLimit: countLimit)
+            isDebug: true
         )
 
         // Assert
@@ -52,19 +52,19 @@ final class YaproqConfigurationTests: BaseTests {
         var delimiters = Set<Delimiter>()
 
         // Act/Assert
-        XCTAssertNoThrow(try Yaproq.Configuration(directories: directories, delimiters: delimiters))
+        XCTAssertNoThrow(try Yaproq.Configuration(delimiters: delimiters, directories: directories))
 
         // Arrange
         delimiters = [.comment("{#", "#}"), .output("{{", "}}"), .statement("{%", "%}")]
 
         // Act/Assert
-        XCTAssertNoThrow(try Yaproq.Configuration(directories: directories, delimiters: delimiters))
+        XCTAssertNoThrow(try Yaproq.Configuration(delimiters: delimiters, directories: directories))
 
         // Arrange
         delimiters = [.comment("{*", "*}"), .output("{$", "$}"), .statement("{$", "$}")]
 
         // Act/Assert
-        XCTAssertThrowsError(try Yaproq.Configuration(directories: directories, delimiters: delimiters)) { error in
+        XCTAssertThrowsError(try Yaproq.Configuration(delimiters: delimiters, directories: directories)) { error in
             let error = error as? YaproqError
             XCTAssertEqual(
                 error?.errorDescription,
@@ -104,8 +104,8 @@ final class YaproqTests: BaseTests {
         super.setUp()
 
         let configuration = Yaproq.Configuration(
-            isDebug: true,
-            directories: Set(arrayLiteral: Bundle.module.resourcePath!)
+            directories: Set(arrayLiteral: Bundle.module.resourcePath!),
+            isDebug: true
         )
         templating = Yaproq(configuration: configuration)
         pages = [
@@ -177,8 +177,8 @@ extension YaproqTests {
         """
         )
         templating.configuration = .init(
-            directories: Set(arrayLiteral: Bundle.module.resourcePath!),
-            caching: .init(costLimit: 2, countLimit: 3)
+            caching: .init(costLimit: 2, countLimit: 3),
+            directories: Set(arrayLiteral: Bundle.module.resourcePath!)
         )
         var result: String?
 
@@ -198,8 +198,8 @@ extension YaproqTests {
         """
         )
         templating.configuration = .init(
-            directories: Set(arrayLiteral: Bundle.module.resourcePath!),
-            caching: .init(costLimit: 2, countLimit: 3)
+            caching: .init(costLimit: 2, countLimit: 3),
+            directories: Set(arrayLiteral: Bundle.module.resourcePath!)
         )
         var result: String?
 

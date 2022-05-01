@@ -204,23 +204,23 @@ extension Yaproq {
         public let caching: Caching
 
         public init(
-            isDebug: Bool = false,
+            caching: Caching = .init(),
             directories: Set<String> = Set(arrayLiteral: defaultDirectoryPath),
-            caching: Caching = .init()
+            isDebug: Bool = false
         ) {
-            self.isDebug = isDebug
-            self.directories = Set<String>(directories.map { $0.normalizedPath })
             self.caching = caching
             Delimiter.reset()
+            self.directories = Set<String>(directories.map { $0.normalizedPath })
+            self.isDebug = isDebug
         }
 
         public init(
-            isDebug: Bool = false,
-            directories: Set<String> = Set(arrayLiteral: defaultDirectoryPath),
             caching: Caching = .init(),
-            delimiters: Set<Delimiter>
+            delimiters: Set<Delimiter>,
+            directories: Set<String> = Set(arrayLiteral: defaultDirectoryPath),
+            isDebug: Bool = false
         ) throws {
-            self.init(isDebug: isDebug, directories: directories, caching: caching)
+            self.init(caching: caching, directories: directories, isDebug: isDebug)
 
             let initialDelimiters = Delimiter.allCases
             let initialRawDelimiters = Set<String>(
