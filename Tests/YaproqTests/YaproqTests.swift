@@ -8,7 +8,7 @@ final class YaproqConfigurationTests: BaseTests {
 
         // Assert
         XCTAssertFalse(configuration.isDebug)
-        XCTAssertEqual(configuration.directories, Set(arrayLiteral: Yaproq.Configuration.defaultDirectoryPath))
+        XCTAssertEqual(configuration.directories, Set(arrayLiteral: Yaproq.Configuration.defaultDirectory))
         XCTAssertEqual(configuration.caching.costLimit, 0)
         XCTAssertEqual(configuration.caching.countLimit, 0)
 

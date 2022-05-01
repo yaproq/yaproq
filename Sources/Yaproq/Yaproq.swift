@@ -168,10 +168,9 @@ extension Yaproq {
             return template
         }
 
-        let template = try loadTemplate(at: filePath)
+        var template = try loadTemplate(at: filePath)
 
         if !configuration.isDebug {
-            var template = template
             template.isCached = true
             templateCache.setValue(template, forKey: filePath)
         }
@@ -198,14 +197,14 @@ extension Yaproq {
 
 extension Yaproq {
     public struct Configuration {
-        public static let defaultDirectoryPath = "/"
+        public static let defaultDirectory = "/"
         public let isDebug: Bool
         public let directories: Set<String>
         public let caching: Caching
 
         public init(
             caching: Caching = .init(),
-            directories: Set<String> = Set(arrayLiteral: defaultDirectoryPath),
+            directories: Set<String> = Set(arrayLiteral: defaultDirectory),
             isDebug: Bool = false
         ) {
             self.caching = caching
@@ -217,7 +216,7 @@ extension Yaproq {
         public init(
             caching: Caching = .init(),
             delimiters: Set<Delimiter>,
-            directories: Set<String> = Set(arrayLiteral: defaultDirectoryPath),
+            directories: Set<String> = Set(arrayLiteral: defaultDirectory),
             isDebug: Bool = false
         ) throws {
             self.init(caching: caching, directories: directories, isDebug: isDebug)
