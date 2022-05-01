@@ -49,7 +49,7 @@ final class YaproqConfigurationTests: BaseTests {
         XCTAssertEqual(configuration.caching.countLimit, countLimit)
 
         // Arrange
-        var delimiters: Set<Delimiter> = .init()
+        var delimiters = Set<Delimiter>()
 
         // Act/Assert
         XCTAssertNoThrow(try Yaproq.Configuration(directories: directories, delimiters: delimiters))
@@ -77,7 +77,7 @@ final class YaproqConfigurationTests: BaseTests {
 final class YaproqCachingConfigurationTests: BaseTests {
     func testInit() {
         // Act
-        var configuration = Yaproq.CachingConfiguration()
+        var configuration = Yaproq.Configuration.Caching()
 
         // Assert
         XCTAssertEqual(configuration.costLimit, 0)
@@ -88,7 +88,7 @@ final class YaproqCachingConfigurationTests: BaseTests {
         let countLimit = 2
 
         // Act
-        configuration = Yaproq.CachingConfiguration(costLimit: costLimit, countLimit: countLimit)
+        configuration = Yaproq.Configuration.Caching(costLimit: costLimit, countLimit: countLimit)
 
         // Assert
         XCTAssertEqual(configuration.costLimit, costLimit)

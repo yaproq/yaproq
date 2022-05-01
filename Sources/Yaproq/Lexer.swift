@@ -9,7 +9,7 @@ final class Lexer {
     private var current = 0
     private var line = 1
     private var column = 0
-    private var tokens: [Token] = .init()
+    private var tokens = [Token]()
 
     init(template: Template) {
         self.template = template

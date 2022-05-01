@@ -11,7 +11,7 @@ final class Cache<Key: Hashable, Value> {
         set { cache.countLimit = newValue }
     }
 
-    private var cache: NSCache<NSNumber, CachedItem<Value>> = .init()
+    private var cache = NSCache<NSNumber, CachedItem<Value>>()
 
     init(costLimit: Int = 0, countLimit: Int = 0) {
         self.costLimit = costLimit

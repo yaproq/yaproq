@@ -1,9 +1,9 @@
 final class Environment {
     let parent: Environment?
     var directories: Set<String> = .init(arrayLiteral: "/")
-    var templates: [String: Template] = .init()
-    private var variables: [String: Any] = .init()
-    private var variableNames: Set<String> = .init()
+    var templates = [String: Template]()
+    private var variables = [String: Any]()
+    private var variableNames = Set<String>()
 
     init(parent: Environment? = nil) {
         self.parent = parent

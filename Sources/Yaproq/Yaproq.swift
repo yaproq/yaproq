@@ -2,16 +2,16 @@ import Foundation
 
 public final class Yaproq {
     public var configuration: Configuration
-    public private(set) var templates: [String: Template] = .init()
-    private var templateCache = Cache<String, Template>()
-    private var statementCache = Cache<String, [Statement]>()
+    public private(set) var templates = [String: Template]()
+    private let templateCache: Cache<String, Template>
+    private let statementCache: Cache<String, [Statement]>
 
     public init(configuration: Configuration = .init()) {
         self.configuration = configuration
-        templateCache.costLimit = configuration.caching.costLimit
-        templateCache.countLimit = configuration.caching.countLimit
-        statementCache.costLimit = configuration.caching.costLimit
-        statementCache.countLimit = configuration.caching.countLimit
+        let costLimit = configuration.caching.costLimit
+        let countLimit = configuration.caching.countLimit
+        templateCache = .init(costLimit: costLimit, countLimit: countLimit)
+        statementCache = .init(costLimit: costLimit, countLimit: countLimit)
     }
 }
 
@@ -201,12 +201,12 @@ extension Yaproq {
         public static let defaultDirectoryPath = "/"
         public let isDebug: Bool
         public let directories: Set<String>
-        public let caching: CachingConfiguration
+        public let caching: Caching
 
         public init(
             isDebug: Bool = false,
             directories: Set<String> = Set(arrayLiteral: defaultDirectoryPath),
-            caching: CachingConfiguration = .init()
+            caching: Caching = .init()
         ) {
             self.isDebug = isDebug
             self.directories = Set<String>(directories.map { $0.normalizedPath })
@@ -217,7 +217,7 @@ extension Yaproq {
         public init(
             isDebug: Bool = false,
             directories: Set<String> = Set(arrayLiteral: defaultDirectoryPath),
-            caching: CachingConfiguration = .init(),
+            caching: Caching = .init(),
             delimiters: Set<Delimiter>
         ) throws {
             self.init(isDebug: isDebug, directories: directories, caching: caching)
@@ -247,8 +247,8 @@ extension Yaproq {
     }
 }
 
-extension Yaproq {
-    public struct CachingConfiguration {
+extension Yaproq.Configuration {
+    public struct Caching {
         public let costLimit: Int
         public let countLimit: Int
 

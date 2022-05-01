@@ -14,7 +14,7 @@ final class Parser {
 
 extension Parser {
     func parse() throws -> [Statement] {
-        var statements: [Statement] = .init()
+        var statements = [Statement]()
 
         while !isAtEnd {
             if let statement = try variableDeclarationStatement() {
@@ -88,7 +88,7 @@ extension Parser {
     }
 
     private func blockStatements() throws -> [Statement] {
-        var statements: [Statement] = .init()
+        var statements = [Statement]()
         let rightBrace = Token.Kind.rightBrace
 
         while !check(rightBrace) && !isAtEnd {
@@ -135,7 +135,7 @@ extension Parser {
     private func ifStatement() throws -> Statement {
         let condition = try expression()
         let thenBranch = try statement()
-        var elseIfBranches: [IfStatement] = .init()
+        var elseIfBranches = [IfStatement]()
 
         while match(.elseif) {
             elseIfBranches.append(try elseIfStatement())
@@ -283,7 +283,7 @@ extension Parser {
         let token = previous
 
         if match(.leftParenthesis) {
-            var arguments: [AnyExpression] = .init()
+            var arguments = [AnyExpression]()
 
             if !check(.rightParenthesis) {
                 repeat {

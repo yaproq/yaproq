@@ -2,7 +2,7 @@ import Foundation
 
 final class Interpreter {
     private(set) var environment: Environment
-    private var statements: [Statement] = .init()
+    private var statements = [Statement]()
     private var result = ""
 
     init(environment: Environment = .init()) {
@@ -83,14 +83,14 @@ extension Interpreter {
     }
 
     private func processSuper(in statements: inout [Statement]) throws {
-        var blockStatements: [String: Int] = .init()
-        var indexSet: IndexSet = .init()
+        var blockStatements = [String: Int]()
+        var indexSet = IndexSet()
 
         for (index, statement) in statements.enumerated() {
             if let blockStatement = statement as? BlockStatement, let name = blockStatement.name {
                 if let firstIndex = blockStatements[name],
                    let parentBlockStatement = statements[firstIndex] as? BlockStatement {
-                    var childStatements: [Statement] = .init()
+                    var childStatements = [Statement]()
 
                     for childStatement in blockStatement.statements {
                         if let superStatement = childStatement as? SuperStatement {
@@ -379,7 +379,7 @@ extension Interpreter: ExpressionVisitor {
 
     func visitFunction(expression: FunctionExpression) throws -> Any? {
         var callee = try? evaluate(expression: expression.callee)
-        var arguments: [Any?] = .init()
+        var arguments = [Any?]()
 
         for argument in expression.arguments {
             arguments.append(try evaluate(expression: argument))
