@@ -6,6 +6,7 @@
         <a href="https://github.com/yaproq/yaproq/actions"><img src="https://github.com/yaproq/yaproq/workflows/ci/badge.svg" /></a>
         <a href="https://www.codacy.com/gh/yaproq/yaproq/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=yaproq/yaproq&amp;utm_campaign=Badge_Grade"><img src="https://app.codacy.com/project/badge/Grade/6cc4920a71e848a588a827f14bbafe8e" /></a>
         <a href="https://codecov.io/gh/yaproq/yaproq"><img src="https://codecov.io/gh/yaproq/yaproq/branch/master/graph/badge.svg?token=LvV6AiCSna" /></a>
+        <a href="https://sonarcloud.io/project/overview?id=yaproq_yaproq"><img src="https://sonarcloud.io/api/project_badges/measure?project=yaproq_yaproq&metric=alert_status" /></a>
         <a href="https://yaproq.dev/yaproq/"><img src="https://github.com/yaproq/yaproq/raw/gh-pages/badge.svg" /></a>
         <a href="https://github.com/yaproq/yaproq/blob/master/CONTRIBUTING.md"><img src="https://img.shields.io/badge/contributing-guide-brightgreen.svg" /></a>
     </p>
