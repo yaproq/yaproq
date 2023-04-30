@@ -527,8 +527,12 @@ extension Compiler: ExpressionVisitor {
         case .bang:
             return try !isTruthy(right, for: token)
         case .minus:
-            if let right = right as? Double { return -right }
-            if let right = right as? Int { return -right }
+            if let right = right as? Double {
+                return -right
+            } else if let right = right as? Int {
+                return -right
+            }
+
             throw runtimeError(.operandMustBeNumber, token: token)
         default: throw syntaxError(.invalidOperator(token.lexeme), token: token)
         }
@@ -699,7 +703,9 @@ extension Compiler: StatementVisitor {
                 }
             }
 
-            if !isTruthy, let elseBranch = statement.elseBranch { try execute(statement: elseBranch) }
+            if !isTruthy, let elseBranch = statement.elseBranch {
+                try execute(statement: elseBranch)
+            }
         }
     }
 
@@ -711,7 +717,11 @@ extension Compiler: StatementVisitor {
 
     func visitVariable(statement: VariableStatement) throws {
         var value: Any?
-        if let expression = statement.expression { value = try evaluate(expression: expression) }
+
+        if let expression = statement.expression {
+            value = try evaluate(expression: expression)
+        }
+
         try environment.defineVariable(value: value, for: statement.token)
     }
 

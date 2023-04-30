@@ -27,33 +27,23 @@ enum Property: String, CaseIterable {
         case .count:
             if let value = value as? [Any] {
                 return value.count
-            }
-
-            if let value = value as? [AnyHashable: Any] {
+            } else if let value = value as? [AnyHashable: Any] {
                 return value.count
-            }
-
-            if let value = value as? String {
+            } else if let value = value as? String {
                 return value.count
             }
         case .first:
             if let value = value as? [Any] {
                 return value.first
-            }
-
-            if let value = value as? String {
+            } else if let value = value as? String {
                 return value.first
             }
         case .isEmpty:
             if let value = value as? [Any] {
                 return value.isEmpty
-            }
-
-            if let value = value as? [AnyHashable: Any] {
+            } else if let value = value as? [AnyHashable: Any] {
                 return value.isEmpty
-            }
-
-            if let value = value as? String {
+            } else if let value = value as? String {
                 return value.isEmpty
             }
         case .keys:
@@ -63,9 +53,7 @@ enum Property: String, CaseIterable {
         case .last:
             if let value = value as? [Any] {
                 return value.last
-            }
-
-            if let value = value as? String {
+            } else if let value = value as? String {
                 return value.last
             }
         case .localizedCapitalized:
@@ -87,9 +75,7 @@ enum Property: String, CaseIterable {
         case .reversed:
             if let value = value as? [Any] {
                 return Array(value.reversed())
-            }
-
-            if let value = value as? String {
+            } else if let value = value as? String {
                 return String(value.reversed())
             }
         case .uppercased:

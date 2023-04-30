@@ -23,7 +23,11 @@ final class Environment {
 
     func defineVariable(value: Any? = nil, for token: Token) throws {
         let name = token.lexeme
-        if hasVariable(named: name) { throw runtimeError(.variableExists(name), token: token) }
+
+        if hasVariable(named: name) {
+            throw runtimeError(.variableExists(name), token: token)
+        }
+
         setVariable(value: value, for: name)
     }
 
@@ -81,7 +85,9 @@ final class Environment {
                 return value
             }
 
-            if let parent = parent { return try parent.getVariableValue(for: token) }
+            if let parent = parent {
+                return try parent.getVariableValue(for: token)
+            }
         }
 
         throw runtimeError(.undefinedVariableOrProperty(token.lexeme), token: token)
