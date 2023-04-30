@@ -19,11 +19,10 @@ jobs:
       uses: sukhrobkhakimov/publish-jazzy-docs@v1
       with:
         personal_access_token: ${{ secrets.ACCESS_TOKEN }}
-        args: "--module Yaproq --theme fullwidth --root-url https://yaproq.dev/yaproq/ --source-host github --source-host-url https://github.com/yaproq/yaproq"
-  ubuntu-bionic:
+        args: "--module Yaproq --theme fullwidth --root-url https://yaproq.dev/yaproq --source-host github --source-host-url https://github.com/yaproq/yaproq"
+  ubuntu:
     runs-on: ubuntu-latest
-    container:
-      image: swift:5.5-bionic
+    container: swift:5.7-jammy
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -39,14 +38,3 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         flags: base64,unittests
         file: coverage.lcov
-  ubuntu-xenial:
-    runs-on: ubuntu-latest
-    container:
-      image: swift:5.5-xenial
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Build
-      run: swift build -v
-    - name: Run tests
-      run: swift test --enable-code-coverage --enable-test-discovery --sanitize=thread
