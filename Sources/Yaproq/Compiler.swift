@@ -17,15 +17,23 @@ extension Compiler {
         let count = extendStatements.count
 
         if count > 0 {
-            if !(self.statements.first is ExtendStatement) { throw templateError(.extendMustBeFirstStatement) }
-            if count > 1 { throw templateError(.extendingMultipleTemplatesNotSupported) }
+            if !(self.statements.first is ExtendStatement) {
+                throw templateError(.extendMustBeFirstStatement)
+            }
+
+            if count > 1 {
+                throw templateError(.extendingMultipleTemplatesNotSupported)
+            }
         }
 
         if let extendStatement = self.statements.first as? ExtendStatement {
             try execute(statement: extendStatement)
         } else {
             try processSuper(in: &self.statements)
-            for statement in self.statements { try execute(statement: statement) }
+
+            for statement in self.statements {
+                try execute(statement: statement)
+            }
         }
 
         return result
@@ -46,7 +54,10 @@ extension Compiler {
         let previousEnvironment = environment
         self.environment = environment
         defer { self.environment = previousEnvironment }
-        for statement in statements { try execute(statement: statement) }
+
+        for statement in statements {
+            try execute(statement: statement)
+        }
     }
 
     private func isEqual(_ left: Any?, _ right: Any?) -> Bool {
@@ -60,8 +71,11 @@ extension Compiler {
     }
 
     private func isTruthy(_ value: Any?, for token: Token? = nil) throws -> Bool {
-        if let value = value as? Bool { return value }
-        if let token = token { throw runtimeError(.operandMustBeBoolean, token: token) }
+        if let value = value as? Bool {
+            return value
+        } else if let token = token {
+            throw runtimeError(.operandMustBeBoolean, token: token)
+        }
 
         return false
     }
@@ -285,42 +299,80 @@ extension Compiler: ExpressionVisitor {
             throw runtimeError(.operandsMustBeEitherIntegersOrDoubles, token: token)
         case .equalEqual: return isEqual(left, right)
         case .greater:
-            if let left = left as? Double, let right = right as? Double { return left > right }
-            if let left = left as? Int, let right = right as? Int { return left > right }
-            if let left = left as? Double, let right = right as? Int { return left > Double(right) }
-            if let left = left as? Int, let right = right as? Double { return Double(left) > right }
-            if let left = left as? String, let right = right as? String { return left > right }
-            if let left = left as? Date, let right = right as? Date { return left > right }
+            if let left = left as? Double, let right = right as? Double {
+                return left > right
+            } else if let left = left as? Int, let right = right as? Int {
+                return left > right
+            } else if let left = left as? Double, let right = right as? Int {
+                return left > Double(right)
+            } else if let left = left as? Int, let right = right as? Double {
+                return Double(left) > right
+            } else if let left = left as? String, let right = right as? String {
+                return left > right
+            } else if let left = left as? Date, let right = right as? Date {
+                return left > right
+            }
+
             throw runtimeError(.operandsMustBeComparable, token: token)
         case .greaterOrEqual:
-            if let left = left as? Double, let right = right as? Double { return left >= right }
-            if let left = left as? Int, let right = right as? Int { return left >= right }
-            if let left = left as? Double, let right = right as? Int { return left >= Double(right) }
-            if let left = left as? Int, let right = right as? Double { return Double(left) >= right }
-            if let left = left as? String, let right = right as? String { return left >= right }
-            if let left = left as? Date, let right = right as? Date { return left >= right }
+            if let left = left as? Double, let right = right as? Double {
+                return left >= right
+            } else if let left = left as? Int, let right = right as? Int {
+                return left >= right
+            } else if let left = left as? Double, let right = right as? Int {
+                return left >= Double(right)
+            } else if let left = left as? Int, let right = right as? Double {
+                return Double(left) >= right
+            } else if let left = left as? String, let right = right as? String {
+                return left >= right
+            } else if let left = left as? Date, let right = right as? Date {
+                return left >= right
+            }
+
             throw runtimeError(.operandsMustBeComparable, token: token)
         case .less:
-            if let left = left as? Double, let right = right as? Double { return left < right }
-            if let left = left as? Int, let right = right as? Int { return left < right }
-            if let left = left as? Double, let right = right as? Int { return left < Double(right) }
-            if let left = left as? Int, let right = right as? Double { return Double(left) < right }
-            if let left = left as? String, let right = right as? String { return left < right }
-            if let left = left as? Date, let right = right as? Date { return left < right }
+            if let left = left as? Double, let right = right as? Double {
+                return left < right
+            } else if let left = left as? Int, let right = right as? Int {
+                return left < right
+            } else if let left = left as? Double, let right = right as? Int {
+                return left < Double(right)
+            } else if let left = left as? Int, let right = right as? Double {
+                return Double(left) < right
+            } else if let left = left as? String, let right = right as? String {
+                return left < right
+            } else if let left = left as? Date, let right = right as? Date {
+                return left < right
+            }
+
             throw runtimeError(.operandsMustBeComparable, token: token)
         case .lessOrEqual:
-            if let left = left as? Double, let right = right as? Double { return left <= right }
-            if let left = left as? Int, let right = right as? Int { return left <= right }
-            if let left = left as? Double, let right = right as? Int { return left <= Double(right) }
-            if let left = left as? Int, let right = right as? Double { return Double(left) <= right }
-            if let left = left as? String, let right = right as? String { return left <= right }
-            if let left = left as? Date, let right = right as? Date { return left <= right }
+            if let left = left as? Double, let right = right as? Double {
+                return left <= right
+            } else if let left = left as? Int, let right = right as? Int {
+                return left <= right
+            } else if let left = left as? Double, let right = right as? Int {
+                return left <= Double(right)
+            } else if let left = left as? Int, let right = right as? Double {
+                return Double(left) <= right
+            } else if let left = left as? String, let right = right as? String {
+                return left <= right
+            } else if let left = left as? Date, let right = right as? Date {
+                return left <= right
+            }
+
             throw runtimeError(.operandsMustBeComparable, token: token)
         case .minus:
-            if let left = left as? Double, let right = right as? Double { return left - right }
-            if let left = left as? Int, let right = right as? Int { return left - right }
-            if let left = left as? Double, let right = right as? Int { return left - Double(right) }
-            if let left = left as? Int, let right = right as? Double { return Double(left) - right }
+            if let left = left as? Double, let right = right as? Double {
+                return left - right
+            } else if let left = left as? Int, let right = right as? Int {
+                return left - right
+            } else if let left = left as? Double, let right = right as? Int {
+                return left - Double(right)
+            } else if let left = left as? Int, let right = right as? Double {
+                return Double(left) - right
+            }
+
             throw runtimeError(.operandsMustBeNumbers, token: token)
         case .percent:
             if let left = left as? Double, let right = right as? Double {
@@ -362,16 +414,28 @@ extension Compiler: ExpressionVisitor {
             throw runtimeError(.operandsMustBeNumbers, token: token)
         case .questionQuestion: return left ?? right
         case .slash:
-            if let left = left as? Double, let right = right as? Double { return left / right }
-            if let left = left as? Int, let right = right as? Int { return Double(left) / Double(right) }
-            if let left = left as? Double, let right = right as? Int { return left / Double(right) }
-            if let left = left as? Int, let right = right as? Double { return Double(left) / right }
+            if let left = left as? Double, let right = right as? Double {
+                return left / right
+            } else if let left = left as? Int, let right = right as? Int {
+                return Double(left) / Double(right)
+            } else if let left = left as? Double, let right = right as? Int {
+                return left / Double(right)
+            } else if let left = left as? Int, let right = right as? Double {
+                return Double(left) / right
+            }
+
             throw runtimeError(.operandsMustBeNumbers, token: token)
         case .star:
-            if let left = left as? Double, let right = right as? Double { return left * right }
-            if let left = left as? Int, let right = right as? Int { return left * right }
-            if let left = left as? Double, let right = right as? Int { return left * Double(right) }
-            if let left = left as? Int, let right = right as? Double { return Double(left) * right }
+            if let left = left as? Double, let right = right as? Double {
+                return left * right
+            } else if let left = left as? Int, let right = right as? Int {
+                return left * right
+            } else if let left = left as? Double, let right = right as? Int {
+                return left * Double(right)
+            } else if let left = left as? Int, let right = right as? Double {
+                return Double(left) * right
+            }
+
             throw runtimeError(.operandsMustBeNumbers, token: token)
         default: throw runtimeError(.invalidOperator(token.lexeme), token: token)
         }
@@ -478,10 +542,16 @@ extension Compiler: ExpressionVisitor {
             let key = try evaluate(expression: key)
 
             if let array = value as? [Any] {
-                if let index = key as? Int { return array[index] }
+                if let index = key as? Int {
+                    return array[index]
+                }
+
                 throw runtimeError(.indexMustBeInteger("\(key ?? "")"), token: token)
             } else if let dictionary = value as? [AnyHashable: Any] {
-                if let key = key as? AnyHashable { return dictionary[key] }
+                if let key = key as? AnyHashable {
+                    return dictionary[key]
+                }
+
                 throw runtimeError(.keyMustBeHashable("\(key ?? "")"), token: token)
             }
 
@@ -566,9 +636,13 @@ extension Compiler: StatementVisitor {
             let token = expression.token
 
             if let closedRange = value as? ClosedRange<Int> {
-                for (key, value) in closedRange.enumerated() { try assign(value: value, for: key, on: token) }
+                for (key, value) in closedRange.enumerated() {
+                    try assign(value: value, for: key, on: token)
+                }
             } else if let range = value as? Range<Int> {
-                for (key, value) in range.enumerated() { try assign(value: value, for: key, on: token) }
+                for (key, value) in range.enumerated() {
+                    try assign(value: value, for: key, on: token)
+                }
             } else {
                 throw syntaxError(.invalidOperator(token.lexeme), token: token)
             }
@@ -577,9 +651,13 @@ extension Compiler: StatementVisitor {
             let token = expression.token
 
             if let array = value as? [Any] {
-                for (key, value) in array.enumerated() { try assign(value: value, for: key, on: token) }
+                for (key, value) in array.enumerated() {
+                    try assign(value: value, for: key, on: token)
+                }
             } else if let dictionary = value as? [AnyHashable: Any] {
-                for (key, value) in dictionary { try assign(value: value, for: key, on: token) }
+                for (key, value) in dictionary {
+                    try assign(value: value, for: key, on: token)
+                }
             } else {
                 throw runtimeError(.variableMustBeEitherArrayOrDictionary(token.lexeme), token: token)
             }
