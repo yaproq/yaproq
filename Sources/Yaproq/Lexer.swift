@@ -14,7 +14,7 @@ final class Lexer {
     init(template: Template) {
         self.template = template
         count = template.source.count
-        delimiters = Set(Delimiter.allCases)
+        delimiters = .init(Delimiter.allCases)
     }
 }
 

@@ -8,7 +8,7 @@ final class YaproqConfigurationTests: BaseTests {
 
         // Assert
         XCTAssertFalse(configuration.isDebug)
-        XCTAssertEqual(configuration.directories, Set(arrayLiteral: Yaproq.Configuration.defaultDirectory))
+        XCTAssertEqual(configuration.directories, .init(arrayLiteral: Yaproq.Configuration.defaultDirectory))
         XCTAssertEqual(configuration.caching.costLimit, 0)
         XCTAssertEqual(configuration.caching.countLimit, 0)
 
@@ -26,12 +26,12 @@ final class YaproqConfigurationTests: BaseTests {
 
         // Assert
         XCTAssertTrue(configuration.isDebug)
-        XCTAssertEqual(configuration.directories, Set(directories.map { $0 + "/" }))
+        XCTAssertEqual(configuration.directories, .init(directories.map { $0 + "/" }))
         XCTAssertEqual(configuration.caching.costLimit, costLimit)
         XCTAssertEqual(configuration.caching.countLimit, countLimit)
 
         // Arrange
-        directories = Set(arrayLiteral: "/templates/")
+        directories = .init(arrayLiteral: "/templates/")
         costLimit = 3
         countLimit = 4
 
@@ -104,7 +104,7 @@ final class YaproqTests: BaseTests {
         super.setUp()
 
         let configuration = Yaproq.Configuration(
-            directories: Set(arrayLiteral: Bundle.module.resourcePath!),
+            directories: .init(arrayLiteral: Bundle.module.resourcePath!),
             isDebug: true
         )
         templating = Yaproq(configuration: configuration)
@@ -178,7 +178,7 @@ extension YaproqTests {
         )
         templating.configuration = .init(
             caching: .init(costLimit: 2, countLimit: 3),
-            directories: Set(arrayLiteral: Bundle.module.resourcePath!)
+            directories: .init(arrayLiteral: Bundle.module.resourcePath!)
         )
         var result: String?
 
@@ -199,7 +199,7 @@ extension YaproqTests {
         )
         templating.configuration = .init(
             caching: .init(costLimit: 2, countLimit: 3),
-            directories: Set(arrayLiteral: Bundle.module.resourcePath!)
+            directories: .init(arrayLiteral: Bundle.module.resourcePath!)
         )
         var result: String?
 

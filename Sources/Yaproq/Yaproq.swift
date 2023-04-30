@@ -204,7 +204,7 @@ extension Yaproq {
 
         public init(
             caching: Caching = .init(),
-            directories: Set<String> = Set(arrayLiteral: defaultDirectory),
+            directories: Set<String> = .init(arrayLiteral: defaultDirectory),
             isDebug: Bool = false
         ) {
             self.caching = caching
@@ -216,7 +216,7 @@ extension Yaproq {
         public init(
             caching: Caching = .init(),
             delimiters: Set<Delimiter>,
-            directories: Set<String> = Set(arrayLiteral: defaultDirectory),
+            directories: Set<String> = .init(arrayLiteral: defaultDirectory),
             isDebug: Bool = false
         ) throws {
             self.init(caching: caching, directories: directories, isDebug: isDebug)
