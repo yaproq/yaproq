@@ -33,7 +33,7 @@ jobs:
     - name: Generate coverage report
       run: llvm-cov export -format="lcov" .build/debug/yaproqPackageTests.xctest -instr-profile=.build/debug/codecov/default.profdata -ignore-filename-regex=".build|Tests" > coverage.lcov
     - name: Upload to codecov.io
-      uses: codecov/codecov-action@v1.0.3
+      uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         flags: base64,unittests
