@@ -713,7 +713,7 @@ extension Compiler: StatementVisitor {
         result += stringify(try evaluate(expression: statement.expression))
     }
 
-    func visitSuper(statement: SuperStatement) throws {}
+    func visitSuper(statement: SuperStatement) throws { /* No implementation needed */}
 
     func visitVariable(statement: VariableStatement) throws {
         var value: Any?
