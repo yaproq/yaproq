@@ -1011,60 +1011,38 @@ extension YaproqTests {
 
     func testClosedRangeOperator() {
         // Arrange
-        var template = Template("""
+        let sources = [
+        """
         {% var result = 1...3 %}
         {{ result }}
+        """,
         """
-        )
-        var result: String?
-
-        // Act/Assert
-        XCTAssertNoThrow(result = try templating.renderTemplate(template))
-        XCTAssertEqual(result, "1...3")
-
-        // Arrange
-        template = Template("""
         {% var min = 1 %}
         {% var result = min...3 %}
         {{ result }}
+        """,
         """
-        )
-
-        // Act/Assert
-        XCTAssertNoThrow(result = try templating.renderTemplate(template))
-        XCTAssertEqual(result, "1...3")
-
-        // Arrange
-        template = Template("""
         {% var max = 3 %}
         {% var result = 1...max %}
         {{ result }}
         """
-        )
+        ]
 
         // Act/Assert
-        XCTAssertNoThrow(result = try templating.renderTemplate(template))
-        XCTAssertEqual(result, "1...3")
+        for source in sources {
+            let template = Template(source)
+            var result: String?
+            XCTAssertNoThrow(result = try templating.renderTemplate(template))
+            XCTAssertEqual(result, "1...3")
+        }
 
         // Arrange
-        template = Template("""
-        {% var min = 1 %}
-        {% var max = 3 %}
-        {% var result = min...max %}
-        {{ result }}
-        """
-        )
-
-        // Act/Assert
-        XCTAssertNoThrow(result = try templating.renderTemplate(template))
-        XCTAssertEqual(result, "1...3")
-
-        // Arrange
-        template = Template("""
+        var template = Template("""
         {% var result = 1.5...3.0 %}
         {{ result }}
         """
         )
+        var result: String?
 
         // Act/Assert
         XCTAssertNoThrow(result = try templating.renderTemplate(template))
@@ -1221,60 +1199,48 @@ extension YaproqTests {
 
     func testRangeOperator() {
         // Arrange
-        var template = Template("""
+        let sources = [
+        """
         {% var result = 1..<3 %}
         {{ result }}
+        """,
         """
-        )
-        var result: String?
-
-        // Act/Assert
-        XCTAssertNoThrow(result = try templating.renderTemplate(template))
-        XCTAssertEqual(result, "1..<3")
-
-        // Arrange
-        template = Template("""
+        {% var result = 1..<3 %}
+        {{ result }}
+        """,
+        """
         {% var min = 1 %}
         {% var result = min..<3 %}
         {{ result }}
+        """,
         """
-        )
-
-        // Act/Assert
-        XCTAssertNoThrow(result = try templating.renderTemplate(template))
-        XCTAssertEqual(result, "1..<3")
-
-        // Arrange
-        template = Template("""
         {% var max = 3 %}
         {% var result = 1..<max %}
         {{ result }}
+        """,
         """
-        )
-
-        // Act/Assert
-        XCTAssertNoThrow(result = try templating.renderTemplate(template))
-        XCTAssertEqual(result, "1..<3")
-
-        // Arrange
-        template = Template("""
         {% var min = 1 %}
         {% var max = 3 %}
         {% var result = min..<max %}
         {{ result }}
         """
-        )
+        ]
 
         // Act/Assert
-        XCTAssertNoThrow(result = try templating.renderTemplate(template))
-        XCTAssertEqual(result, "1..<3")
+        for source in sources {
+            let template = Template(source)
+            var result: String?
+            XCTAssertNoThrow(result = try templating.renderTemplate(template))
+            XCTAssertEqual(result, "1..<3")
+        }
 
         // Arrange
-        template = Template("""
+        var template = Template("""
         {% var result = 1.5..<3.0 %}
         {{ result }}
         """
         )
+        var result: String?
 
         // Act/Assert
         XCTAssertNoThrow(result = try templating.renderTemplate(template))
