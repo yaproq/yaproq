@@ -1,0 +1,306 @@
+{
+  "warnings": [
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Delimiter.swift",
+      "line": 1,
+      "symbol": "Delimiter",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Delimiter.swift",
+      "line": 2,
+      "symbol": "Delimiter.comment(_:_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Delimiter.swift",
+      "line": 2,
+      "symbol": "Delimiter.output(_:_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Delimiter.swift",
+      "line": 2,
+      "symbol": "Delimiter.statement(_:_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Delimiter.swift",
+      "line": 64,
+      "symbol": "Delimiter",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Error/CodingError.swift",
+      "line": 3,
+      "symbol": "CodingError",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Error/CodingError.swift",
+      "line": 4,
+      "symbol": "CodingError.filePath",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Error/CodingError.swift",
+      "line": 6,
+      "symbol": "CodingError.line",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Error/CodingError.swift",
+      "line": 7,
+      "symbol": "CodingError.column",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Error/RuntimeError.swift",
+      "line": 1,
+      "symbol": "RuntimeError",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Error/SyntaxError.swift",
+      "line": 1,
+      "symbol": "SyntaxError",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Error/TemplateError.swift",
+      "line": 3,
+      "symbol": "TemplateError",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Error/TemplateError.swift",
+      "line": 4,
+      "symbol": "TemplateError.filePath",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Error/YaproqError.swift",
+      "line": 3,
+      "symbol": "YaproqError",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Template.swift",
+      "line": 1,
+      "symbol": "Template",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Template.swift",
+      "line": 2,
+      "symbol": "Template.source",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Template.swift",
+      "line": 3,
+      "symbol": "Template.filePath",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Template.swift",
+      "line": 4,
+      "symbol": "Template.isCached",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Template.swift",
+      "line": 12,
+      "symbol": "Template.init(_:filePath:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 3,
+      "symbol": "Yaproq",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 4,
+      "symbol": "Yaproq.configuration",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 5,
+      "symbol": "Yaproq.templates",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 9,
+      "symbol": "Yaproq.init(configuration:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 18,
+      "symbol": "Yaproq",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 19,
+      "symbol": "Yaproq.loadTemplate(named:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 35,
+      "symbol": "Yaproq.loadTemplate(at:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 121,
+      "symbol": "Yaproq",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 122,
+      "symbol": "Yaproq.renderTemplate(named:in:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 138,
+      "symbol": "Yaproq.renderTemplate(at:in:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 142,
+      "symbol": "Yaproq.renderTemplate(_:in:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 198,
+      "symbol": "Yaproq",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 199,
+      "symbol": "Yaproq.Configuration",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 200,
+      "symbol": "Yaproq.Configuration.defaultDirectory",
+      "symbol_kind": "source.lang.swift.decl.var.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 201,
+      "symbol": "Yaproq.Configuration.isDebug",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 202,
+      "symbol": "Yaproq.Configuration.directories",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 203,
+      "symbol": "Yaproq.Configuration.caching",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 205,
+      "symbol": "Yaproq.Configuration.init(caching:directories:isDebug:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 216,
+      "symbol": "Yaproq.Configuration.init(caching:delimiters:directories:isDebug:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 249,
+      "symbol": "Yaproq.Configuration",
+      "symbol_kind": "source.lang.swift.decl.extension",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 250,
+      "symbol": "Yaproq.Configuration.Caching",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 251,
+      "symbol": "Yaproq.Configuration.Caching.costLimit",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 252,
+      "symbol": "Yaproq.Configuration.Caching.countLimit",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/yaproq/yaproq/Sources/Yaproq/Yaproq.swift",
+      "line": 254,
+      "symbol": "Yaproq.Configuration.Caching.init(costLimit:countLimit:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    }
+  ],
+  "source_directory": "/Users/runner/work/yaproq/yaproq"
+}
